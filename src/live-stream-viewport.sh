@@ -20,6 +20,7 @@ panic() {
     log "$_message"
     echo "$_message" >"$PANIC_MESSAGE_FILE"
     kill -SIGQUIT "$PID"
+    exit
 }
 
 usage() {
@@ -73,21 +74,33 @@ EOF
 }
 
 # Functions
-parse_output_dir() {
+parse_and_validate_output_dir() {
   local _output_dir="$1"
-  log "Parsing option 'output-dir', input is '$_output_dir'"
-  if [ ! -d "$_output_dir" ]; then
-    panic "Error. Directory '$_output_dir' doesn't exist."
-  fi
+
+  log "Parsing and validating output-dir, input is '$_output_dir'"
+
+  [ ! -d "$_output_dir" ] && panic "Error. Directory '$_output_dir' doesn't exist."
+  if ! touch "$_output_dir"/touch 2>/dev/null; then panic "Error. Directory '$_output_dir' is not writable."; fi
+  rm "$_output_dir"/touch
+
+  echo "$_output_dir"
 }
 
-parse_layout() {
+parse_and_validate_layout() {
   local _layout="$1"
 
-  log "$_layout"
+  log "Parsing and validating layout, input is '$_layout'"
+
+  local _rows=$(echo "$_layout" | awk -F 'x' '{print $1}')
+  local _columns=$(echo "$_layout" | awk -F 'x' '{print $2}')
+  log "Layout rows=$_rows, layout columns=$_columns"
+
+  local _grid_size=$((_rows * _columns))
+  if (( "$_grid_size" < 1 )) || (( "$_grid_size" > "$MAX_GRID_SIZE" )); then panic "Error. Layout grid size of $_grid_size is out of bounds."; fi
+
 }
 
-parse_streams() {
+parse_and_validate_streams() {
   local _array_name="$1"[@]
   local _streams=("${!_array_name}")
 
@@ -96,7 +109,8 @@ parse_streams() {
 
 # Main
 
-# Defaults
+# Defaults and constants
+MAX_GRID_SIZE=30
 DEFAULT_OUTPUT_DIR='.'
 DEFAULT_LAYOUT='2x2'
 streams=()
@@ -154,9 +168,9 @@ while :; do
   esac
 done
 
-output_dir=$(parse_output_dir "$output_dir" "$DEFAULT_OUTPUT_DIR")
-layout=$(parse_layout "$layout")
-streams=$(parse_streams streams)
+output_dir=$(parse_and_validate_output_dir "$output_dir" "$DEFAULT_OUTPUT_DIR");
+layout=$(parse_and_validate_layout "$layout")
+streams=$(parse_and_validate_streams streams)
 
 
 #      stream_id=$(echo "$2" | awk -f '=' '{print $1}')
