@@ -142,30 +142,58 @@ parse_and_validate_streams() {
   echo ${_streams[*]}
 }
 
-generate_viewport() {
-  local _output_dir="$1"
-  local _layout=("$2")
-  shift 2
-  local _streams=("$@")
+generate_viewport_page() {
+  local _template_file="$1"
+  local _viewport_file="$2"
+  local _layout=($3)
+  shift 3
+  local _streams=($@)
+
+  log "Preparing replacements for the template file '$_template_file'"
 
   local _rows="${_layout[0]}"
   local _columns="${_layout[1]}"
-  local _grid_size=$(( "$_rows" * "$_columns" ))
 
-  _stream_ids=()
+  local _html_rows
+  for _dummy in $(seq "$_rows"); do _html_rows="$_html_rows 1fr "; done
+  log "{{ROWS}} is going to be '$_html_rows'"
+
+  local _html_columns
+  for _dummy in $(seq "$_columns"); do _html_columns="$_html_columns 1fr "; done
+  log "{{COLUMNS}} is going to be '$_html_columns'"
+
+  local _html_grid_size=$(( $_rows * $_columns ))
+  log "{{GRID_SIZE}} is going to be '$_html_grid_size'"
+
+  local _html_stream_ids=()
   for _id_url in ${_streams[*]}; do
-    _stream_ids+=($(echo "$_id_url" | awk -F '=' '{print $1}'))
+    _html_stream_ids+=($(echo "$_id_url" | awk -F '=' '{print $1}'))
   done
 
-  log $( echo "${_stream_ids[*]}" | tr ' ' ',' )
+  _html_stream_ids=$( echo "${_html_stream_ids[*]}" | tr ' ' ',' )
+  log "{{STREAM_IDS}} is going to be '$_html_stream_ids'"
+
+  log "Generating into '$_viewport_file'..."
+  sed \
+    -e 's/{{ROWS}}/'"$_html_rows"'/g' \
+    -e 's/{{COLUMNS}}/'"$_html_columns"'/g' \
+    -e 's/{{GRID_SIZE}}/'"$_html_grid_size"'/g' \
+    -e 's/{{STREAM_IDS}}/'"$_html_stream_ids"'/g' \
+    "$_template_file" \
+    >"$_viewport_file"
 }
 
 # Main
 
 # Defaults and constants
 MAX_GRID_SIZE=30
+VIEWPORT_TEMPLATE_FILE='live-stream-viewport.html.template'
+VIEWPORT_PAGE='viewport.html'
+STREAMS_OUTPUT_DIR='streams'
+
 DEFAULT_OUTPUT_DIR='.'
 DEFAULT_LAYOUT='2x2'
+
 streams=()
 
 # Usage and --help, getopt on macos doesn't have long options
@@ -225,5 +253,5 @@ output_dir=$(parse_and_validate_output_dir "$output_dir" "$DEFAULT_OUTPUT_DIR");
 layout=( $(parse_and_validate_layout "$layout" "$DEFAULT_LAYOUT") )
 streams=( $(parse_and_validate_streams "${streams[*]}") )
 
-generate_viewport "$output_dir" "${layout[*]}" "${streams[*]}"
+generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" "${layout[*]}" "${streams[*]}"
 
