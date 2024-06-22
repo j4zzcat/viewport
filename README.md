@@ -14,13 +14,14 @@ The program is available both as a Docker container and a Raspberry Pi deb packa
 
 ## Unifi Protect Quickstart
 * The following will display a 2x3 viewport for 4 Unifi Protect Cameras. 
-* Obviously, you have to replace the IDs and URLs with your own. 
+* Obviously, you have to replace the IDs and URLs given in this example with your very own. 
 * To get the RTSPS stream URL for a camera, open the Unifi Protect app, go to 'Unifi Devices', 
 select the desired camera, and then select 'Settings'. Scroll down and expand the 'Advanced' section. 
 Enable the desired RTSPS stream, and take a note of its URL. Pass this URL to the `-s` option.
 
 ```bash
-docker run -it --rm \
+docker run \
+  -it --rm \
   -p 8777:80 \
   --mount type=tmpfs,destination=/var/www/localhost/htdocs,tmpfs-mode=1777 \
   j4zzcat/live-stream-viewport:latest \
@@ -31,7 +32,7 @@ docker run -it --rm \
     -s 'my-back-camera=rtsps://192.168.1.246:7441/EFDHIpxfo3zYC?enableSrtp'
 ```
 
-To get to the viewport, open a web browser and navigate to http://localhost:8777/viewport.html.
+To get to the viewport, open a web browser and navigate to: http://localhost:8777/viewport.html.
 
 &nbsp;
 ## Raspberry Pi Quickstart
