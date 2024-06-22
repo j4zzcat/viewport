@@ -19,6 +19,7 @@ The program is available both as a Docker container and a Raspberry Pi deb packa
 * To get the RTSPS stream URL for a camera, open the Unifi Protect app, go to 'Unifi Devices', 
 select the desired camera, and then select 'Settings'. Scroll down and expand the 'Advanced' section. 
 Enable the desired RTSPS stream, and take a note of its URL. Pass this URL to the `-s` option.
+* Run the following command:
 
 ```bash
 docker run \
@@ -33,7 +34,7 @@ docker run \
     -s 'my-back-camera=rtsps://192.168.1.246:7441/EFDHIpxfo3zYC?enableSrtp'
 ```
 
-To get to the viewport, open a web browser and navigate to: http://localhost:8777/viewport.html.
+* To get to the viewport, open a web browser and navigate to: http://localhost:8777/viewport.html.
 
 &nbsp;
 ## Raspberry Pi Quickstart
