@@ -76,8 +76,13 @@ EOF
 # Functions
 parse_and_validate_output_dir() {
   local _output_dir="$1"
+  local _default_output_dir="$2"
 
   log "Parsing and validating output-dir, input is '$_output_dir'"
+  if [ -z "$_output_dir" ]; then
+    _output_dir="$_default_output_dir"
+    log "Using default output dir '$_output_dir'"
+  fi
 
   [ ! -d "$_output_dir" ] && panic "Error. Directory '$_output_dir' doesn't exist."
   if ! touch "$_output_dir"/touch 2>/dev/null; then panic "Error. Directory '$_output_dir' is not writable."; fi
@@ -88,8 +93,14 @@ parse_and_validate_output_dir() {
 
 parse_and_validate_layout() {
   local _layout="$1"
+  local _default_layout="$2"
 
   log "Parsing and validating layout, input is '$_layout'"
+
+  if [ -z "$_layout" ]; then
+    _layout="$_default_layout"
+    log "Using default layout '$_layout'"
+  fi
 
   local _rows=$(echo "$_layout" | awk -F 'x' '{print $1}')
   local _columns=$(echo "$_layout" | awk -F 'x' '{print $2}')
@@ -98,6 +109,7 @@ parse_and_validate_layout() {
   local _grid_size=$((_rows * _columns))
   if (( "$_grid_size" < 1 )) || (( "$_grid_size" > "$MAX_GRID_SIZE" )); then panic "Error. Layout grid size of $_grid_size is out of bounds."; fi
 
+  echo "$_rows" "$_columns"
 }
 
 parse_and_validate_streams() {
@@ -169,7 +181,7 @@ while :; do
 done
 
 output_dir=$(parse_and_validate_output_dir "$output_dir" "$DEFAULT_OUTPUT_DIR");
-layout=$(parse_and_validate_layout "$layout")
+layout=$(parse_and_validate_layout "$layout" "$DEFAULT_LAYOUT")
 streams=$(parse_and_validate_streams streams)
 
 
