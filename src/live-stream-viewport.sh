@@ -145,17 +145,19 @@ parse_and_validate_streams() {
 generate_viewport() {
   local _output_dir="$1"
   local _layout=("$2")
-  local _rows="${_layout[0]}"
-  local _columns="${_layout[1]}"
   shift 2
   local _streams=("$@")
+
+  local _rows="${_layout[0]}"
+  local _columns="${_layout[1]}"
+  local _grid_size=$(( "$_rows" * "$_columns" ))
 
   _stream_ids=()
   for _id_url in ${_streams[*]}; do
     _stream_ids+=($(echo "$_id_url" | awk -F '=' '{print $1}'))
   done
 
-  log "${_stream_ids[*]}"
+  log $( echo "${_stream_ids[*]}" | tr ' ' ',' )
 }
 
 # Main
