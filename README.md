@@ -8,34 +8,30 @@ for passive, security cameras view-only scenarios (i.e., 'Kiosk').
 
 The program uses `ffmpeg` to continuously transcode RTSP/RTSPS streams from 
 the given endpoints (usually security cameras) into HTTP Live Streaming (HLS) streams, 
-and then makes these streams available on a simple, unattended web page (i.e., 'viewiport').
+and then makes these streams available on a simple, unattended web page (i.e., 'viewport').
 
 The program is available both as a Docker container and a Raspberry Pi deb package. 
 
-## Docker Quickstart
-
-Before starting, you first have to enable the RTSPS stream for the camera.  
-
-To do so, open the Unifi Protect app, go to 'Unifi Devices', select the desired camera, and then select 'Settings'. 
-Scroll down and expand the 'Advanced' section. Enable the desired RTSPS stream, and take a note of its URL. 
-Pass this URL to the `--stream` parameter.
-
-For example, here the program shows 5 streams from 5 different cameras in a 3x3 arrangement.
-The `--mount` option is used to accelerate things a bit by putting the web server' dir in memory.
+## Unifi Protect Quickstart
+* The following will display a 2x3 viewport for 4 Unifi Protect Cameras. 
+* Obviously, you have to replace the IDs and URLs with your own. 
+* To get the RTSPS stream URL for a camera, open the Unifi Protect app, go to 'Unifi Devices', 
+select the desired camera, and then select 'Settings'. Scroll down and expand the 'Advanced' section. 
+Enable the desired RTSPS stream, and take a note of its URL. Pass this URL to the `-s` option.
 
 ```bash
-docker run -it --rm -p 8777:80 \
+docker run -it --rm \
+  -p 8777:80 \
   --mount type=tmpfs,destination=/var/www/localhost/htdocs,tmpfs-mode=1777 \
-  j4zzcat/unifi-protect-camera-kiosk:latest \
-    --layout 3x3 \
-    --stream 'camera1=rtsps://192.168.1.246:7441/D3xxDDe0xA9JN?enableSrtp' \
-    --stream 'camera2=rtsps://192.168.1.246:7441/DEVC0FFEE1Sd3?enableSrtp' \
-    --stream 'camera_pool=rtsps://192.168.1.246:7441/AoSixcDJKP0xj?enableSrtp' \
-    --stream 'camera7=rtsps://192.168.1.246:7441/EFDHIpxfo3zYC?enableSrtp' \
-    --stream 'camera_home=rtsps://192.168.1.246:7441/ABCDEBZUDGtFJ?enableSrtp'
+  j4zzcat/live-stream-viewport:latest \
+    -l 2x3 \
+    -s 'my-gate-camera=rtsps://192.168.1.246:7441/D3xxDDe0xA9JN?enableSrtp' \
+    -s 'my-tree-camera=rtsps://192.168.1.246:7441/DEVC0FFEE1Sd3?enableSrtp' \
+    -s 'my-pool-camera=rtsps://192.168.1.246:7441/AoSixcDJKP0xj?enableSrtp' \
+    -s 'my-back-camera=rtsps://192.168.1.246:7441/EFDHIpxfo3zYC?enableSrtp'
 ```
 
-To view the kiosk, open a web browser to http://localhost:8777/kiosk.html.
+To get to the viewport, open a web browser and navigate to http://localhost:8777/viewport.html.
 
 &nbsp;
 ## Raspberry Pi Quickstart
