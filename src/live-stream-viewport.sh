@@ -1,23 +1,32 @@
 #! /bin/bash
 
-function log() {
-    [[ -z "$verbose" ]] && return
-    local message="$1"
-    local now=$(date +'%y-%m-%d %h:%m:%s')
-    echo "[$now] $message" >/dev/stderr
+PID="$$"
+PANIC_MESSAGE_FILE=$(mktemp /tmp/XXXXX)
+trap "cat $PANIC_MESSAGE_FILE; exit 127" SIGQUIT
+
+graceful_shutdown() {
+  echo "Done"
 }
 
-function panic() {
-    local error_message="$1"
-    log "panic. $error_message"
-    exit 128
+log() {
+    [[ -z "$VERBOSE" ]] && return
+    local _message="$1"
+    local now=$(date +'%Y-%m-%d %H:%M:%S')
+    echo "[$now] $_message" >/dev/stderr
 }
 
-function usage() {
+panic() {
+    local _message="$1"
+    log "$_message"
+    echo "$_message" >"$PANIC_MESSAGE_FILE"
+    kill -SIGQUIT "$PID"
+}
+
+usage() {
     echo "usage: $(basename $0) [-vh] [-o <output-dir>] [-l <layout>] -s <id=rtsp-url>..."
 }
 
-function help() {
+help() {
     cat <<EOF
 NAME:
     $(basename $0) - View rtsp/rtsps streams in a web browser.
@@ -64,23 +73,25 @@ EOF
 }
 
 # Functions
-function parse_output_dir() {
-  local output_dir="$1"
-
-  log "$output_dir"
+parse_output_dir() {
+  local _output_dir="$1"
+  log "Parsing option 'output-dir', input is '$_output_dir'"
+  if [ ! -d "$_output_dir" ]; then
+    panic "Error. Directory '$_output_dir' doesn't exist."
+  fi
 }
 
-function parse_layout() {
-  local layout="$1"
+parse_layout() {
+  local _layout="$1"
 
-  log "$layout"
+  log "$_layout"
 }
 
-function parse_streams() {
-  local array_name="$1"[@]
-  local streams=("${!array_name}")
+parse_streams() {
+  local _array_name="$1"[@]
+  local _streams=("${!_array_name}")
 
-  log "${streams[*]}"
+  log "${_streams[*]}"
 }
 
 # Main
@@ -109,30 +120,30 @@ eval set -- "$valid_args"
 while :; do
   case "$1" in
     -v | --verbose)
-      verbose='true'
-      log "parsing 'verbose' option"
+      VERBOSE='true'
+      log "Collecting 'verbose' option"
       shift 1
       ;;
 
     -h | --help)
-      log "parsing 'help' option"
+      log "Collecting 'help' option"
       help && exit 0
       ;;
 
     -o | --output-dir)
-      log "parsing 'output-dir' option, input is '$2'"
+      log "Collecting 'output-dir' option, input is '$2'"
       output_dir="$2"
       shift 2
       ;;
 
     -l | --layout)
-      log "parsing 'layout' option, input is '$2'"
+      log "Collecting 'layout' option, input is '$2'"
       layout="$2"
       shift 2
       ;;
 
     -s | --stream)
-      log "parsing 'stream' option, input is '$2'"
+      log "Collecting 'stream' option, input is '$2'"
       streams+=("$2")
       shift 2
       ;;
