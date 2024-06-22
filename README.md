@@ -2,10 +2,13 @@
 
 <img src="docs/screenshot1.png" align="right" width="40%"/>
 
-This program offers a simple method to display multiple side-by-side Real-Time Streaming Protocol (RTSP) streams in a web
-browser, making it ideal for passive, security cameras view-only scenarios. The program uses `ffmpeg` to continuously 
-transcode RTSP/RTSPS streams from security cameras into HTTP Live Streaming (HLS) streams, and then shares these streams
-via a web server (`Apache v2`). The streams are then displayed on a simple, unattended web page.
+This program offers a simple  method to display multiple, side-by-side Real
+Time Streaming Protocol (RTSP)  streams in a  web browser, making  it ideal
+for passive, security cameras view-only scenarios (i.e., 'Kiosk').
+
+The program uses `ffmpeg` to continuously transcode RTSP/RTSPS streams from 
+the given endpoints (usually security cameras) into HTTP Live Streaming (HLS) streams, 
+and then makes these streams available on a simple, unattended web page (i.e., 'viewiport').
 
 The program is available both as a Docker container and a Raspberry Pi deb package. 
 
