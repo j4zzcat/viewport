@@ -27,8 +27,8 @@ docker run \
     -s 'my-pool-camera=rtsps://192.168.1.246:7441/AoSixcDJKP0xj?enableSrtp' \
     -s 'my-back-camera=rtsps://192.168.1.246:7441/EFDHIpxfo3zYC?enableSrtp'
 ```
-* The above will display a 2x3 viewport for 4 Unifi Protect Cameras. 
-* Obviously, you have to replace the IDs and URLs given in this example with your very own. 
+* The above will display a 2x3 viewport with 4 Unifi Protect Cameras. 
+* Obviously, you have to replace the `IDs` and `URLs` given in this example with your very own. 
 * To get the RTSPS stream URL for a camera, open the Unifi Protect app, go to 'Unifi Devices', 
 select the desired camera, and then select 'Settings'. Scroll down and expand the 'Advanced' section. 
 Enable the desired RTSPS stream, and take a note of its URL. Pass this URL to the `-s` option.
