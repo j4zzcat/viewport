@@ -113,10 +113,32 @@ parse_and_validate_layout() {
 }
 
 parse_and_validate_streams() {
-  local _array_name="$1"[@]
-  local _streams=("${!_array_name}")
+  local _streams=("$@")
 
-  log "${_streams[*]}"
+  log "Parsing and validating streams, input is '$_streams'"
+
+  local _temp_dir=$(mktemp -d /tmp/XXXXX)
+  for _id_url in ${streams[*]}; do
+    log "Parsing $_id_url"
+    local _seperator_count=$(echo "$_id_url" | grep --count '=')
+    (( "$_seperator_count" == 0 )) && panic "Error. The stream '$_id_url' doesn't match the pattern 'id=url'."
+
+    local _id=$(echo "$_id_url" | awk -F '=' '{print $1}')
+    local _url=$(echo "$_id_url" | awk -F '=' '{print $2}')
+
+    log "Stream id is '$_id', URL is '$_url'"
+
+    [ -f "$_temp_dir/$_id" ] && panic "Error. The stream id '$_id' was already given."
+    touch "$_temp_dir/$_id"
+
+    local _protocol=$(echo "${_url}" | awk -F '/' '{print substr($1, 1, length($1)-1)}')
+    case "$_protocol" in
+       rtsp) ;;
+       rtsps) ;;
+       *) panic "Error. Unsupported protocol in url '$_url'" ;;
+    esac
+  done
+
 }
 
 # Main
@@ -181,8 +203,8 @@ while :; do
 done
 
 output_dir=$(parse_and_validate_output_dir "$output_dir" "$DEFAULT_OUTPUT_DIR");
-layout=$(parse_and_validate_layout "$layout" "$DEFAULT_LAYOUT")
-streams=$(parse_and_validate_streams streams)
+layout=( $(parse_and_validate_layout "$layout" "$DEFAULT_LAYOUT") )
+streams=( $(parse_and_validate_streams "${streams[*]}") )
 
 
 #      stream_id=$(echo "$2" | awk -f '=' '{print $1}')
