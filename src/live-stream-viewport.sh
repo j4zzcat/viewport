@@ -137,9 +137,25 @@ parse_and_validate_streams() {
        rtsps) ;;
        *) panic "Error. Unsupported protocol in url '$_url'" ;;
     esac
-
   done
 
+  echo ${_streams[*]}
+}
+
+generate_viewport() {
+  local _output_dir="$1"
+  local _layout=("$2")
+  local _rows="${_layout[0]}"
+  local _columns="${_layout[1]}"
+  shift 2
+  local _streams=("$@")
+
+  _stream_ids=()
+  for _id_url in ${_streams[*]}; do
+    _stream_ids+=($(echo "$_id_url" | awk -F '=' '{print $1}'))
+  done
+
+  log "${_stream_ids[*]}"
 }
 
 # Main
@@ -207,9 +223,5 @@ output_dir=$(parse_and_validate_output_dir "$output_dir" "$DEFAULT_OUTPUT_DIR");
 layout=( $(parse_and_validate_layout "$layout" "$DEFAULT_LAYOUT") )
 streams=( $(parse_and_validate_streams "${streams[*]}") )
 
+generate_viewport "$output_dir" "${layout[*]}" "${streams[*]}"
 
-#      stream_id=$(echo "$2" | awk -f '=' '{print $1}')
-#      stream_ids="$stream_ids $stream_id"
-#      url=$(echo "$2" | awk -f '=' '{print $2}')
-
-      #stream_transcode "$stream_id" "$url"
