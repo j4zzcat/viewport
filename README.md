@@ -2,7 +2,7 @@
 
 <img src="docs/screenshot1.png" align="right" width="40%"/>
 
-This program offers a simple  method to display multiple, side-by-side Real
+This program offers a simple method to display multiple, side-by-side Real
 Time Streaming Protocol (RTSP)  streams in a  web browser, making  it ideal
 for passive, security cameras view-only scenarios (i.e., 'Kiosk').
 
@@ -31,7 +31,8 @@ docker run \
 * Obviously, you have to replace the `IDs` and `URLs` given in this example with your very own. 
 * To get the RTSPS stream URL for a camera, open the Unifi Protect app, go to 'Unifi Devices', 
 select the desired camera, and then select 'Settings'. Scroll down and expand the 'Advanced' section. 
-Enable the stream for the desired resolution, and take a note of its URL. Pass this URL to the `-s` option as in `-s ID=URL`.
+Enable the stream for the desired resolution, and take a note of its URL. 
+Pass this URL to the `-s` option as in `-s ID=URL`.
 * To get to the viewport, open a web browser and navigate to: http://localhost:8777/viewport.html.
 
 &nbsp;
