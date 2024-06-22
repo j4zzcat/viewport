@@ -118,7 +118,7 @@ parse_and_validate_streams() {
   log "Parsing and validating streams, input is '$_streams'"
 
   local _temp_dir=$(mktemp -d /tmp/XXXXX)
-  for _id_url in ${streams[*]}; do
+  for _id_url in ${_streams[*]}; do
     log "Parsing $_id_url"
     local _seperator_count=$(echo "$_id_url" | grep --count '=')
     (( "$_seperator_count" == 0 )) && panic "Error. The stream '$_id_url' doesn't match the pattern 'id=url'."
@@ -137,6 +137,7 @@ parse_and_validate_streams() {
        rtsps) ;;
        *) panic "Error. Unsupported protocol in url '$_url'" ;;
     esac
+
   done
 
 }
