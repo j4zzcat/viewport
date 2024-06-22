@@ -1,12 +1,13 @@
-# Unifi Protect Camera Kiosk
+# Live Stream Viewport
 
 <img src="docs/screenshot1.png" align="right" width="40%"/>
 
-This program is a simple and easy way to show `Unifi Protect NVR` camera streams on a standard web browser in 'Kiosk' 
-mode, i.e., without needing any user interaction. It is available as a Docker container for easy consumption and also for
-Raspberry Pi as a kiosk solution. The program uses `ffmpeg` to convert the Real-Time Streaming Protocol Secure (RTSPS) streams 
-from the Unifi Protect NVR to HTTP Live Streaming (HLS) streams, and then shares these streams via a web server (`Apache v2`). 
-The streams are then displayed on a simple, unattended web page.
+This program offers a simple method to display multiple side-by-side Real-Time Streaming Protocol (RTSP) streams in a web
+browser, making it ideal for passive, security cameras view-only scenarios. The program uses `ffmpeg` to continuously 
+transcode RTSP/RTSPS streams from security cameras into HTTP Live Streaming (HLS) streams, and then shares these streams
+via a web server (`Apache v2`). The streams are then displayed on a simple, unattended web page.
+
+The program is available both as a Docker container and a Raspberry Pi deb package. 
 
 ## Docker Quickstart
 
