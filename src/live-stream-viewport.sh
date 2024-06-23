@@ -381,20 +381,31 @@ generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" 
 
 # Start transcoders
 stream_id_pids=( $(transcode_streams "$output_dir/streams" "${streams[*]}" ) )
+
+# Collect the non-zero pids for the cleanup trap
 transcoder_pids=( $(
   for id_pid in ${stream_id_pids[*]}; do
     pid=$(echo "$id_pid" | awk -F '=' '{print $2}')
     [ "$pid" != "0" ] && echo "$pid"
   done | xargs)
 )
-
 log "Running transcoders pids: ${transcoder_pids[*]}"
-
 trap "log 'Terminating the following ffmpeg processes: ${transcoder_pids[*]}'; kill ${transcoder_pids[*]}; exit" SIGHUP SIGINT SIGTERM SIGABRT
 
 # Report status
 while :; do
-  log "Hi"
-  Sleep 10
+  for ip_pid in ${stream_id_pids[*]}; do
+    stream_id=$(echo "$id_pid" | awk -F '=' '{print $1}')
+    pid=$(echo "$id_pid" | awk -F '=' '{print $2}')
+
+    if [ "$pid" == "0" ]; then
+      status="not running"
+    else
+      status="running"
+    fi
+
+    echo "Stream '$stream_id' is '$status'"
+  done
+  sleep 10
 done
 
