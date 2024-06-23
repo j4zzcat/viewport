@@ -59,7 +59,7 @@ STANDARD OPTIONS:
 OPTIONS:
     -o <output-dir>   Directory where the output should go [default: .]
     -l <layout>       Viewport layout in rows x columns format [default: 2x2]
-    -s <id=url>       Stream id and url in the form of 'id=rtsp[s]://address.'
+    -s <id=url>       Stream id and url in the form of 'id=rtsp[s]://address'
 
 EXAMPLE:
     The following is used to view two streams,  side by side,  in a 1x2 layout.
@@ -294,7 +294,7 @@ transcode_streams() {
     # Zero size?
     if [ -s "$_error_output_file" ]; then
       log "Error starting ffmpeg. '$(head "$_error_output_file")'"
-      _child_pid=0
+      _child_pid='T' # indicates 'terminated' state
     else
       log "Successfully started ffmpeg, PID is '$_child_pid'"
       echo $_child_pid > "$_stream_output_dir/pid"
@@ -382,32 +382,48 @@ generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" 
 # Start transcoders
 stream_id_pids=( $(transcode_streams "$output_dir/streams" "${streams[*]}" ) )
 
-# Collect the non-zero pids for the cleanup trap
-transcoder_pids=( $(
-  for id_pid in ${stream_id_pids[*]}; do
-    pid=$(echo "$id_pid" | awk -F '=' '{print $2}')
-    [ "$pid" != "0" ] && echo "$pid"
-  done | xargs)
-)
-log "Running transcoders pids: ${transcoder_pids[*]}"
-trap "log 'Terminating the following ffmpeg processes: ${transcoder_pids[*]}'; kill ${transcoder_pids[*]} 2>/dev/null; exit" SIGHUP SIGINT SIGTERM SIGABRT
+# Collect the pids of the started transcoders for the cleanup trap
+transcoder_pids_file=$(mktemp /tmp/XXXXX)
+for id_pid in ${stream_id_pids[*]}; do
+  pid=$(echo "$id_pid" | awk -F '=' '{print $2}')
 
-# Report status
-log "Will report status every 30 seconds"
+  # Make sure pid is a valid number
+  if [[ "$pid" =~ '^[0-9]+$' ]] ; then
+    echo "$pid" >> "$transcoder_pids_file"
+  fi
+done
+
+trap "log 'Terminating background ffmpeg processes.'; <$transcoder_pids_file xargs -n1 kill 2>/dev/null; exit" SIGHUP SIGINT SIGTERM SIGABRT
+
+# Monitor and report status
+log "Will report status every now and then..."
 while :; do
-  log "Sleeping..."
-  sleep 30
   for id_pid in ${stream_id_pids[*]}; do
     stream_id=$(echo "$id_pid" | awk -F '=' '{print $1}')
     pid=$(echo "$id_pid" | awk -F '=' '{print $2}')
 
-    # Is it still running?
-    if [[ "$(ps -ef | awk '/'"$pid"'.*ffmpeg/{print $8}' | head -1)" == "ffmpeg" ]]; then
-      sequence=$(grep '#EXT-X-MEDIA-SEQUENCE' "$output_dir/streams/$stream_id/index.m3u8" | awk -F ':' '{print $2}')
-      log "Stream '$stream_id': pid=$pid, status=running, sequence=$sequence"
-    else
-      log "Stream '$stream_id': status=stopped"
-    fi
+    message=''
+    case "$pid" in
+      T)
+        message='state: terminated'
+        ;;
+
+      S*)
+        log "$stream_id"
+        ;;
+
+      *)
+        if [[ "$(ps -ef | awk '/'"$pid"'.*ffmpeg/{print $8}' | head -1)" == "ffmpeg" ]]; then
+          sequence=$(grep '#EXT-X-MEDIA-SEQUENCE' "$output_dir/streams/$stream_id/index.m3u8" 2>/dev/null | awk -F ':' '{print $2}')
+          message="pid=$pid, status=running, sequence=$sequence"
+        else
+          message="status: stopped"
+          stream_id_pids=("${array[@]/$stream_id=*/$stream_id=S1}")
+        fi
+        ;;
+    esac
+    log "Stream '$stream_id': $message"
   done
+  sleep 5
 done
 
