@@ -167,7 +167,7 @@ generate_viewport_page() {
 
   local _html_stream_ids=()
   for _id_url in ${_streams[*]}; do
-    _html_stream_ids+=($(echo "$_id_url" | awk -F '=' '{print $1}'))
+    _html_stream_ids+=(\"$(echo "$_id_url" | awk -F '=' '{print $1}')\")
   done
 
   _html_stream_ids=$( echo "${_html_stream_ids[*]}" | tr ' ' ',' )
