@@ -21,14 +21,16 @@ docker run \
   -p 8777:80 \
   --mount type=tmpfs,destination=/var/www/localhost/htdocs,tmpfs-mode=1777 \
   j4zzcat/live-stream-viewport:latest \
-    -l 2x3 \
+    -l 3x3 \
     -s 'my-gate-camera=rtsps://192.168.1.246:7441/D3xxDDe0xA9JN?enableSrtp' \
     -s 'my-tree-camera=rtsps://192.168.1.246:7441/DEVC0FFEE1Sd3?enableSrtp' \
     -s 'my-pool-camera=rtsps://192.168.1.246:7441/AoSixcDJKP0xj?enableSrtp' \
-    -s 'my-back-camera=rtsps://192.168.1.246:7441/EFDHIpxfo3zYC?enableSrtp'
+    -s 'my-back-camera=rtsps://192.168.1.246:7441/EFDHIpxfo3zYC?enableSrtp' \
+    -s 'my-roof-camera=rtsps://192.168.1.246:7441/LOxx1FREFD11C?enableSrtp'
 ```
-* The above will display a 2x3 viewport with 4 Unifi Protect Cameras. 
+* The above will display a 3x3 viewport with 5 Unifi Protect Cameras. 
 * Obviously, you have to replace the `IDs` and `URLs` given in this example with your very own. 
+Note that `IDs` are arbitrary strings, but must be unique.
 * To get the RTSPS stream URL for a camera, open the Unifi Protect app, go to 'Unifi Devices', 
 select the desired camera, and then select 'Settings'. Scroll down and expand the 'Advanced' section. 
 Enable the stream for the desired resolution, and take a note of its URL. 

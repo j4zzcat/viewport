@@ -212,7 +212,7 @@ transcode_streams() {
 
     # Zero size?
     if [ -s "$_error_output_file" ]; then
-      log "Error starting ffmpeg '$(head "$_error_output_file")'"
+      log "Error starting ffmpeg. '$(head "$_error_output_file")'"
     else
       log "Successfully started ffmpeg, PID is '$_child_pid'"
     fi
