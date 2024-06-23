@@ -268,6 +268,7 @@ transcode_streams() {
   shift
   local _streams=($@)
 
+  local _id_pids=()
   for _id_url in ${_streams[*]}; do
     local _stream_id=$(echo "$_id_url" | awk -F '=' '{print $1}')
     local _stream_url=$(echo "$_id_url" | awk -F '=' '{print $2}')
@@ -275,7 +276,6 @@ transcode_streams() {
     local _stream_output_dir="$_output_dir"/"$_stream_id"
     mkdir -p "$_stream_output_dir"
 
-    local _pids=()
     log "Trying to transcode '$_stream_url'..."
     local _error_output_file="$(mktemp /tmp/XXXXX)"
     ffmpeg \
@@ -294,14 +294,16 @@ transcode_streams() {
     # Zero size?
     if [ -s "$_error_output_file" ]; then
       log "Error starting ffmpeg. '$(head "$_error_output_file")'"
+      _child_pid=0
     else
       log "Successfully started ffmpeg, PID is '$_child_pid'"
-      _pids+=($_child_pid)
       echo $_child_pid > "$_stream_output_dir/pid"
     fi
+
+    _id_pids+=("$_stream_id=$_child_pid")
   done
 
-  echo ${_pids[*]}
+  echo ${_id_pids[*]}
 }
 
 # --- Main ---
@@ -378,7 +380,16 @@ streams=( $(parse_and_validate_streams "${streams[*]}") )
 generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" "${layout[*]}" "${streams[*]}"
 
 # Start transcoders
-transcoder_pids=( $(transcode_streams "$output_dir/streams" "${streams[*]}" ) )
+stream_id_pids=( $(transcode_streams "$output_dir/streams" "${streams[*]}" ) )
+transcoder_pids=( $(
+  for id_pid in ${stream_id_pids[*]}; do
+    pid=$(echo "$id_pid" | awk -F '=' '{print $2}')
+    [ "$pid" != "0" ] && echo "$pid"
+  done | xargs)
+)
+
+log "Running transcoders pids: ${transcoder_pids[*]}"
+
 trap "log 'Terminating the following ffmpeg processes: ${transcoder_pids[*]}'; kill ${transcoder_pids[*]}; exit" SIGHUP SIGINT SIGTERM SIGABRT
 
 # Report status
