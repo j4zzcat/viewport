@@ -393,19 +393,19 @@ log "Running transcoders pids: ${transcoder_pids[*]}"
 trap "log 'Terminating the following ffmpeg processes: ${transcoder_pids[*]}'; kill ${transcoder_pids[*]}; exit" SIGHUP SIGINT SIGTERM SIGABRT
 
 # Report status
+log "Will report status every 30 seconds..."
 while :; do
-  for ip_pid in ${stream_id_pids[*]}; do
+  for id_pid in ${stream_id_pids[*]}; do
     stream_id=$(echo "$id_pid" | awk -F '=' '{print $1}')
     pid=$(echo "$id_pid" | awk -F '=' '{print $2}')
 
     if [ "$pid" == "0" ]; then
-      status="not running"
+      log "Stream '$stream_id': status: not running"
     else
-      status="running"
+      sequence=$(grep '#EXT-X-MEDIA-SEQUENCE' "$output_dir/streams/$stream_id/index.m3u8" | awk -F ':' '{print $2}')
+      log "Stream '$stream_id': status: running, sequence: $sequence"
     fi
-
-    echo "Stream '$stream_id' is '$status'"
   done
-  sleep 10
+  sleep 30
 done
 
