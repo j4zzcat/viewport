@@ -28,7 +28,7 @@ process_running() {
   local _pid="$2"
   case "$(uname)" in
    Darwin)
-     pgrep "$_name" | grep "$_pid"
+     pgrep "$_name" | grep "$_pid" &>/dev/null
      return "$?"
      ;;
   esac
@@ -199,7 +199,7 @@ parse_and_validate_streams() {
     esac
   done
 
-  echo ${_streams[*]}
+  echo "${_streams[@]}"
 }
 
 #
@@ -387,14 +387,16 @@ generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" 
 SLEEP_PERIOD=10
 INITIAL_WAIT_PERIOD=10
 MAX_WAIT_PERIOD=600
-PINGS_REQUIRED_FOR_WAIT_PERIOD_RESET=3
+STABLE_PERIOD_BEFORE_WAIT_PERIOD_RESET=120
+PINGS_REQUIRED_FOR_WAIT_PERIOD_RESET=$(( STABLE_PERIOD_BEFORE_WAIT_PERIOD_RESET / SLEEP_PERIOD ))
 
 # Initialize state
 for id_url in "${map_stream_id_url[@]}"; do
   id=$(echo "$id_url" | awk -F '=' '{print $1}')
+  now_epoch=$(date +%s)
 
   # :pid :ping_count :last_ping_epoch :wait_period
-  map_stream_id_state+=("$id=:0:0:0:$(( INITIAL_WAIT_PERIOD/2 ))")
+  map_stream_id_state+=("$id=0:0:$(( now_epoch - $INITIAL_WAIT_PERIOD/2)):$(( INITIAL_WAIT_PERIOD/2 ))")
 done
 
 CLEANUP_PIDS_FILE=$(mktemp /tmp/XXXXX)
@@ -406,7 +408,6 @@ while :; do
   for id_state in "${map_stream_id_state[@]}"; do
     id="${id_state%%=*}"
     state="${id_state#*=}"
-
     pid=$(echo "$state" | awk -F ':' '{print $1}')
     ping_count=$(echo "$state" | awk -F ':' '{print $2}')
     last_ping_epoch=$(echo "$state" | awk -F ':' '{print $3}')
@@ -417,7 +418,6 @@ while :; do
     now_epoch=$(date +%s)
 
     if transcoder_running "$pid"; then
-      log "The transcoder for stream '$id' is running, pid=$pid, ping-count=$ping_count"
 
       last_ping_epoch="$now_epoch"
       ping_count=$(( ping_count + 1 ))
@@ -425,12 +425,14 @@ while :; do
         wait_period="$INITIAL_WAIT_PERIOD"
       fi
 
-      state=":$pid:$ping_count:$last_ping_epoch:$wait_period"
-      map_stream_id_state=("${map_stream_id_state[@]/id=*/id=$state}")
+      state="$pid:$ping_count:$last_ping_epoch:$wait_period"
+      map_stream_id_state=("${map_stream_id_state[@]/$id=*/$id=$state}")
+
+      log "The transcoder for stream '$id' is running, state='$state'"
       continue
 
     else # process not running
-      log "Transcoder for stream '$id' is not running"
+      log "Transcoder for stream '$id' is not running, state='$state'"
 
       if (( now_epoch - last_ping_epoch >= wait_period )); then
         # Prepare for the next time
@@ -444,17 +446,18 @@ while :; do
         fi
 
         log "Starting transcoder for stream '$id' on url '$url'"
-        pid=$(transcode_stream "$id" "$url" "$output_dir")
+        pid=$(transcode_stream "$id" "$url" "$output_dir/streams")
         if (( pid > 0 )); then
           echo "$pid" >> "$CLEANUP_PIDS_FILE"
         fi
 
-        state=":$pid:0:$last_ping_epoch:$wait_period"
-        map_stream_id_state=("${map_stream_id_state[@]/id=*/id=$state}")
+        state="$pid:0:$now_epoch:$wait_period"
+        map_stream_id_state=("${map_stream_id_state[@]/$id=*/$id=$state}")
       fi
     fi
   done
 
+  log "Sleeping for $SLEEP_PERIOD seconds"
   sleep "$SLEEP_PERIOD"
 done # forever loop
 
