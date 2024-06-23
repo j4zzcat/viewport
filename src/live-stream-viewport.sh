@@ -107,7 +107,7 @@ parse_and_validate_layout() {
   log "Layout rows=$_rows, layout columns=$_columns"
 
   local _grid_size=$((_rows * _columns))
-  if (( "$_grid_size" < 1 )) || (( "$_grid_size" > "$MAX_GRID_SIZE" )); then panic "Error. Layout grid size of $_grid_size is out of bounds."; fi
+  if (( _grid_size < 1 )) || (( _grid_size > MAX_GRID_SIZE )); then panic "Error. Layout grid size of $_grid_size is out of bounds."; fi
 
   echo "$_rows" "$_columns"
 }
@@ -121,7 +121,7 @@ parse_and_validate_streams() {
   for _id_url in ${_streams[*]}; do
     log "Parsing $_id_url"
     local _seperator_count=$(echo "$_id_url" | grep --count '=')
-    (( "$_seperator_count" == 0 )) && panic "Error. The stream '$_id_url' doesn't match the pattern 'id=url'."
+    (( _seperator_count == 0 )) && panic "Error. The stream '$_id_url' doesn't match the pattern 'id=url'."
 
     local _id=$(echo "$_id_url" | awk -F '=' '{print $1}')
     local _url=$(echo "$_id_url" | awk -F '=' '{print $2}')
@@ -162,7 +162,7 @@ generate_viewport_page() {
   for _dummy in $(seq "$_columns"); do _html_columns="$_html_columns 1fr "; done
   log "{{COLUMNS}} is going to be '$_html_columns'"
 
-  local _html_grid_size=$(( $_rows * $_columns ))
+  local _html_grid_size=$(( _rows * _columns ))
   log "{{GRID_SIZE}} is going to be '$_html_grid_size'"
 
   local _html_stream_ids=()
@@ -183,27 +183,62 @@ generate_viewport_page() {
     >"$_viewport_file"
 }
 
+transcode_streams() {
+  local _output_dir="$1"
+  shift
+  local _streams=($@)
+
+  for _id_url in ${_streams[*]}; do
+    local _stream_id=$(echo "$_id_url" | awk -F '=' '{print $1}')
+    local _stream_url=$(echo "$_id_url" | awk -F '=' '{print $2}')
+
+    local _stream_output_dir="$_output_dir"/"$_stream_id"
+    mkdir -p "$_stream_output_dir"
+
+    log "Trying to transcode '$_stream_url'..."
+    local _error_output_file="$(mktemp /tmp/XXXXX)"
+    ffmpeg \
+       -loglevel 8 \
+       -i "$_stream_url" \
+       -fflags flush_packets -max_delay 5 -flags -global_header \
+       -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
+       -vcodec copy \
+       -y "$_stream_output_dir"/index.m3u8 \
+       &>"$_error_output_file" \
+       &
+
+    local _child_pid="$!"
+    sleep 1
+
+    # Zero size?
+    if [ -s "$_error_output_file" ]; then
+      log "Error starting ffmpeg '$(head "$_error_output_file")'"
+    else
+      log "Successfully started ffmpeg, PID is '$_child_pid'"
+    fi
+  done
+}
+
 # Main
 
 # Defaults and constants
 MAX_GRID_SIZE=30
 VIEWPORT_TEMPLATE_FILE='live-stream-viewport.html.template'
 VIEWPORT_PAGE='viewport.html'
-STREAMS_OUTPUT_DIR='streams'
 
 DEFAULT_OUTPUT_DIR='.'
 DEFAULT_LAYOUT='2x2'
 
 streams=()
 
-# Usage and --help, getopt on macos doesn't have long options
+# Usage and --help, as getopt on macos doesn't have long options
 if [[ $# -eq 0 ]]; then
     usage && exit 128
 elif [[ "$1" == "--help" ]]; then
   help && exit 0
 fi
 
-# parse command line
+# Parse command line
 error_message_file=$(mktemp /tmp/XXXXX)
 valid_args=$(getopt vho:l:s: "$@" 2>"$error_message_file")
 if [[ $? -ne 0 ]]; then
@@ -255,3 +290,4 @@ streams=( $(parse_and_validate_streams "${streams[*]}") )
 
 generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" "${layout[*]}" "${streams[*]}"
 
+transcode_streams "$output_dir/streams" "${streams[*]}"
