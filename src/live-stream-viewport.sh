@@ -28,8 +28,12 @@ process_running() {
   local _pid="$2"
   case "$(uname)" in
    Darwin)
-     pgrep "$_name" | grep "$_pid" &>/dev/null
-     return "$?"
+     if (( _pid == 0 )); then
+       return 127
+     else
+       pgrep "$_name" | grep "$_pid" &>/dev/null
+       return "$?"
+     fi
      ;;
   esac
 }
@@ -406,6 +410,7 @@ log "Starting control loop"
 # And now down to business...
 while :; do
   for id_state in "${map_stream_id_state[@]}"; do
+
     id="${id_state%%=*}"
     state="${id_state#*=}"
     pid=$(echo "$state" | awk -F ':' '{print $1}')
@@ -418,7 +423,6 @@ while :; do
     now_epoch=$(date +%s)
 
     if transcoder_running "$pid"; then
-
       last_ping_epoch="$now_epoch"
       ping_count=$(( ping_count + 1 ))
       if (( ping_count == PINGS_REQUIRED_FOR_WAIT_PERIOD_RESET )); then
@@ -428,7 +432,8 @@ while :; do
       state="$pid:$ping_count:$last_ping_epoch:$wait_period"
       map_stream_id_state=("${map_stream_id_state[@]/$id=*/$id=$state}")
 
-      log "The transcoder for stream '$id' is running, state='$state'"
+      section=$(awk <"$output_dir/streams/$id/index.m3u8" -F ':' '/^#EXT-X-MEDIA-SEQUENCE/{print $2}')
+      log "The transcoder for stream '$id' is running, state='$state', section='$section'"
       continue
 
     else # process not running
