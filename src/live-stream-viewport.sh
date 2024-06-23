@@ -186,7 +186,7 @@ parse_and_validate_streams() {
     local _id=$(echo "$_id_url" | awk -F '=' '{print $1}')
     local _url=$(echo "$_id_url" | awk -F '=' '{print $2}')
 
-    log "Stream id is '$_id', URL is '$_url'"
+    log "Stream id is '$_id', url is '$_url'"
 
     [ -f "$_temp_dir/$_id" ] && panic "Error. The stream id '$_id' was already given."
     touch "$_temp_dir/$_id"
@@ -302,7 +302,7 @@ transcode_stream() {
     echo "$_pid" > "$_stream_output_dir/pid"
   fi
 
-  echo "$pid"
+  echo "$_pid"
 }
 
 transcoder_running() {
@@ -397,6 +397,10 @@ for id_url in "${map_stream_id_url[@]}"; do
   map_stream_id_state+=("$id=:0:0:0:$(( INITIAL_WAIT_PERIOD/2 ))")
 done
 
+CLEANUP_PIDS_FILE=$(mktemp /tmp/XXXXX)
+trap "log 'Cleaning up background processes.'; <$CLEANUP_PIDS_FILE xargs -n1 kill 2>/dev/null; exit" SIGTERM SIGHUP SIGABRT
+
+log "Starting control loop"
 # And now down to business...
 while :; do
   for id_state in "${map_stream_id_state[@]}"; do
@@ -441,6 +445,9 @@ while :; do
 
         log "Starting transcoder for stream '$id' on url '$url'"
         pid=$(transcode_stream "$id" "$url" "$output_dir")
+        if (( pid > 0 )); then
+          echo "$pid" >> "$CLEANUP_PIDS_FILE"
+        fi
 
         state=":$pid:0:$last_ping_epoch:$wait_period"
         map_stream_id_state=("${map_stream_id_state[@]/id=*/id=$state}")
