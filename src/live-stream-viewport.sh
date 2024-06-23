@@ -6,7 +6,7 @@
 
 PID="$$"
 PANIC_MESSAGE_FILE=$(mktemp /tmp/XXXXX)
-trap "cat $PANIC_MESSAGE_FILE; exit 127" SIGQUIT
+trap "cat $PANIC_MESSAGE_FILE; exit 127" SIGUSR1
 
 log() {
     [[ -z "$VERBOSE" ]] && return
@@ -19,7 +19,7 @@ panic() {
     local _message="$1"
     log "$_message"
     echo "$_message" >"$PANIC_MESSAGE_FILE"
-    kill -SIGQUIT "$PID"
+    kill -SIGUSR1 "$PID"
     exit
 }
 
@@ -297,6 +297,7 @@ transcode_streams() {
     else
       log "Successfully started ffmpeg, PID is '$_child_pid'"
       _pids+=($_child_pid)
+      echo $_child_pid > "$_stream_output_dir/pid"
     fi
   done
 
@@ -378,3 +379,11 @@ generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" 
 
 # Start transcoders
 transcoder_pids=( $(transcode_streams "$output_dir/streams" "${streams[*]}" ) )
+trap "log 'Terminating the following ffmpeg processes: ${transcoder_pids[*]}'; kill ${transcoder_pids[*]}; exit" SIGHUP SIGINT SIGTERM SIGABRT
+
+# Report status
+while :; do
+  log "Hi"
+  Sleep 10
+done
+
