@@ -390,22 +390,24 @@ transcoder_pids=( $(
   done | xargs)
 )
 log "Running transcoders pids: ${transcoder_pids[*]}"
-trap "log 'Terminating the following ffmpeg processes: ${transcoder_pids[*]}'; kill ${transcoder_pids[*]}; exit" SIGHUP SIGINT SIGTERM SIGABRT
+trap "log 'Terminating the following ffmpeg processes: ${transcoder_pids[*]}'; kill ${transcoder_pids[*]} 2>/dev/null; exit" SIGHUP SIGINT SIGTERM SIGABRT
 
 # Report status
-log "Will report status every 30 seconds..."
+log "Will report status every 30 seconds"
 while :; do
+  log "Sleeping..."
+  sleep 30
   for id_pid in ${stream_id_pids[*]}; do
     stream_id=$(echo "$id_pid" | awk -F '=' '{print $1}')
     pid=$(echo "$id_pid" | awk -F '=' '{print $2}')
 
-    if [ "$pid" == "0" ]; then
-      log "Stream '$stream_id': status: not running"
-    else
+    # Is it still running?
+    if [[ "$(ps -ef | awk '/'"$pid"'.*ffmpeg/{print $8}' | head -1)" == "ffmpeg" ]]; then
       sequence=$(grep '#EXT-X-MEDIA-SEQUENCE' "$output_dir/streams/$stream_id/index.m3u8" | awk -F ':' '{print $2}')
-      log "Stream '$stream_id': status: running, sequence: $sequence"
+      log "Stream '$stream_id': pid=$pid, status=running, sequence=$sequence"
+    else
+      log "Stream '$stream_id': status=stopped"
     fi
   done
-  sleep 30
 done
 
