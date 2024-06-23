@@ -1,12 +1,12 @@
 #! /bin/bash
 
+#
+# Utility functions
+#
+
 PID="$$"
 PANIC_MESSAGE_FILE=$(mktemp /tmp/XXXXX)
 trap "cat $PANIC_MESSAGE_FILE; exit 127" SIGQUIT
-
-graceful_shutdown() {
-  echo "Done"
-}
 
 log() {
     [[ -z "$VERBOSE" ]] && return
@@ -22,6 +22,10 @@ panic() {
     kill -SIGQUIT "$PID"
     exit
 }
+
+#
+# Usage and help functions
+#
 
 usage() {
     echo "usage: $(basename $0) [-vh] [-o <output-dir>] [-l <layout>] -s <id=rtsp-url>..."
@@ -73,7 +77,22 @@ EXAMPLE:
 EOF
 }
 
-# Functions
+#
+# The parse_and_validate_output_dir function is responsible for parsing and
+# validating the provided output directory. If the provided directory is null,
+# it defaults to a specified directory. It verifies that the directory exists
+# and is writable.
+#
+# Positional parameters:
+#   (1) <output_dir>:
+#       The desired output directory specified by the user. It can be an empty
+#       string, meaning that the function should use the default directory.
+#   (2) <default_output_dir>:
+#       The default output directory to be used if <output_dir> is empty or null.
+#
+# Returns:
+#   The validated output directory path.
+#
 parse_and_validate_output_dir() {
   local _output_dir="$1"
   local _default_output_dir="$2"
@@ -91,6 +110,23 @@ parse_and_validate_output_dir() {
   echo "$_output_dir"
 }
 
+#
+# The parse_and_validate_layout function is responsible for parsing and
+# validating a layout string, which specifies a grid in the form of rows and
+# columns. If the input layout is null, it defaults to a specified layout. It
+# verifies that the grid size is within acceptable bounds.
+#
+# Positional parameters:
+#   (1) <layout>: The desired layout specified by the user in the format NxM,
+#       where N is the number of rows and M is the number of columns. It can
+#       be an empty string, meaning that the function should use the default
+#       layout.
+#   (2) <default_layout>: The default layout to be used if <layout> is empty
+#       or null.
+#
+# Returns:
+#   The number of rows and columns as separate echoed values.
+#
 parse_and_validate_layout() {
   local _layout="$1"
   local _default_layout="$2"
@@ -112,6 +148,19 @@ parse_and_validate_layout() {
   echo "$_rows" "$_columns"
 }
 
+#
+# The parse_and_validate_streams function is responsible for parsing and
+# validating a list of streams provided in the format id=url. It checks if
+# each stream has a valid id=url structure, ensures no duplicate IDs exist,
+# and verifies that the URLs use supported protocols (RTSP or RTSPS).
+#
+# Positional parameters:
+#   (1)...(N) <stream1> <stream2> ...: A list of streams, each specified in the
+#      format id=url.
+#
+# Returns:
+#   A list of validated streams in the format <id=url> <id=url>...
+#
 parse_and_validate_streams() {
   local _streams=("$@")
 
@@ -142,6 +191,20 @@ parse_and_validate_streams() {
   echo ${_streams[*]}
 }
 
+#
+# The generate_viewport_page function generates an HTML viewport page based on
+# a template file. It populates the template with layout information and stream
+# IDs.
+#
+# Positional parameters:
+#   (1) <template_file>: Path to the HTML template file that contains place
+#       holders for the layout and stream information.
+#   (2) <viewport_file>: Path to the output HTML file generated from the template.
+#   (3) <rows>: Number of rows in the layout grid.
+#   (4) <columns>: Number of columns in the layout grid.
+#   (5)...(N) <stream1> <stream2> ...: A list of streams, each specified in the
+#       format id=url.
+#
 generate_viewport_page() {
   local _template_file="$1"
   local _viewport_file="$2"
@@ -183,6 +246,23 @@ generate_viewport_page() {
     >"$_viewport_file"
 }
 
+#
+# The transcode_streams function is responsible for transcoding multiple streams
+# using ffmpeg. Each stream is specified in the format id=url, and the output
+# for each stream is saved in a specified output directory. The function also
+# collects and returns the PIDs of the ffmpeg processes started.
+#
+# Positional parameters:
+#   (1) <output_dir>: The base directory where output directories for each
+#       stream's transcoded files will be created.
+#   (2)...(N) <stream1> <stream2> ...: A list of streams, each specified in
+#       the format id=url.
+#
+# Returns:
+#  After processing all streams, the function returns the list of PIDs for the
+#  started ffmpeg processes. Failed processes are represented by 0.
+#
+
 transcode_streams() {
   local _output_dir="$1"
   shift
@@ -195,6 +275,7 @@ transcode_streams() {
     local _stream_output_dir="$_output_dir"/"$_stream_id"
     mkdir -p "$_stream_output_dir"
 
+    local _pids=()
     log "Trying to transcode '$_stream_url'..."
     local _error_output_file="$(mktemp /tmp/XXXXX)"
     ffmpeg \
@@ -215,11 +296,14 @@ transcode_streams() {
       log "Error starting ffmpeg. '$(head "$_error_output_file")'"
     else
       log "Successfully started ffmpeg, PID is '$_child_pid'"
+      _pids+=($_child_pid)
     fi
   done
+
+  echo ${_pids[*]}
 }
 
-# Main
+# --- Main ---
 
 # Defaults and constants
 MAX_GRID_SIZE=30
@@ -284,10 +368,13 @@ while :; do
   esac
 done
 
+# Parse and validate the instructions
 output_dir=$(parse_and_validate_output_dir "$output_dir" "$DEFAULT_OUTPUT_DIR");
 layout=( $(parse_and_validate_layout "$layout" "$DEFAULT_LAYOUT") )
 streams=( $(parse_and_validate_streams "${streams[*]}") )
 
+# Generate the viewport
 generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" "${layout[*]}" "${streams[*]}"
 
-transcode_streams "$output_dir/streams" "${streams[*]}"
+# Start transcoders
+transcoder_pids=( $(transcode_streams "$output_dir/streams" "${streams[*]}" ) )
