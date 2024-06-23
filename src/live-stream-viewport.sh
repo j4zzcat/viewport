@@ -23,6 +23,17 @@ panic() {
     exit
 }
 
+process_running() {
+  local _name="$1"
+  local _pid="$2"
+  case "$(uname)" in
+   Darwin)
+     pgrep "$_name" | grep "$_pid"
+     return "$?"
+     ;;
+  esac
+}
+
 #
 # Usage and help functions
 #
@@ -167,7 +178,7 @@ parse_and_validate_streams() {
   log "Parsing and validating streams, input is '$_streams'"
 
   local _temp_dir=$(mktemp -d /tmp/XXXXX)
-  for _id_url in ${_streams[*]}; do
+  for _id_url in "${_streams[@]}"; do
     log "Parsing $_id_url"
     local _seperator_count=$(echo "$_id_url" | grep --count '=')
     (( _seperator_count == 0 )) && panic "Error. The stream '$_id_url' doesn't match the pattern 'id=url'."
@@ -229,11 +240,11 @@ generate_viewport_page() {
   log "{{GRID_SIZE}} is going to be '$_html_grid_size'"
 
   local _html_stream_ids=()
-  for _id_url in ${_streams[*]}; do
+  for _id_url in "${_streams[@]}"; do
     _html_stream_ids+=(\"$(echo "$_id_url" | awk -F '=' '{print $1}')\")
   done
 
-  _html_stream_ids=$( echo "${_html_stream_ids[*]}" | tr ' ' ',' )
+  _html_stream_ids=$( echo "${_html_stream_ids[@]}" | tr ' ' ',' )
   log "{{STREAM_IDS}} is going to be '$_html_stream_ids'"
 
   log "Generating into '$_viewport_file'..."
@@ -247,64 +258,59 @@ generate_viewport_page() {
 }
 
 #
-# The transcode_streams function is responsible for transcoding multiple streams
-# using ffmpeg. Each stream is specified in the format id=url, and the output
-# for each stream is saved in a specified output directory. The function also
-# collects and returns the PIDs of the ffmpeg processes started.
+# The transcode_stream function transcodes a RTSP(S) stream to HLS stream
+# by running ffmpeg process in the background.
 #
 # Positional parameters:
-#   (1) <output_dir>: The base directory where output directories for each
-#       stream's transcoded files will be created.
-#   (2)...(N) <stream1> <stream2> ...: A list of streams, each specified in
-#       the format id=url.
+#   (1) <stream_id>: The id of the stream.
+#   (2) <stream_url>: The URL of the stream.
+#   (3) <output_dir>: The base directory where output should go.
 #
 # Returns:
-#  After processing all streams, the function returns the list of PIDs for the
-#  started ffmpeg processes. Failed processes are represented by 0.
+#   The PID of the running ffmpeg, 0 otherwise.
 #
 
-transcode_streams() {
-  local _output_dir="$1"
-  shift
-  local _streams=($@)
+transcode_stream() {
+  local _stream_id="$1"
+  local _stream_url="$2"
+  local _output_dir="$3"
 
-  local _id_pids=()
-  for _id_url in ${_streams[*]}; do
-    local _stream_id=$(echo "$_id_url" | awk -F '=' '{print $1}')
-    local _stream_url=$(echo "$_id_url" | awk -F '=' '{print $2}')
+  local _stream_output_dir="$_output_dir"/"$_stream_id"
+  mkdir -p "$_stream_output_dir"
 
-    local _stream_output_dir="$_output_dir"/"$_stream_id"
-    mkdir -p "$_stream_output_dir"
+  log "Trying to start ffmpeg on url '$_stream_url'..."
+  local _error_output_file="$(mktemp /tmp/XXXXX)"
+  ffmpeg \
+    -loglevel 8 \
+    -i "$_stream_url" \
+    -fflags flush_packets -max_delay 5 -flags -global_header \
+    -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
+    -vcodec copy \
+    -y "$_stream_output_dir"/index.m3u8 \
+    &>"$_error_output_file" \
+    &
 
-    log "Trying to transcode '$_stream_url'..."
-    local _error_output_file="$(mktemp /tmp/XXXXX)"
-    ffmpeg \
-       -loglevel 8 \
-       -i "$_stream_url" \
-       -fflags flush_packets -max_delay 5 -flags -global_header \
-       -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
-       -vcodec copy \
-       -y "$_stream_output_dir"/index.m3u8 \
-       &>"$_error_output_file" \
-       &
-
-    local _child_pid="$!"
-    sleep 1
+  local _pid="$!"
+  sleep 1
 
     # Zero size?
-    if [ -s "$_error_output_file" ]; then
-      log "Error starting ffmpeg. '$(head "$_error_output_file")'"
-      _child_pid='T' # indicates 'terminated' state
-    else
-      log "Successfully started ffmpeg, PID is '$_child_pid'"
-      echo $_child_pid > "$_stream_output_dir/pid"
-    fi
+  if [ -s "$_error_output_file" ]; then
+    log "Error starting ffmpeg. '$(head "$_error_output_file")'"
+    _pid=0
+  else
+    log "Successfully started ffmpeg, PID is '$_pid'"
+    echo "$_pid" > "$_stream_output_dir/pid"
+  fi
 
-    _id_pids+=("$_stream_id=$_child_pid")
-  done
-
-  echo ${_id_pids[*]}
+  echo "$pid"
 }
+
+transcoder_running() {
+  local _pid="$1"
+  process_running 'ffmpeg' "$_pid"
+}
+
+
 
 # --- Main ---
 
@@ -315,8 +321,6 @@ VIEWPORT_PAGE='viewport.html'
 
 DEFAULT_OUTPUT_DIR='.'
 DEFAULT_LAYOUT='2x2'
-
-streams=()
 
 # Usage and --help, as getopt on macos doesn't have long options
 if [[ $# -eq 0 ]]; then
@@ -374,56 +378,76 @@ done
 # Parse and validate the instructions
 output_dir=$(parse_and_validate_output_dir "$output_dir" "$DEFAULT_OUTPUT_DIR");
 layout=( $(parse_and_validate_layout "$layout" "$DEFAULT_LAYOUT") )
-streams=( $(parse_and_validate_streams "${streams[*]}") )
+map_stream_id_url=( $(parse_and_validate_streams "${streams[@]}") )
 
 # Generate the viewport
-generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" "${layout[*]}" "${streams[*]}"
+generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" "${layout[@]}" "${map_stream_id_url[@]}"
 
-# Start transcoders
-stream_id_pids=( $(transcode_streams "$output_dir/streams" "${streams[*]}" ) )
+# Control loop
+SLEEP_PERIOD=10
+INITIAL_WAIT_PERIOD=10
+MAX_WAIT_PERIOD=600
+PINGS_REQUIRED_FOR_WAIT_PERIOD_RESET=3
 
-# Collect the pids of the started transcoders for the cleanup trap
-transcoder_pids_file=$(mktemp /tmp/XXXXX)
-for id_pid in ${stream_id_pids[*]}; do
-  pid=$(echo "$id_pid" | awk -F '=' '{print $2}')
+# Initialize state
+for id_url in "${map_stream_id_url[@]}"; do
+  id=$(echo "$id_url" | awk -F '=' '{print $1}')
 
-  # Make sure pid is a valid number
-  if [[ "$pid" =~ '^[0-9]+$' ]] ; then
-    echo "$pid" >> "$transcoder_pids_file"
-  fi
+  # :pid :ping_count :last_ping_epoch :wait_period
+  map_stream_id_state+=("$id=:0:0:0:$(( INITIAL_WAIT_PERIOD/2 ))")
 done
 
-trap "log 'Terminating background ffmpeg processes.'; <$transcoder_pids_file xargs -n1 kill 2>/dev/null; exit" SIGHUP SIGINT SIGTERM SIGABRT
-
-# Monitor and report status
-log "Will report status every now and then..."
+# And now down to business...
 while :; do
-  for id_pid in ${stream_id_pids[*]}; do
-    stream_id=$(echo "$id_pid" | awk -F '=' '{print $1}')
-    pid=$(echo "$id_pid" | awk -F '=' '{print $2}')
+  for id_state in "${map_stream_id_state[@]}"; do
+    id="${id_state%%=*}"
+    state="${id_state#*=}"
 
-    message=''
-    case "$pid" in
-      T)
-        message='state: terminated'
-        ;;
+    pid=$(echo "$state" | awk -F ':' '{print $1}')
+    ping_count=$(echo "$state" | awk -F ':' '{print $2}')
+    last_ping_epoch=$(echo "$state" | awk -F ':' '{print $3}')
+    wait_period=$(echo "$state" | awk -F ':' '{print $4}')
 
-      S*)
-        log "$stream_id"
-        ;;
+    url=$(printf '%s\n' "${map_stream_id_url[@]}" | awk -F '=' '/^'"$id"'=/{print $2}')
 
-      *)
-        if [[ "$(ps -ef | awk '/'"$pid"'.*ffmpeg/{print $8}' | head -1)" == "ffmpeg" ]]; then
-          sequence=$(grep '#EXT-X-MEDIA-SEQUENCE' "$output_dir/streams/$stream_id/index.m3u8" 2>/dev/null | awk -F ':' '{print $2}')
-          message="pid=$pid, status=running, sequence=$sequence"
-        else
-          message="status: stopped"
-          stream_id_pids=("${array[@]/$stream_id=*/$stream_id=S1}")
+    now_epoch=$(date +%s)
+
+    if transcoder_running "$pid"; then
+      log "The transcoder for stream '$id' is running, pid=$pid, ping-count=$ping_count"
+
+      last_ping_epoch="$now_epoch"
+      ping_count=$(( ping_count + 1 ))
+      if (( ping_count == PINGS_REQUIRED_FOR_WAIT_PERIOD_RESET )); then
+        wait_period="$INITIAL_WAIT_PERIOD"
+      fi
+
+      state=":$pid:$ping_count:$last_ping_epoch:$wait_period"
+      map_stream_id_state=("${map_stream_id_state[@]/id=*/id=$state}")
+      continue
+
+    else # process not running
+      log "Transcoder for stream '$id' is not running"
+
+      if (( now_epoch - last_ping_epoch >= wait_period )); then
+        # Prepare for the next time
+        if (( wait_period < MAX_WAIT_PERIOD )); then
+          wait_period=$(( wait_period * 2 ))
+
+          # cap at MAX_WAIT_PERIOD
+          if (( wait_period >= MAX_WAIT_PERIOD )); then
+            wait_period="$MAX_WAIT_PERIOD"
+          fi
         fi
-        ;;
-    esac
-    log "Stream '$stream_id': $message"
+
+        log "Starting transcoder for stream '$id' on url '$url'"
+        pid=$(transcode_stream "$id" "$url" "$output_dir")
+
+        state=":$pid:0:$last_ping_epoch:$wait_period"
+        map_stream_id_state=("${map_stream_id_state[@]/id=*/id=$state}")
+      fi
+    fi
   done
-  sleep 5
-done
+
+  sleep "$SLEEP_PERIOD"
+done # forever loop
 
