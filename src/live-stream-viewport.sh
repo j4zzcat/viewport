@@ -387,7 +387,27 @@ map_stream_id_url=( $(parse_and_validate_streams "${streams[@]}") )
 # Generate the viewport
 generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" "${layout[@]}" "${map_stream_id_url[@]}"
 
-# Control loop
+#
+# The main Control Loop. This is used to monitor and manage transcoding
+# processes for a set of streams. It keeps the streams' states updated,
+# checks their statuses, and restarts them if necessary. The loop supports
+# exponential backoff for the wait period between restart attempts.
+#
+# Main variables and data structures:
+#   * map_stream_id_state: An array containing the state of each stream
+#     transcoder in the format id=pid:ping_count:last_ping_epoch:wait_period.
+#   * map_stream_id_url: An array containing the URLs of each stream in the
+#     format id=url.
+#   * output_dir: Directory where stream outputs are stored.
+#
+# Constants:
+#   * SLEEP_PERIOD: Time to sleep between control loop iterations.
+#   * INITIAL_WAIT_PERIOD: Initial wait period before retrying a failed stream.
+#   * MAX_WAIT_PERIOD: Maximum wait period before retrying a failed stream.
+#   * PINGS_REQUIRED_FOR_WAIT_PERIOD_RESET: Number of successful pings required
+#     to reset the wait period to its initial value.
+#
+
 SLEEP_PERIOD=10
 INITIAL_WAIT_PERIOD=10
 MAX_WAIT_PERIOD=600
@@ -400,7 +420,7 @@ for id_url in "${map_stream_id_url[@]}"; do
   now_epoch=$(date +%s)
 
   # :pid :ping_count :last_ping_epoch :wait_period
-  map_stream_id_state+=("$id=0:0:$(( now_epoch - $INITIAL_WAIT_PERIOD/2)):$(( INITIAL_WAIT_PERIOD/2 ))")
+  map_stream_id_state+=("$id=0:0:$(( now_epoch - INITIAL_WAIT_PERIOD/2)):$(( INITIAL_WAIT_PERIOD/2 ))")
 done
 
 CLEANUP_PIDS_FILE=$(mktemp /tmp/XXXXX)
@@ -436,7 +456,7 @@ while :; do
       log "The transcoder for stream '$id' is running, state='$state', section='$section'"
       continue
 
-    else # process not running
+    else # Transcoder not running
       log "Transcoder for stream '$id' is not running, state='$state'"
 
       if (( now_epoch - last_ping_epoch >= wait_period )); then
