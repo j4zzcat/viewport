@@ -38,6 +38,33 @@ Pass this URL to the `-s` option as in `-s ID=URL`.
 * To get to the viewport, open a web browser and navigate to: http://localhost:8777/viewport.html.
 
 &nbsp;
+## macOS Quickstart
+* Create temporary directory 
+```shell
+mkdir -p ~/.tmp/{work,conf}
+```
+* Start the program, passing `~/.tmp/work` as the output directory. Pass your stream ids and URLs to `-s` option. 
+```shell
+./live-stream-viewport.sh -v -o ~/.tmp/work -l 2x2 -s camera-1=rtsps://...    
+```
+* To access the viewport, a web server needs to be running, serving from `~/.tmp/work`. The easiest option is to
+run a web server inside a docker container, like so:
+```shell
+docker run --rm httpd:2.4 \
+  cat /usr/local/apache2/conf/httpd.conf \
+  | sed -e 's|\(<Directory "/usr/local/apache2/htdocs">\)|\1\nHeader set Access-Control-Allow-Origin "*"|' \
+  >~/.tmp/conf/httpd.conf
+  
+docker run -itd \
+  --name viewport-httpd-server \
+  -p 8777:80 \
+  -v ~/.tmp/conf/httpd.conf:/usr/local/apache2/conf/httpd.conf \
+  -v ~/.tmp/work:/usr/local/apache2/htdocs/ \
+  httpd:2.4
+```
+* To get to the viewport, open a web browser and navigate to: http://localhost:8777/viewport.html.
+
+&nbsp;
 ## Raspberry Pi Quickstart
 
 First, login to the RPI and install the necessary prerequisites: 
