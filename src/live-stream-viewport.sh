@@ -46,7 +46,7 @@ process_running() {
       return "$?"
       ;;
 
-   Linux)
+    Linux)
       [[ "$(ps | grep "$_pid" | head -1 | awk '{print $4}')" == "$_name" ]]
       return "$?"
   esac
@@ -134,7 +134,9 @@ parse_and_validate_output_dir() {
   fi
 
   [ ! -d "$_output_dir" ] && panic "Error. Directory '$_output_dir' doesn't exist."
-  if ! touch "$_output_dir"/touch 2>/dev/null; then panic "Error. Directory '$_output_dir' is not writable."; fi
+  if ! touch "$_output_dir"/touch 2>/dev/null; then
+    panic "Error. Directory '$_output_dir' is not writable."
+  fi
   rm "$_output_dir"/touch
 
   echo "$_output_dir"
@@ -174,7 +176,9 @@ parse_and_validate_layout() {
   log "Layout rows=$_rows, layout columns=$_columns"
 
   local _grid_size=$((_rows * _columns))
-  if (( _grid_size < 1 )) || (( _grid_size > MAX_GRID_SIZE )); then panic "Error. Layout grid size of $_grid_size is out of bounds."; fi
+  if (( _grid_size < 1 )) || (( _grid_size > MAX_GRID_SIZE )); then
+    panic "Error. Layout grid size of $_grid_size is out of bounds."
+  fi
 
   echo "$_rowsx$_columns"
 }
