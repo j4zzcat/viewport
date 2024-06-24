@@ -4,7 +4,9 @@ FROM ${ARCH}alpine:3.20
 RUN apk update \
     && apk add bash gawk ffmpeg apache2
 
-ADD * /opt/live-stream-viewport/
+ADD src/* /opt/live-stream-viewport/
+ADD docker/httpd.conf /etc/apache2
+
 #ENV HOME_DIR=/opt/unifi-protect-camera-kiosk
 #RUN mkdir -p "$HOME_DIR" \
 #    && cp /tmp/kiosk-launcher.sh "$HOME_DIR" \
