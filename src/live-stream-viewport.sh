@@ -422,7 +422,7 @@ generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" 
 #     it is considered stable.
 #
 
-SLEEP_PERIOD=10
+SLEEP_PERIOD=30
 INITIAL_WAIT_PERIOD=10
 MAX_WAIT_PERIOD=600
 STABLE_PERIOD=120
