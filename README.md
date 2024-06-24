@@ -10,7 +10,7 @@ The program uses `ffmpeg` to continuously transcode RTSP/RTSPS streams from
 the given endpoints (usually security cameras) into HTTP Live Streaming (HLS) streams, 
 and then makes these streams available on a simple, unattended web page (i.e., 'viewport').
 
-The program is available both as a Docker container and a Raspberry Pi deb package. 
+The program is available both as standalone and as a Docker image.
 
 &nbsp;
 ## Unifi Protect Quickstart
@@ -40,15 +40,19 @@ Pass this URL to the `-s` option as in `-s ID=URL`.
 &nbsp;
 ## macOS Quickstart
 
-* Create temporary directory 
+Install prerequisites 
+```shell
+brew install ffmpeg 
+```
+Create temporary directory 
 ```shell
 mkdir -p ~/.tmp/{work,conf}
 ```
-* Start the program, passing `~/.tmp/work` as the output directory. Pass your stream ids and URLs to `-s` option. 
+Start the program, passing `~/.tmp/work` as the output directory. Pass your stream ids and URLs to `-s` option. 
 ```shell
 ./live-stream-viewport.sh -v -o ~/.tmp/work -l 2x2 -s camera-1=rtsps://...    
 ```
-* To access the viewport, a web server needs to be running, serving from `~/.tmp/work`. The easiest option is to
+eTo access the viewport, a web server needs to be running, serving from `~/.tmp/work`. The easiest option is to
 run a web server inside a docker container, like so:
 ```shell
 docker run --rm httpd:2.4 \
