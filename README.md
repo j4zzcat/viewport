@@ -21,7 +21,7 @@ docker run \
   -p 8777:80 \
   --mount type=tmpfs,destination=/var/www/localhost/htdocs,tmpfs-mode=1777 \
   j4zzcat/live-stream-viewport:latest \
-    -l 3x3 \
+    -v -o /var/www/localhost/htdocs -l 3x3 \
     -s 'my-gate-camera=rtsps://192.168.1.246:7441/D3xxDDe0xA9JN?enableSrtp' \
     -s 'my-tree-camera=rtsps://192.168.1.246:7441/DEVC0FFEE1Sd3?enableSrtp' \
     -s 'my-pool-camera=rtsps://192.168.1.246:7441/AoSixcDJKP0xj?enableSrtp' \
@@ -39,6 +39,7 @@ Pass this URL to the `-s` option as in `-s ID=URL`.
 
 &nbsp;
 ## macOS Quickstart
+
 * Create temporary directory 
 ```shell
 mkdir -p ~/.tmp/{work,conf}
