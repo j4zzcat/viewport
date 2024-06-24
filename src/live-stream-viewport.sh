@@ -429,7 +429,7 @@ generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" 
 # Constants:
 #   * SLEEP_PERIOD: Time to sleep (s) between control loop iterations.
 #   * INITIAL_WAIT_PERIOD: Initial wait period (s) before retrying a failed stream.
-#   * MAX_WAIT_PERIOD: Maximum wait period (s) before retrying a failed stream.
+#   * MAX_WAIT_PERIOD: Maximum wait period (s) before restarting a failed stream.
 #   * STABLE_PERIOD: The time (s) a process has to be continuously running before
 #     it is considered stable.
 #
