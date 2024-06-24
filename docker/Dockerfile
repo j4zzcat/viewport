@@ -7,14 +7,7 @@ RUN apk update \
 ADD src/* /opt/live-stream-viewport/
 ADD docker/httpd.conf /etc/apache2
 
-#ENV HOME_DIR=/opt/unifi-protect-camera-kiosk
-#RUN mkdir -p "$HOME_DIR" \
-#    && cp /tmp/kiosk-launcher.sh "$HOME_DIR" \
-#    && chmod a+x "$HOME_DIR/kiosk-launcher.sh" \
-#    && ln -s "$HOME_DIR"/kiosk-launcher.sh /usr/local/bin/ \
-#    && cp /tmp/kiosk.html.template "$HOME_DIR" \
-#    && cp /tmp/httpd.conf /etc/apache2 \
-#    && rm -rf /tmp/*
+RUN echo >/opt/live-stream-viewport/starter.sh '/usr/sbin/httpd -k start && /opt/live-stream-viewport/live-stream-viewport.sh "$@"'
 
 EXPOSE 80
-#ENTRYPOINT ["/bin/bash", "/usr/local/bin/kiosk-launcher.sh"]
+ENTRYPOINT [ "/bin/bash", "/opt/live-stream-viewport/starter.sh" ]
