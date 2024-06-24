@@ -29,7 +29,7 @@ docker run \
     -s 'my-roof-camera=rtsps://192.168.1.246:7441/LOxx1FREFD11C?enableSrtp'
 ```
 * The above will display a 3x3 viewport with 5 Unifi Protect Cameras. 
-* Obviously, you have to replace the `IDs` and `URLs` given in this example with your very own. 
+* Obviously, you have to replace the `IDs` and `URLs` given in this example with *your very own*. 
 Note that `IDs` are arbitrary strings, but must be unique.
 * To get the RTSPS stream URL for a camera, open the Unifi Protect app, go to 'Unifi Devices', 
 select the desired camera, and then select 'Settings'. Scroll down and expand the 'Advanced' section. 
@@ -48,7 +48,8 @@ Create temporary directory
 ```shell
 mkdir -p ~/.tmp/{work,conf}
 ```
-Start the program, passing `~/.tmp/work` as the output directory. Pass your stream ids and URLs to `-s` option. 
+Start the program, passing `~/.tmp/work` as the output directory. Obviously, you have to pass *your* stream 
+ids and URLs to the `-s` option. 
 ```shell
 ./live-stream-viewport.sh -v -o ~/.tmp/work -l 2x2 -s camera-1=rtsps://...    
 ```
