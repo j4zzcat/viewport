@@ -401,18 +401,17 @@ generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" 
 #   * output_dir: Directory where stream outputs are stored.
 #
 # Constants:
-#   * SLEEP_PERIOD: Time to sleep between control loop iterations.
-#   * INITIAL_WAIT_PERIOD: Initial wait period before retrying a failed stream.
-#   * MAX_WAIT_PERIOD: Maximum wait period before retrying a failed stream.
-#   * PINGS_REQUIRED_FOR_WAIT_PERIOD_RESET: Number of successful pings required
-#     to reset the wait period to its initial value.
+#   * SLEEP_PERIOD: Time to sleep (s) between control loop iterations.
+#   * INITIAL_WAIT_PERIOD: Initial wait period (s) before retrying a failed stream.
+#   * MAX_WAIT_PERIOD: Maximum wait period (s) before retrying a failed stream.
+#   * STABLE_PERIOD: The time (s) a process has to be continuously running before
+#     it is considered stable.
 #
 
 SLEEP_PERIOD=10
 INITIAL_WAIT_PERIOD=10
 MAX_WAIT_PERIOD=600
-STABLE_PERIOD_BEFORE_WAIT_PERIOD_RESET=120
-PINGS_REQUIRED_FOR_WAIT_PERIOD_RESET=$(( STABLE_PERIOD_BEFORE_WAIT_PERIOD_RESET / SLEEP_PERIOD ))
+STABLE_PERIOD=120
 
 # Initialize state
 for id_url in "${map_stream_id_url[@]}"; do
@@ -445,13 +444,27 @@ while :; do
     if transcoder_running "$pid"; then
       last_ping_epoch="$now_epoch"
       ping_count=$(( ping_count + 1 ))
-      if (( ping_count == PINGS_REQUIRED_FOR_WAIT_PERIOD_RESET )); then
+
+      #
+      # If the process is stable enough, reset the wait period back to the
+      # value of INITIAL_WAIT_PERIOD. This controls situations where the
+      # process starts, works for a short period and then stops, causing
+      # constant restart attempts without exponential increase in wait
+      # time between restarts.
+      #
+      if (( ping_count == STABLE_PERIOD / SLEEP_PERIOD )); then
         wait_period="$INITIAL_WAIT_PERIOD"
       fi
 
+      #
+      # Save state
+      #
       state="$pid:$ping_count:$last_ping_epoch:$wait_period"
       map_stream_id_state=("${map_stream_id_state[@]/$id=*/$id=$state}")
 
+      #
+      # Get the progress this transcoder has made
+      #
       section=$(awk <"$output_dir/streams/$id/index.m3u8" -F ':' '/^#EXT-X-MEDIA-SEQUENCE/{print $2}')
       log "The transcoder for stream '$id' is running, state='$state', section='$section'"
       continue
