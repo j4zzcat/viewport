@@ -40,20 +40,20 @@ Pass this URL to the `-s` option as in `-s ID=URL`.
 &nbsp;
 ## macOS Quickstart
 
-Install prerequisites 
+Install prerequisites: 
 ```shell
 brew install ffmpeg 
 ```
-Create temporary directory 
+Create temporary directory: 
 ```shell
 mkdir -p ~/.tmp/{work,conf}
 ```
 Start the program, passing `~/.tmp/work` as the output directory. Obviously, you have to pass *your* stream 
-ids and URLs to the `-s` option. 
+ids and URLs to the `-s` option: 
 ```shell
 ./live-stream-viewport.sh -v -o ~/.tmp/work -l 2x2 -s camera-1=rtsps://...    
 ```
-eTo access the viewport, a web server needs to be running, serving from `~/.tmp/work`. The easiest option is to
+To access the viewport, a web server needs to be running, serving from `~/.tmp/work`. The easiest option is to
 run a web server inside a docker container, like so:
 ```shell
 docker run --rm httpd:2.4 \
@@ -68,7 +68,7 @@ docker run -itd \
   -v ~/.tmp/work:/usr/local/apache2/htdocs/ \
   httpd:2.4
 ```
-* To get to the viewport, open a web browser and navigate to: http://localhost:8777/viewport.html.
+To get to the viewport, open a web browser and navigate to: http://localhost:8777/viewport.html.
 
 &nbsp;
 ## Raspberry Pi Quickstart
@@ -84,8 +84,6 @@ Now, enable the `headers` apache2 module:
 sudo a2enmod headers
 ```
 
-Next, enable 
-
 ### Performance 
 On [Raspberry Pi model 3 B](https://www.raspberrypi.com/products/raspberry-pi-3-model-b), the delay is about 7 seconds 
 and resource usage per one stream transcoding is as follows: 
@@ -98,14 +96,6 @@ and resource usage per one stream transcoding is as follows:
 
 Essentially, it means that starting from the 4th stream, adding more streams will cause an increase in delay. 
 For example, with 5 streams the CPU consumption is 100% and the delay for each stream can be as much as 15 seconds. 
-
-Note. Average CPU was measured using this thingy:
-```bash
-for i in $(seq 60); do 
-  top -b -n 2 -d 0.2 -p <ffmpeg PID> | tail -1 | awk '{print $9}'
-done \
-| awk 'BEGIN{sum=0}{sum += $1}END{print sum/NR}'
-```
 
 &nbsp;
 ## Advance Topics
@@ -121,7 +111,7 @@ Use the following snippet to display a HLS video stream:
   <script>
     let stream_id = "camera_pool";
     let stream_server = "localhost:8777";
-    let stream_url = "http://" + stream_server + "/stream/" + stream_id + "/index.m3u8";
+    let stream_url = "http://" + stream_server + "/streams/" + stream_id + "/index.m3u8";
     
     let video_element = document.getElementById("my-camera-video");
 
@@ -139,9 +129,9 @@ Use the following snippet to display a HLS video stream:
 ### Consuming individual streams with VLC
 
 Individual HLS streams are also made available on the web server under the `/stream` path, i.e., for the docker example above, 
-the streams are available at `http://localhost:8777/stream/<stream-id>/index.m3u8`. 
+the streams are available at `http://localhost:8777/streams/<stream-id>/index.m3u8`. 
 The easiest way to view a single stream is by using `vlc`, like so:
 
 ```bash
-vlc http://localhost:8777/stream/camera7/index.m3u8
+vlc http://localhost:8777/streams/camera7/index.m3u8
 ```
