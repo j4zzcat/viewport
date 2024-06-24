@@ -33,10 +33,10 @@ version=$(git describe --tags 2>/dev/null || echo 'latest')
 image_name='j4zzcat/live-stream-viewport'
 
 docker buildx build \
-  -f Dockerfile \
+  -f docker/Dockerfile \
   -t "$image_name":"$version" \
   --platform linux/arm64 \
-  ..
+  .
 
 if [[ "$version" != "latest" ]]; then
   docker tag "$image_name:$version" "$image_name:latest"
