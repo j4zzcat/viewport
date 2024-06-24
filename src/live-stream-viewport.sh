@@ -330,14 +330,18 @@ VIEWPORT_PAGE='viewport.html'
 DEFAULT_OUTPUT_DIR='.'
 DEFAULT_LAYOUT='2x2'
 
-# Usage and --help, as getopt on macos doesn't have long options
+#
+# Handle usage and --help early, as getopt on macOS doesn't have long options.
+#
 if [[ $# -eq 0 ]]; then
     usage && exit 128
 elif [[ "$1" == "--help" ]]; then
   help && exit 0
 fi
 
+#
 # Parse command line
+#
 error_message_file=$(mktemp /tmp/XXXXX)
 valid_args=$(getopt vho:l:s: "$@" 2>"$error_message_file")
 if [[ $? -ne 0 ]]; then
@@ -383,12 +387,16 @@ while :; do
   esac
 done
 
-# Parse and validate the instructions
+#
+# Parse and validate the input.
+#
 output_dir=$(parse_and_validate_output_dir "$output_dir" "$DEFAULT_OUTPUT_DIR");
 layout=( $(parse_and_validate_layout "$layout" "$DEFAULT_LAYOUT") )
 map_stream_id_url=( $(parse_and_validate_streams "${streams[@]}") )
 
+#
 # Generate the viewport
+#
 generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" "${layout[@]}" "${map_stream_id_url[@]}"
 
 #
