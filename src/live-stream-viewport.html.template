@@ -46,7 +46,7 @@
             video_element.setAttribute("id", stream_id);
             video_element.setAttribute("width", "100%");
             let hls = new Hls();
-            hls.loadSource(window.location.origin + "/stream/" + stream_id + "/index.m3u8");
+            hls.loadSource(window.location.origin + "/streams/" + stream_id + "/index.m3u8");
             hls.attachMedia(video_element);
             hls.on(Hls.Events.MEDIA_ATTACHED, function () {
                 video_element.muted = true;
