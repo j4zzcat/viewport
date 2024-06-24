@@ -1,12 +1,23 @@
 #! /bin/bash
 
+# Globals and defaults
+
+PID="$$"
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+PANIC_MESSAGE_FILE=$(mktemp)
+trap "cat $PANIC_MESSAGE_FILE; exit 127" SIGUSR1
+
+# Defaults and constants
+MAX_GRID_SIZE=30
+VIEWPORT_TEMPLATE_FILE="$SCRIPT_DIR/live-stream-viewport.html.template"
+VIEWPORT_PAGE=viewport.html
+
+DEFAULT_OUTPUT_DIR='.'
+DEFAULT_LAYOUT='2x2'
+
 #
 # Utility functions
 #
-
-PID="$$"
-PANIC_MESSAGE_FILE=$(mktemp /tmp/XXXXX)
-trap "cat $PANIC_MESSAGE_FILE; exit 127" SIGUSR1
 
 log() {
     [[ -z "$VERBOSE" ]] && return
@@ -26,15 +37,18 @@ panic() {
 process_running() {
   local _name="$1"
   local _pid="$2"
+
+  (( _pid == 0 )) && return 127
+
   case "$(uname)" in
-   Darwin)
-     if (( _pid == 0 )); then
-       return 127
-     else
-       pgrep "$_name" | grep "$_pid" &>/dev/null
-       return "$?"
-     fi
-     ;;
+    Darwin)
+      pgrep "$_name" | grep "$_pid" &>/dev/null
+      return "$?"
+      ;;
+
+   Linux)
+      [[ "$(ps | grep "$_pid" | head -1 | awk '{print $4}')" == "$_name" ]]
+      return "$?"
   esac
 }
 
@@ -162,7 +176,7 @@ parse_and_validate_layout() {
   local _grid_size=$((_rows * _columns))
   if (( _grid_size < 1 )) || (( _grid_size > MAX_GRID_SIZE )); then panic "Error. Layout grid size of $_grid_size is out of bounds."; fi
 
-  echo "$_rows" "$_columns"
+  echo "$_rowsx$_columns"
 }
 
 #
@@ -183,24 +197,23 @@ parse_and_validate_streams() {
 
   log "Parsing and validating streams, input is '$_streams'"
 
-  local _temp_dir=$(mktemp -d /tmp/XXXXX)
+  local _temp_dir=$(mktemp -d)
   for _id_url in "${_streams[@]}"; do
     log "Parsing $_id_url"
-    local _seperator_count=$(echo "$_id_url" | grep --count '=')
-    (( _seperator_count == 0 )) && panic "Error. The stream '$_id_url' doesn't match the pattern 'id=url'."
 
     local _id=$(echo "$_id_url" | awk -F '=' '{print $1}')
     local _url=$(echo "$_id_url" | awk -F '=' '{print $2}')
 
-    log "Stream id is '$_id', url is '$_url'"
+    [[ "$_id" =~ [=:/] ]] && panic "Stream id cannot have the '=:/' chars in it."
 
     [ -f "$_temp_dir/$_id" ] && panic "Error. The stream id '$_id' was already given."
     touch "$_temp_dir/$_id"
 
     local _protocol=$(echo "${_url}" | awk -F '/' '{print substr($1, 1, length($1)-1)}')
     case "$_protocol" in
-       rtsp) ;;
-       rtsps) ;;
+       rtsp[s]) ;;
+       http[s]) ;;
+       file) ;;
        *) panic "Error. Unsupported protocol in url '$_url'" ;;
     esac
   done
@@ -227,14 +240,15 @@ parse_and_validate_streams() {
 generate_viewport_page() {
   local _template_file="$1"
   local _viewport_file="$2"
-  local _layout=($3)
+  local _layout="$3"
   shift 3
   local _streams=($@)
 
-  log "Preparing replacements for the template file '$_template_file'"
+  log "Preparing replacements for the template file $(basename $_template_file)"
 
-  local _rows="${_layout[0]}"
-  local _columns="${_layout[1]}"
+  local _rows="${_layout%x*}"
+  local _columns="${_layout#*x}"
+  log "Layout is $_rows x $_columns"
 
   local _html_rows
   for _dummy in $(seq "$_rows"); do _html_rows="$_html_rows 1fr "; done
@@ -243,6 +257,7 @@ generate_viewport_page() {
   local _html_columns
   for _dummy in $(seq "$_columns"); do _html_columns="$_html_columns 1fr "; done
   log "{{COLUMNS}} is going to be '$_html_columns'"
+
 
   local _html_grid_size=$(( _rows * _columns ))
   log "{{GRID_SIZE}} is going to be '$_html_grid_size'"
@@ -287,7 +302,7 @@ transcode_stream() {
   mkdir -p "$_stream_output_dir"
 
   log "Trying to start ffmpeg on url '$_stream_url'..."
-  local _error_output_file="$(mktemp /tmp/XXXXX)"
+  local _error_output_file="$(mktemp)"
   ffmpeg \
     -loglevel 8 \
     -i "$_stream_url" \
@@ -322,13 +337,6 @@ transcoder_running() {
 # --- Main ---
 #
 
-# Defaults and constants
-MAX_GRID_SIZE=30
-VIEWPORT_TEMPLATE_FILE='live-stream-viewport.html.template'
-VIEWPORT_PAGE='viewport.html'
-
-DEFAULT_OUTPUT_DIR='.'
-DEFAULT_LAYOUT='2x2'
 
 #
 # Handle usage and --help early, as getopt on macOS doesn't have long options.
@@ -342,7 +350,7 @@ fi
 #
 # Parse command line
 #
-error_message_file=$(mktemp /tmp/XXXXX)
+error_message_file=$(mktemp)
 valid_args=$(getopt vho:l:s: "$@" 2>"$error_message_file")
 if [[ $? -ne 0 ]]; then
     echo "error. $(cat "$error_message_file")" 2>/dev/stderr
@@ -391,13 +399,13 @@ done
 # Parse and validate the input.
 #
 output_dir=$(parse_and_validate_output_dir "$output_dir" "$DEFAULT_OUTPUT_DIR");
-layout=( $(parse_and_validate_layout "$layout" "$DEFAULT_LAYOUT") )
+layout=$(parse_and_validate_layout "$layout" "$DEFAULT_LAYOUT")
 map_stream_id_url=( $(parse_and_validate_streams "${streams[@]}") )
 
 #
 # Generate the viewport
 #
-generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" "${layout[@]}" "${map_stream_id_url[@]}"
+generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" "$layout" "${map_stream_id_url[@]}"
 
 #
 # The main Control Loop. This is used to monitor and manage transcoding
@@ -436,7 +444,7 @@ for id_url in "${map_stream_id_url[@]}"; do
   map_stream_id_state+=("$id=0:0:$(( now_epoch - INITIAL_WAIT_PERIOD/2)):$(( INITIAL_WAIT_PERIOD/2 ))")
 done
 
-CLEANUP_PIDS_FILE=$(mktemp /tmp/XXXXX)
+CLEANUP_PIDS_FILE=$(mktemp)
 trap "log 'Cleaning up background processes.'; <$CLEANUP_PIDS_FILE xargs -n1 kill 2>/dev/null; exit" SIGTERM SIGHUP SIGABRT
 
 log "Starting control loop"
