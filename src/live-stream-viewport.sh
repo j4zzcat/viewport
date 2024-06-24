@@ -11,8 +11,8 @@ trap "cat $PANIC_MESSAGE_FILE; exit 127" SIGUSR1
 log() {
     [[ -z "$VERBOSE" ]] && return
     local _message="$1"
-    local now=$(date +'%Y-%m-%d %H:%M:%S')
-    echo "[$now] $_message" >/dev/stderr
+    local _now=$(date +'%Y-%m-%d %H:%M:%S')
+    echo "[$_now] $_message" >/dev/stderr
 }
 
 panic() {
@@ -99,11 +99,12 @@ EOF
 # and is writable.
 #
 # Positional parameters:
-#   (1) <output_dir>:
-#       The desired output directory specified by the user. It can be an empty
-#       string, meaning that the function should use the default directory.
-#   (2) <default_output_dir>:
-#       The default output directory to be used if <output_dir> is empty or null.
+#   (1) <output_dir>: The desired output directory specified by the user. It
+#   can be an empty string, meaning that the function should use the default
+#   directory.
+#
+#   (2) <default_output_dir>: The default output directory to be used if
+#   <output_dir> is empty or null.
 #
 # Returns:
 #   The validated output directory path.
@@ -136,6 +137,7 @@ parse_and_validate_output_dir() {
 #       where N is the number of rows and M is the number of columns. It can
 #       be an empty string, meaning that the function should use the default
 #       layout.
+
 #   (2) <default_layout>: The default layout to be used if <layout> is empty
 #       or null.
 #
@@ -170,8 +172,8 @@ parse_and_validate_layout() {
 # and verifies that the URLs use supported protocols (RTSP or RTSPS).
 #
 # Positional parameters:
-#   (1)...(N) <stream1> <stream2> ...: A list of streams, each specified in the
-#      format id=url.
+#   (1)...(N) <stream1> <stream2> ...: A list of streams, each specified in
+#      a format of 'id=url'.
 #
 # Returns:
 #   A list of validated streams in the format <id=url> <id=url>...
@@ -215,8 +217,10 @@ parse_and_validate_streams() {
 #   (1) <template_file>: Path to the HTML template file that contains place
 #       holders for the layout and stream information.
 #   (2) <viewport_file>: Path to the output HTML file generated from the template.
+#
 #   (3) <rows>: Number of rows in the layout grid.
 #   (4) <columns>: Number of columns in the layout grid.
+
 #   (5)...(N) <stream1> <stream2> ...: A list of streams, each specified in the
 #       format id=url.
 #
@@ -314,9 +318,9 @@ transcoder_running() {
   process_running 'ffmpeg' "$_pid"
 }
 
-
-
+#
 # --- Main ---
+#
 
 # Defaults and constants
 MAX_GRID_SIZE=30
@@ -396,8 +400,10 @@ generate_viewport_page "$VIEWPORT_TEMPLATE_FILE" "$output_dir"/"$VIEWPORT_PAGE" 
 # Main variables and data structures:
 #   * map_stream_id_state: An array containing the state of each stream
 #     transcoder in the format id=pid:ping_count:last_ping_epoch:wait_period.
+#
 #   * map_stream_id_url: An array containing the URLs of each stream in the
 #     format id=url.
+#
 #   * output_dir: Directory where stream outputs are stored.
 #
 # Constants:
