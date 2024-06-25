@@ -30,7 +30,7 @@ docker run \
 ```
 * The above will display a 3x3 viewport with 5 Unifi Protect Cameras. 
 * Obviously, you have to replace the `IDs` and `URLs` given in this example with *your very own*. 
-Note that `IDs` are arbitrary strings, but must be unique.
+Note that `IDs` are arbitrary strings, but they must be unique.
 * To get the RTSPS stream URL for a camera, open the Unifi Protect app, go to 'Unifi Devices', 
 select the desired camera, and then select 'Settings'. Scroll down and expand the 'Advanced' section. 
 Enable the stream for the desired resolution, and take a note of its URL. 
