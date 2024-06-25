@@ -61,8 +61,7 @@ docker run --rm httpd:2.4 \
   | sed -e 's|\(<Directory "/usr/local/apache2/htdocs">\)|\1\nHeader set Access-Control-Allow-Origin "*"|' \
   >~/.tmp/conf/httpd.conf
   
-docker run -itd \
-  --name viewport-httpd-server \
+docker run -itd --rm \
   -p 8777:80 \
   -v ~/.tmp/conf/httpd.conf:/usr/local/apache2/conf/httpd.conf \
   -v ~/.tmp/work:/usr/local/apache2/htdocs/ \
