@@ -65,5 +65,9 @@
             cctvs_element.appendChild(div_element);
           }
         }
+
+        setTimeout(function(){
+            window.location.reload();
+        }, 2 * 60 * 1000);
     </script>
 </html>
