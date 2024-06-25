@@ -1,11 +1,11 @@
 #! /bin/bash
 
 usage() {
-    echo "usage: $(basename $0) [-p]"
+    echo "usage: $(basename $0) [-a]"
 }
 
 error_message_file=$(mktemp /tmp/XXXXX)
-valid_args=$(getopt hp "$@" 2>"$error_message_file")
+valid_args=$(getopt ha "$@" 2>"$error_message_file")
 if [[ $? -ne 0 ]]; then
     echo "error. $(cat "$error_message_file")" 2>/dev/stderr
     usage && exit 129
@@ -14,12 +14,13 @@ fi
 eval set -- "$valid_args"
 while :; do
   case "$1" in
-    -p | --push)
-      OPTION_PUSH='true'
+    -a | --all)
       shift 1
+      ALL='true'
       ;;
 
     -h | --help)
+      shift 1
       usage && exit 0
       ;;
 
@@ -29,27 +30,22 @@ while :; do
   esac
 done
 
-version=$(git describe --tags 2>/dev/null || echo 'latest')
+image_tag=$(git describe --tags 2>/dev/null || echo 'latest')
 image_name='j4zzcat/live-stream-viewport'
 
-docker buildx build \
-  -f docker/Dockerfile \
-  -t "$image_name":"$version" \
-  --platform linux/arm64 \
-  .
+if [[ "$ALL" == 'true' ]]; then
+  docker buildx create --name container --driver=docker-container 2>/dev/null
 
-if [[ "$version" != "latest" ]]; then
-  docker tag "$image_name:$version" "$image_name:latest"
+  docker buildx build \
+   --tag "$image_name:$image_tag" \
+   --platform linux/arm64,linux/amd64 \
+   --builder container \
+   --push \
+   -f docker/Dockerfile .
+else
+  # Default, no hassle build
+  docker buildx build \
+    -t "$image_name:$image_tag" \
+    -f docker/Dockerfile .
 fi
 
-if [[ ! -z "$OPTION_PUSH" ]]; then
-  docker push "$image_name":"$version"
-  if [[ "$version" != "latest" ]]; then
-    docker push "$image_name:latest"
-  fi
-fi
-
-
-# other platforms:
-# linux/amd64
-# linux/amd64/v2
