@@ -2,7 +2,7 @@
 
 # Globals and defaults
 
-PID="$$"
+SCRIPT_PID="$$"
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 PANIC_MESSAGE_FILE=$(mktemp)
 trap "cat $PANIC_MESSAGE_FILE; exit 127" SIGUSR1
@@ -30,7 +30,7 @@ panic() {
     local _message="$1"
     log "$_message"
     echo "$_message" >"$PANIC_MESSAGE_FILE"
-    kill -SIGUSR1 "$PID"
+    kill -SIGUSR1 "$SCRIPT_PID"
     exit
 }
 
@@ -171,8 +171,8 @@ parse_and_validate_layout() {
     log "Using default layout '$_layout'"
   fi
 
-  local _rows=$(echo "$_layout" | awk -F 'x' '{print $1}')
-  local _columns=$(echo "$_layout" | awk -F 'x' '{print $2}')
+  local _rows=${_layout%x*}
+  local _columns=${_layout#*x}
   log "Layout rows=$_rows, layout columns=$_columns"
 
   local _grid_size=$((_rows * _columns))
@@ -205,8 +205,8 @@ parse_and_validate_streams() {
   for _id_url in "${_streams[@]}"; do
     log "Parsing $_id_url"
 
-    local _id=$(echo "$_id_url" | awk -F '=' '{print $1}')
-    local _url=$(echo "$_id_url" | awk -F '=' '{print $2}')
+    local _id=${_id_url%=*}
+    local _url=${_id_url#*=}
 
     [[ "$_id" =~ [=:/] ]] && panic "Stream id cannot have the '=:/' chars in it."
 
@@ -248,7 +248,7 @@ generate_viewport_page() {
   shift 3
   local _streams=($@)
 
-  log "Preparing replacements for the template file $(basename $_template_file)"
+  log "Preparing replacements for the template file $(basename "$_template_file")"
 
   local _rows="${_layout%x*}"
   local _columns="${_layout#*x}"
@@ -441,7 +441,7 @@ STABLE_PERIOD=120
 
 # Initialize state
 for id_url in "${map_stream_id_url[@]}"; do
-  id=$(echo "$id_url" | awk -F '=' '{print $1}')
+  id=${id_url%=*}
   now_epoch=$(date +%s)
 
   # :pid :ping_count :last_ping_epoch :wait_period
