@@ -214,9 +214,10 @@ parse_and_validate_streams() {
     touch "$_temp_dir/$_id"
 
     local _protocol=$(echo "${_url}" | awk -F '/' '{print substr($1, 1, length($1)-1)}')
+    log "Protocol is '$_protocol'"
     case "$_protocol" in
-       rtsp[s]) ;;
-       http[s]) ;;
+       rtsp|rtsps) ;;
+       http|https) ;;
        file) ;;
        *) panic "Error. Unsupported protocol in url '$_url'" ;;
     esac
