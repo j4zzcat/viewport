@@ -128,12 +128,12 @@ parse_and_validate_output_dir() {
   local _default_output_dir="$2"
 
   log "Parsing and validating output-dir, input is '$_output_dir'"
-  if [ -z "$_output_dir" ]; then
+  if [[ -z "$_output_dir" ]]; then
     _output_dir="$_default_output_dir"
     log "Using default output dir '$_output_dir'"
   fi
 
-  [ ! -d "$_output_dir" ] && panic "Error. Directory '$_output_dir' doesn't exist."
+  [[ ! -d "$_output_dir" ]] && panic "Error. Directory '$_output_dir' doesn't exist."
   if ! touch "$_output_dir"/touch 2>/dev/null; then
     panic "Error. Directory '$_output_dir' is not writable."
   fi
@@ -166,7 +166,7 @@ parse_and_validate_layout() {
 
   log "Parsing and validating layout, input is '$_layout'"
 
-  if [ -z "$_layout" ]; then
+  if [[ -z "$_layout" ]]; then
     _layout="$_default_layout"
     log "Using default layout '$_layout'"
   fi
@@ -210,7 +210,7 @@ parse_and_validate_streams() {
 
     [[ "$_id" =~ [=:/] ]] && panic "Stream id cannot have the '=:/' chars in it."
 
-    [ -f "$_temp_dir/$_id" ] && panic "Error. The stream id '$_id' was already given."
+    [[ -f "$_temp_dir/$_id" ]] && panic "Error. The stream id '$_id' was already given."
     touch "$_temp_dir/$_id"
 
     local _protocol=$(echo "${_url}" | awk -F '/' '{print substr($1, 1, length($1)-1)}')
@@ -322,7 +322,7 @@ transcode_stream() {
   sleep 1
 
     # Zero size?
-  if [ -s "$_error_output_file" ]; then
+  if [[ -s "$_error_output_file" ]]; then
     log "Error starting ffmpeg. '$(head "$_error_output_file")'"
     _pid=0
   else
