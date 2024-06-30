@@ -100,8 +100,8 @@ EXAMPLE:
     $(basename $0) \\
       -o /var/www/htdocs \\
       -l 1x2 \\
-      -s 'door-camera=rtsps://192.168.4.10/d3xxdde0xa9jn' \\
-      -s 'pool-camera=rtsps://192.168.4.10/f1gzgge0xt1sn?nightmode=false'
+      -s 'door-camera=rtsp://192.168.4.101:7441/d3xxdde0xa9jn' \\
+      -s 'pool-camera=rtsps://192.168.4.10:7447/f1gzgge0xt1sn?nightmode=false'
 
 EOF
 }
