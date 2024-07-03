@@ -2,6 +2,8 @@
   "dependencies": {
     "homebridge": "^1.8.3",
     "homebridge-unifi-protect": "^7.1.2",
+    "shell": "^0.9.6",
+    "shelljs": "^0.8.5",
     "tsx": "^4.16.2"
   },
   "devDependencies": {

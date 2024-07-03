@@ -1,6 +1,9 @@
 "use strict";
 exports.__esModule = true;
 var protect_platform_1 = require("homebridge-unifi-protect/dist/protect-platform");
+var shell = require("shelljs");
+var USERID = 'viewport-1';
+var PASSWORD = shell.exec('security find-generic-password -l dev-user -a unifi-protect -w', { silent: true }).split('\n')[0];
 // @ts-ignore
 var MockedLogging = /** @class */ (function () {
     function MockedLogging(prefix) {
@@ -64,8 +67,8 @@ var MockedPlatformConfig = /** @class */ (function () {
             {
                 address: "192.168.4.10",
                 name: "nvr",
-                username: "userid",
-                password: "password"
+                username: USERID,
+                password: PASSWORD
             }
         ];
     }
@@ -77,6 +80,8 @@ var MockedHomebridgeAPI = /** @class */ (function () {
     MockedHomebridgeAPI.prototype.on = function (event, listener) {
         console.log(event);
         console.log(listener);
+        if (event == "didFinishLaunching")
+            listener.call({}, {});
         return this;
     };
     ;

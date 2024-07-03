@@ -14,6 +14,12 @@ import {
 import {ProtectNvr} from "homebridge-unifi-protect/dist/protect-nvr";
 import {ProtectNvrOptions} from "homebridge-unifi-protect/dist/protect-options";
 import {HAPLegacyTypes} from "homebridge/lib/api";
+import { setTimeout } from 'node:timers/promises';
+
+import * as shell from "shelljs";
+
+const USERID = 'viewport-1';
+const PASSWORD = shell.exec('security find-generic-password -l dev-user -a unifi-protect -w', { silent: true }).split('\n')[0];
 
 // @ts-ignore
 class MockedLogging implements Logging {
@@ -62,8 +68,8 @@ class MockedPlatformConfig implements PlatformConfig {
         {
             address: "192.168.4.10",
             name: "nvr",
-            username: "userid",
-            password: "password"
+            username: USERID,
+            password: PASSWORD
         } as ProtectNvrOptions
     ];
 }
@@ -79,6 +85,8 @@ class MockedHomebridgeAPI implements API {
     on(event: string, listener: () => void): this {
         console.log(event);
         console.log(listener);
+        if( event == "didFinishLaunching" )
+            listener.call({}, {});
         return this;
     };
 
@@ -110,7 +118,6 @@ class MockedHomebridgeAPI implements API {
     versionGreaterOrEqual(version: string): boolean {
         return false;
     }
-
 }
 
 const mocked_logging = new MockedLogging("dummy");
@@ -119,3 +126,4 @@ const mocked_homebridge_api = new MockedHomebridgeAPI()
 
 // @ts-ignore
 const protect_platform = new ProtectPlatform( mocked_logging, mocked_platform_config, mocked_homebridge_api );
+
