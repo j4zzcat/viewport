@@ -1,0 +1,51 @@
+{
+  "name": "fast-srp-hap",
+  "description": "Secure Remote Password (SRP)",
+  "version": "2.0.4",
+  "main": "lib/srp.js",
+  "types": "lib/srp.d.ts",
+  "scripts": {
+    "clean": "rimraf lib && rimraf coverage && rimraf .nyc_output",
+    "lint": "eslint 'src/**/*.{js,ts,json}'",
+    "build": "npm run clean && tsc",
+    "test": "vows lib/test/test_*.js --spec",
+    "test-coverage": "nyc --reporter=lcovonly npm run test",
+    "docs": "typedoc src/srp.ts",
+    "prepublishOnly": "npm run build",
+    "postpublish": "npm run clean"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/homebridge/fast-srp"
+  },
+  "author": "Zarmack Tanen",
+  "license": "MIT",
+  "engines": {
+    "node": ">=10.17.0"
+  },
+  "files": [
+    "jsbn",
+    "lib",
+    "!lib/test",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^10.17.60",
+    "typescript": "^4.4.3",
+    "vows": "^0.8.3",
+    "nyc": "^15.1.0",
+    "typedoc": "0.22.5",
+    "eslint": "^7.32.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "rimraf": "^3.0.2"
+  },
+  "nyc": {
+    "exclude": [
+      "*/test",
+      "jsbn"
+    ]
+  }
+}

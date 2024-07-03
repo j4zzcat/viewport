@@ -1,0 +1,1 @@
+{"version":3,"file":"hapStatusError.d.ts","sourceRoot":"","sources":["../../../src/lib/util/hapStatusError.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAyB,MAAM,cAAc,CAAC;AAEhE;;;;;;;;;GASG;AACH,qBAAa,cAAe,SAAQ,KAAK;IAChC,SAAS,EAAE,SAAS,CAAC;gBAEhB,MAAM,EAAE,SAAS;CAW9B"}
