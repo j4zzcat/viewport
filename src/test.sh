@@ -6,4 +6,10 @@ node --import=tsx src/streamline-viewport.ts | ffmpeg \
     -vcodec copy \
     -y ~/.tmp/index.m3u8
 
-streamline-viewport
+streamline-viewport -v
+  -s, --stream ...        camera-1=rtsps://...
+  -m, --multi-stream ...  unifi://userid:password@192.168.4.10/camera/{_all}
+  -v, --view ...          unifi://userid:password@192.168.4.10/liveview/important
+
+
+
