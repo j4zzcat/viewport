@@ -29,7 +29,7 @@ async function login(ufp: ProtectApi) {
     if (!(await ufp.getBootstrap())) {
 
         console.log("Unable to bootstrap the Protect controller.");
-        util.process.exit(0);
+        process.exit(0);
     }
 }
 
