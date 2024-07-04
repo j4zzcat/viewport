@@ -5,3 +5,5 @@ node --import=tsx src/streamline-viewport.ts | ffmpeg \
     -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
     -vcodec copy \
     -y ~/.tmp/index.m3u8
+
+streamline-viewport

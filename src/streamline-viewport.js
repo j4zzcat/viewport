@@ -1,4 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,8 +51,96 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
+exports.WidgetCommandLine = exports.PushAction = void 0;
 var shell = require("shelljs");
 var unifi_protect_1 = require("unifi-protect");
+var ts_command_line_1 = require("@rushstack/ts-command-line");
+var BusinessLogic = /** @class */ (function () {
+    function BusinessLogic() {
+    }
+    BusinessLogic.doTheWork = function (force, protocol) {
+        console.log(force);
+        console.log(protocol);
+    };
+    BusinessLogic.configureLogger = function (value) {
+        console.log(value);
+    };
+    ;
+    return BusinessLogic;
+}());
+var PushAction = /** @class */ (function (_super) {
+    __extends(PushAction, _super);
+    function PushAction() {
+        var _this = _super.call(this, {
+            actionName: 'push',
+            summary: 'Pushes a widget to the service',
+            documentation: 'Here we provide a longer description of how our action works.'
+        }) || this;
+        _this._force = _this.defineFlagParameter({
+            parameterLongName: '--force',
+            parameterShortName: '-f',
+            description: 'Push and overwrite any existing state'
+        });
+        _this._protocol = _this.defineChoiceParameter({
+            parameterLongName: '--protocol',
+            description: 'Specify the protocol to use',
+            alternatives: ['ftp', 'webdav', 'scp'],
+            environmentVariable: 'WIDGET_PROTOCOL',
+            defaultValue: 'scp'
+        });
+        return _this;
+    }
+    PushAction.prototype.onExecute = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: // abstract
+                    return [4 /*yield*/, BusinessLogic.doTheWork(this._force.value, this._protocol.value || "(none)")];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return PushAction;
+}(ts_command_line_1.CommandLineAction));
+exports.PushAction = PushAction;
+var WidgetCommandLine = /** @class */ (function (_super) {
+    __extends(WidgetCommandLine, _super);
+    function WidgetCommandLine() {
+        var _this = _super.call(this, {
+            toolFilename: 'widget',
+            toolDescription: 'The "widget" tool is a code sample for using the @rushstack/ts-command-line library.'
+        }) || this;
+        _this.addAction(new PushAction());
+        _this._verbose = _this.defineFlagParameter({
+            parameterLongName: '--verbose',
+            parameterShortName: '-v',
+            description: 'Show extra logging detail'
+        });
+        return _this;
+    }
+    WidgetCommandLine.prototype.onExecute = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        BusinessLogic.configureLogger(this._verbose.value);
+                        return [4 /*yield*/, _super.prototype.onExecute.call(this)];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    return WidgetCommandLine;
+}(ts_command_line_1.CommandLineParser));
+exports.WidgetCommandLine = WidgetCommandLine;
+var commandLine = new WidgetCommandLine();
+commandLine.executeAsync();
+process.exit(0);
 var USERID = 'viewport-1';
 var PASSWORD = shell.exec('security find-generic-password -l dev-user -a unifi-protect -w', { silent: true }).split('\n')[0];
 function login(ufp) {
@@ -90,7 +193,7 @@ pls.on("initsegment", function (buffer) {
     //console.log(buffer);
 });
 pls.on("message", function (buffer) {
-    console.log(buffer);
+    process.stdout.write(buffer);
 });
 pls.on("segment", function (buffer) {
     //console.log(buffer);
