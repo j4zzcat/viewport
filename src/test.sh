@@ -6,13 +6,9 @@ node --import=tsx src/streamline-viewport.ts | ffmpeg \
     -vcodec copy \
     -y ~/.tmp/index.m3u8
 
-streamline-viewport [-v] [-h]
-  grid
-    -l, --layout            3x3
-    -s, --stream ...        rtsps://... | unifi://userid:password@192.168.4.10/camera/{_all}
 
-  remote
-    -r, --remote ...   unifi://userid:password@192.168.4.10/liveview/important
-
-
+streamline-viewport -v \
+  grid \
+    --layout 3x3 \
+    --stream 'unifi://dev-user:'$(security find-generic-password -l dev-user -a unifi-protect -w)'@192.168.4.10/camera/{_all}'
 
