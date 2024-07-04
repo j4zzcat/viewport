@@ -51,7 +51,7 @@ mkdir -p ~/.tmp/{work,conf}
 Start the program, passing `~/.tmp/work` as the output directory. Obviously, you have to pass *your* stream 
 ids and URLs to the `-s` option: 
 ```shell
-./live-stream-viewport.sh -v -o ~/.tmp/work -l 2x2 -s camera-1=rtsps://...    
+./streamline-viewport.sh -v -o ~/.tmp/work -l 2x2 -s camera-1=rtsps://...    
 ```
 To access the viewport, a web server needs to be running, serving from `~/.tmp/work`. The easiest option is to
 run a web server inside a docker container, like so:
