@@ -4,7 +4,7 @@ import {
     CommandLineAction,
     CommandLineChoiceParameter,
     CommandLineFlagParameter,
-    CommandLineParser
+    CommandLineParser, CommandLineStringListParameter, CommandLineStringParameter
 } from "@rushstack/ts-command-line";
 
 class BusinessLogic {
@@ -18,47 +18,74 @@ class BusinessLogic {
     };
 }
 
-export class PushAction extends CommandLineAction {
-    private _force: CommandLineFlagParameter;
-    private _protocol: CommandLineChoiceParameter;
+export class GridAction extends CommandLineAction {
+    private _layout: CommandLineStringParameter;
+    private _stream: CommandLineStringListParameter;
 
     public constructor() {
         super({
-            actionName: 'push',
-            summary: 'Pushes a widget to the service',
+            actionName: 'grid',
+            summary: 'Launch a viewport with specified streams',
             documentation: 'Here we provide a longer description of how our action works.'
         });
 
-        this._force = this.defineFlagParameter({
-            parameterLongName: '--force',
-            parameterShortName: '-f',
-            description: 'Push and overwrite any existing state'
-        });
+        this._layout = this.defineStringParameter({
+            argumentName: "SIZE",
+            defaultValue: '2x2',
+            description: 'Grid layout in rows x columns',
+            parameterLongName: '--layout',
+            required: false})
 
-        this._protocol = this.defineChoiceParameter({
-            parameterLongName: '--protocol',
-            description: 'Specify the protocol to use',
-            alternatives: ['ftp', 'webdav', 'scp'],
-            environmentVariable: 'WIDGET_PROTOCOL',
-            defaultValue: 'scp'
-        });
+        this._stream = this.defineStringListParameter( {
+            argumentName: "URL",
+            description: "Stream url, supported protocols: rtsp, rtsps, unifi",
+            parameterLongName: "--stream"
+
+        })
     }
 
     protected async onExecute(): Promise<void> { // abstract
-        await BusinessLogic.doTheWork(this._force.value, this._protocol.value || "(none)");
+        console.log(this._layout.value);
+        console.log(this._stream.values);
+        // await BusinessLogic.doTheWork(this._force.value, this._protocol.value || "(none)");
     }
 }
+
+export class RemoteAction extends CommandLineAction {
+    private _remote: CommandLineStringParameter;
+
+    public constructor() {
+        super({
+            actionName: 'remote',
+            summary: 'Launch a remote viewport',
+            documentation: 'Here we provide a longer description of how our action works.'
+        });
+
+        this._remote = this.defineStringParameter({
+            argumentName: "URL",
+            description: 'Remote viewport URL',
+            parameterLongName: '--url',
+            required: true})
+    }
+
+    protected async onExecute(): Promise<void> { // abstract
+        console.log(this._remote.value);
+        // await BusinessLogic.doTheWork(this._force.value, this._protocol.value || "(none)");
+    }
+}
+
 
 export class WidgetCommandLine extends CommandLineParser {
     private _verbose: CommandLineFlagParameter;
 
     public constructor() {
         super({
-            toolFilename: 'widget',
-            toolDescription: 'The "widget" tool is a code sample for using the @rushstack/ts-command-line library.'
+            toolFilename: 'streamline-viewport',
+            toolDescription: 'Create a web-based viewport for rtsp/rtsps/unifi video streams'
         });
 
-        this.addAction(new PushAction());
+        this.addAction(new GridAction());
+        this.addAction(new RemoteAction());
 
         this._verbose = this.defineFlagParameter({
             parameterLongName: '--verbose',
