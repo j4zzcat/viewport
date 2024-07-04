@@ -3,19 +3,23 @@ import {
     CommandLineFlagParameter,
     CommandLineParser, CommandLineStringListParameter, CommandLineStringParameter
 } from "@rushstack/ts-command-line";
+import {Backend} from "./backend";
 
 export class StreamsAction extends CommandLineAction {
-    private _layout: CommandLineStringParameter;
+    private _backend: Backend;
+    private _grid: CommandLineStringParameter;
     private _stream: CommandLineStringListParameter;
 
-    public constructor() {
+    public constructor(backend: Backend) {
         super({
             actionName: 'streams',
             summary: 'Launch a viewport with specified streams.',
             documentation: 'Here we provide a longer description of how our action works.'
         });
 
-        this._layout = this.defineStringParameter({
+        this._backend = backend;
+
+        this._grid = this.defineStringParameter({
             argumentName: "SIZE",
             defaultValue: '2x2',
             description: 'Grid layout in rows x columns.',
@@ -25,24 +29,27 @@ export class StreamsAction extends CommandLineAction {
         this._stream = this.defineStringListParameter( {
             argumentName: "URL",
             description: "Stream url, supported protocols: rtsp, rtsps, unifi.",
-            parameterLongName: "--stream" })
+            parameterLongName: "--stream",
+            required: true })
     }
 
     protected async onExecute(): Promise<void> {
-        console.log(this._layout.value);
-        console.log(this._stream.values);
+        await this._backend.handleStreamsAction(this._grid.value, this._stream.values);
     }
 }
 
 export class RemoteAction extends CommandLineAction {
+    private _backend: Backend;
     private _remote: CommandLineStringParameter;
 
-    public constructor() {
+    public constructor(backend: Backend) {
         super({
             actionName: 'remote',
             summary: 'Launch a remote viewport.',
             documentation: 'Here we provide a longer description of how our action works.'
         });
+
+        this._backend = backend;
 
         this._remote = this.defineStringParameter({
             argumentName: "URL",
@@ -58,15 +65,17 @@ export class RemoteAction extends CommandLineAction {
 }
 
 export class MainCommandLine extends CommandLineParser {
+    private readonly _backend: Backend;
     private _verbose: CommandLineFlagParameter;
 
-    public constructor() {
+    public constructor(backend: Backend) {
         super({
             toolFilename: 'streamline-viewport',
             toolDescription: 'Create a web-based viewport for rtsp/rtsps/unifi video streams.' });
 
-        this.addAction(new StreamsAction());
-        this.addAction(new RemoteAction());
+        this._backend = backend;
+        this.addAction(new StreamsAction(this._backend));
+        this.addAction(new RemoteAction(this._backend));
 
         this._verbose = this.defineFlagParameter({
             parameterLongName: '--verbose',
@@ -75,7 +84,7 @@ export class MainCommandLine extends CommandLineParser {
     }
 
     protected async onExecute(): Promise<void> {
-        console.log(this._verbose.value);
+        this._backend.verbosity(this._verbose.value);
         await super.onExecute();
     }
 }
