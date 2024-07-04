@@ -38,7 +38,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var shell = require("shelljs");
 var unifi_protect_1 = require("unifi-protect");
-var util = require("node:util");
 var USERID = 'viewport-1';
 var PASSWORD = shell.exec('security find-generic-password -l dev-user -a unifi-protect -w', { silent: true }).split('\n')[0];
 function login(ufp) {
@@ -49,11 +48,12 @@ function login(ufp) {
                     // Set a listener to wait for the bootstrap event to occur.
                     ufp.once("bootstrap", function (bootstrapJSON) {
                         // Once we've bootstrapped the Protect controller, output the bootstrap JSON and we're done.
-                        process.stdout.write(util.inspect(bootstrapJSON, {
-                            colors: true,
-                            depth: null,
-                            sorted: true
-                        }) + "\n", function () { return process.exit(0); });
+                        // process.stdout.write(util.inspect(bootstrapJSON, {
+                        //     colors: true,
+                        //     depth: null,
+                        //     sorted: true
+                        // }) + "\n", () => process.exit(0));
+                        //console.log("Logged in");
                     });
                     return [4 /*yield*/, ufp.login("192.168.4.10", USERID, PASSWORD)];
                 case 1:
@@ -68,7 +68,7 @@ function login(ufp) {
                     // Bootstrap the controller. It will emit a message once it's received the bootstrap JSON, or you can alternatively wait for the promise to resolve.
                     if (!(_a.sent())) {
                         console.log("Unable to bootstrap the Protect controller.");
-                        util.process.exit(0);
+                        process.exit(0);
                     }
                     return [2 /*return*/];
             }
@@ -78,3 +78,21 @@ function login(ufp) {
 // Create a new Protect API instance.
 var ufp = new unifi_protect_1.ProtectApi();
 login(ufp);
+var pls = ufp.createLivestream();
+pls.on("close", function () {
+    console.log("close");
+    process.exit(0);
+});
+pls.on("codec", function (codec) {
+    //console.log(codec);
+});
+pls.on("initsegment", function (buffer) {
+    //console.log(buffer);
+});
+pls.on("message", function (buffer) {
+    console.log(buffer);
+});
+pls.on("segment", function (buffer) {
+    //console.log(buffer);
+});
+pls.start("667b554f024e4603e400041b", 0);

@@ -1,6 +1,7 @@
 import * as shell from "shelljs";
-import { ProtectApi, ProtectNvrBootstrap } from "unifi-protect";
+import {ProtectApi, ProtectLivestream, ProtectNvrBootstrap} from "unifi-protect";
 import * as util from "node:util";
+
 
 const USERID = 'viewport-1';
 const PASSWORD = shell.exec('security find-generic-password -l dev-user -a unifi-protect -w', {silent: true}).split('\n')[0];
@@ -10,11 +11,12 @@ async function login(ufp: ProtectApi) {
     ufp.once("bootstrap", (bootstrapJSON: ProtectNvrBootstrap) => {
 
         // Once we've bootstrapped the Protect controller, output the bootstrap JSON and we're done.
-        process.stdout.write(util.inspect(bootstrapJSON, {
-            colors: true,
-            depth: null,
-            sorted: true
-        }) + "\n", () => process.exit(0));
+        // process.stdout.write(util.inspect(bootstrapJSON, {
+        //     colors: true,
+        //     depth: null,
+        //     sorted: true
+        // }) + "\n", () => process.exit(0));
+        //console.log("Logged in");
     });
 
     // Login to the Protect controller.
@@ -36,3 +38,27 @@ async function login(ufp: ProtectApi) {
 // Create a new Protect API instance.
 const ufp = new ProtectApi();
 login(ufp);
+
+const pls = ufp.createLivestream();
+pls.on("close", () => {
+    console.log("close");
+    process.exit(0);
+})
+
+pls.on("codec", (codec) => {
+    //console.log(codec);
+})
+
+pls.on("initsegment", (buffer) => {
+    //console.log(buffer);
+})
+
+pls.on("message", (buffer) => {
+    process.stdout.write(buffer);
+})
+
+pls.on("segment", (buffer) => {
+    //console.log(buffer);
+})
+
+pls.start("667b554f024e4603e400041b", 0);
