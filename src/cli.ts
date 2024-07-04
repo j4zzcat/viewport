@@ -34,6 +34,7 @@ export class StreamsAction extends CommandLineAction {
     }
 
     protected async onExecute(): Promise<void> {
+        // @ts-ignore
         await this._backend.handleStreamsAction(this._grid.value, this._stream.values);
     }
 }
@@ -67,6 +68,7 @@ export class RemoteAction extends CommandLineAction {
 export class MainCommandLine extends CommandLineParser {
     private readonly _backend: Backend;
     private _verbose: CommandLineFlagParameter;
+    private _output_dir: CommandLineStringParameter;
 
     public constructor(backend: Backend) {
         super({
@@ -81,10 +83,21 @@ export class MainCommandLine extends CommandLineParser {
             parameterLongName: '--verbose',
             parameterShortName: '-v',
             description: 'Be verbose.' });
+
+        this._output_dir = this.defineStringParameter({
+            parameterShortName: '-o',
+            parameterLongName: '--output-dir',
+            argumentName: 'DIR',
+            defaultValue: '.',
+            description: 'Directory where the output should go',
+            required: false
+
+        })
     }
 
     protected async onExecute(): Promise<void> {
-        this._backend.verbosity(this._verbose.value);
+        this._backend.verbosity = this._verbose.value;
+        this._backend.output_dir = (this._output_dir.value);
         await super.onExecute();
     }
 }
