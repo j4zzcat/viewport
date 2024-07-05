@@ -12,8 +12,13 @@ class NVRCache {
         if(this._nvrs.has(key)) {
             return this._nvrs.get(key);
         } else {
-
+            let nvr = this.create(host, port, username, password);
+            this._nvrs.set(key, nvr);
         }
+    }
+
+    private create(host, port, username, password): NVR {
+        return undefined;
     }
 }
 
@@ -25,7 +30,7 @@ export class UnifiProtocolManager implements IProtocolManager {
         return this._supportedProtocols.includes(url.protocol.split(':')[0]);
     }
 
-    createTranscoder(url: URL): ITranscoder {
+    createTranscoder(url: URL): ITranscoder[] {
         logger.info(`Creating transcoder for ${url}`);
         let nvr = this._nvrCache.getOrCreate(url.host, url.port, url.username, url.password);
 
