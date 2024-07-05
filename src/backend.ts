@@ -1,33 +1,13 @@
-import {logger} from "./index";
+import {logger} from "./logger";
 
-interface IProtocolManager {
+export interface IProtocolManager {
     canHandle(url: URL): boolean
-    createTranscoder(url: URL): ITranscoder;
+    createTranscoder(url: URL): ITranscoder[];
 }
 
-export class RTSPProtocolManager implements IProtocolManager {
-    canHandle(url: URL): boolean {
-        return false;
-    }
-
-    createTranscoder(url: URL): ITranscoder {
-        return undefined;
-    }
-}
-
-export class UnifiProtocolManager implements IProtocolManager {
-    canHandle(url: URL): boolean {
-        return false;
-    }
-
-    createTranscoder(url: URL): ITranscoder {
-        return undefined;
-    }
-}
-
-
-interface ITranscoder {
-
+export interface ITranscoder {
+    start();
+    stop();
 }
 
 export class TranscoderFactory {
@@ -38,7 +18,7 @@ export class TranscoderFactory {
         this._protocol_managers = protocol_managers;
     }
 
-    createTranscoder(url: URL): ITranscoder {
+    createTranscoder(url: URL): ITranscoder[] {
         for(let pm of this._protocol_managers) {
             if(pm.canHandle(url) == false) continue;
             return pm.createTranscoder(url);
@@ -46,7 +26,6 @@ export class TranscoderFactory {
         throw Error(`No suitable Protocol Manager for url '${url}'`);
     }
 }
-
 
 export class Backend {
     private _transcoderFactory: TranscoderFactory;
