@@ -8,9 +8,14 @@ node --import=tsx src/streamline-viewport.ts | ffmpeg \
 
 
 streamline-viewport -v \
-  --work-dir ~/.tmp/work
+  --output-dir ~/.tmp/work \
   grid \
     --layout 3x3 \
     --stream 'unifi://dev-user:'$(security find-generic-password -l dev-user -a unifi-protect -w)'@192.168.4.10/camera/{_all}'
+
+streamline-viewport -v \
+  -o ~/.tmp/work \
+  remote \
+    --url 'unifi://dev-user:'$(security find-generic-password -l dev-user -a unifi-protect -w)'@192.168.4.10/liveview/kiosk'
 
 

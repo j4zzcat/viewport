@@ -36,9 +36,52 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Backend = void 0;
+exports.Backend = exports.TranscoderFactory = exports.UnifiProtocolManager = exports.RTSPProtocolManager = void 0;
+var index_1 = require("./index");
+var RTSPProtocolManager = /** @class */ (function () {
+    function RTSPProtocolManager() {
+    }
+    RTSPProtocolManager.prototype.canHandle = function (url) {
+        return false;
+    };
+    RTSPProtocolManager.prototype.createTranscoder = function (url) {
+        return undefined;
+    };
+    return RTSPProtocolManager;
+}());
+exports.RTSPProtocolManager = RTSPProtocolManager;
+var UnifiProtocolManager = /** @class */ (function () {
+    function UnifiProtocolManager() {
+    }
+    UnifiProtocolManager.prototype.canHandle = function (url) {
+        return false;
+    };
+    UnifiProtocolManager.prototype.createTranscoder = function (url) {
+        return undefined;
+    };
+    return UnifiProtocolManager;
+}());
+exports.UnifiProtocolManager = UnifiProtocolManager;
+var TranscoderFactory = /** @class */ (function () {
+    function TranscoderFactory(protocol_managers) {
+        this._transcoders = new Map();
+        this._protocol_managers = protocol_managers;
+    }
+    TranscoderFactory.prototype.createTranscoder = function (url) {
+        for (var _i = 0, _a = this._protocol_managers; _i < _a.length; _i++) {
+            var pm = _a[_i];
+            if (pm.canHandle(url) == false)
+                continue;
+            return pm.createTranscoder(url);
+        }
+        throw Error("No suitable Protocol Manager for url '".concat(url, "'"));
+    };
+    return TranscoderFactory;
+}());
+exports.TranscoderFactory = TranscoderFactory;
 var Backend = /** @class */ (function () {
-    function Backend() {
+    function Backend(tf) {
+        this._transcoderFactory = tf;
     }
     Object.defineProperty(Backend.prototype, "verbosity", {
         set: function (flag) {
@@ -47,32 +90,26 @@ var Backend = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(Backend.prototype, "output_dir", {
+    Object.defineProperty(Backend.prototype, "outputDir", {
         set: function (dir) {
-            this._output_dir = dir;
+            this._outputDir = dir;
         },
         enumerable: false,
         configurable: true
     });
     Backend.prototype.handleStreamsAction = function (grid, streams) {
         return __awaiter(this, void 0, void 0, function () {
-            var _i, streams_1, stream, url;
+            var _i, streams_1, stream, url, transcoders;
             return __generator(this, function (_a) {
-                console.log(grid);
-                console.log(streams);
                 for (_i = 0, streams_1 = streams; _i < streams_1.length; _i++) {
                     stream = streams_1[_i];
                     url = new URL(stream);
-                    switch (url.protocol.split(':')[0]) {
-                        case 'unifi':
-                            console.log('unifi');
-                            break;
-                        case 'rtsp':
-                        case 'rtsps':
-                            console.log('rtsp/s');
-                            break;
-                        default:
-                            throw Error();
+                    try {
+                        transcoders = this._transcoderFactory.createTranscoder(url);
+                    }
+                    catch (e) {
+                        index_1.logger.error(e);
+                        process.exit(1);
                     }
                 }
                 return [2 /*return*/];

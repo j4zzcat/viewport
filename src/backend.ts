@@ -1,31 +1,79 @@
-export class Backend {
-    private _verbose: boolean;
-    private _output_dir: string;
+import {logger} from "./index";
 
-    public constructor() {
+interface IProtocolManager {
+    canHandle(url: URL): boolean
+    createTranscoder(url: URL): ITranscoder;
+}
+
+export class RTSPProtocolManager implements IProtocolManager {
+    canHandle(url: URL): boolean {
+        return false;
+    }
+
+    createTranscoder(url: URL): ITranscoder {
+        return undefined;
+    }
+}
+
+export class UnifiProtocolManager implements IProtocolManager {
+    canHandle(url: URL): boolean {
+        return false;
+    }
+
+    createTranscoder(url: URL): ITranscoder {
+        return undefined;
+    }
+}
+
+
+interface ITranscoder {
+
+}
+
+export class TranscoderFactory {
+    private _protocol_managers: IProtocolManager[];
+    private _transcoders: Map<URL, ITranscoder> = new Map<URL, ITranscoder>();
+
+    public constructor(protocol_managers: IProtocolManager[]) {
+        this._protocol_managers = protocol_managers;
+    }
+
+    createTranscoder(url: URL): ITranscoder {
+        for(let pm of this._protocol_managers) {
+            if(pm.canHandle(url) == false) continue;
+            return pm.createTranscoder(url);
+        }
+        throw Error(`No suitable Protocol Manager for url '${url}'`);
+    }
+}
+
+
+export class Backend {
+    private _transcoderFactory: TranscoderFactory;
+    private _verbose: boolean;
+    private _outputDir: string;
+
+    public constructor(tf) {
+        this._transcoderFactory = tf;
     }
 
     public set verbosity(flag: boolean) {
         this._verbose = flag;
     }
 
-    public set output_dir(dir: string) {
-        this._output_dir = dir;
+    public set outputDir(dir: string) {
+        this._outputDir = dir;
     }
 
     public async handleStreamsAction(grid: string, streams: string[]) {
-        console.log(grid);
-        console.log(streams);
-
         for(let stream of streams) {
             const url = new URL(stream);
-            const protocol = url.protocol.split(':')[0];
-            pm = ProtocolManagerFactory.getOrCreate(url);
-            for(id of pm.streamIds) {
-                transcoder = pm.createStreamTranscoder(id);
-                transcoder.start();
+            try {
+                const transcoders = this._transcoderFactory.createTranscoder(url);
+            } catch (e) {
+                logger.error(e);
+                process.exit(1);
             }
-
         }
     }
 }

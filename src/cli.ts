@@ -68,7 +68,7 @@ export class RemoteAction extends CommandLineAction {
 export class MainCommandLine extends CommandLineParser {
     private readonly _backend: Backend;
     private _verbose: CommandLineFlagParameter;
-    private _output_dir: CommandLineStringParameter;
+    private _outputDir: CommandLineStringParameter;
 
     public constructor(backend: Backend) {
         super({
@@ -84,7 +84,7 @@ export class MainCommandLine extends CommandLineParser {
             parameterShortName: '-v',
             description: 'Be verbose.' });
 
-        this._output_dir = this.defineStringParameter({
+        this._outputDir = this.defineStringParameter({
             parameterShortName: '-o',
             parameterLongName: '--output-dir',
             argumentName: 'DIR',
@@ -97,7 +97,7 @@ export class MainCommandLine extends CommandLineParser {
 
     protected async onExecute(): Promise<void> {
         this._backend.verbosity = this._verbose.value;
-        this._backend.output_dir = (this._output_dir.value);
+        this._backend.outputDir = this._outputDir.value;
         await super.onExecute();
     }
 }

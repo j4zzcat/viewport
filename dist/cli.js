@@ -138,7 +138,7 @@ var MainCommandLine = /** @class */ (function (_super) {
             parameterShortName: '-v',
             description: 'Be verbose.'
         });
-        _this._output_dir = _this.defineStringParameter({
+        _this._outputDir = _this.defineStringParameter({
             parameterShortName: '-o',
             parameterLongName: '--output-dir',
             argumentName: 'DIR',
@@ -154,7 +154,7 @@ var MainCommandLine = /** @class */ (function (_super) {
                 switch (_a.label) {
                     case 0:
                         this._backend.verbosity = this._verbose.value;
-                        this._backend.output_dir = (this._output_dir.value);
+                        this._backend.outputDir = this._outputDir.value;
                         return [4 /*yield*/, _super.prototype.onExecute.call(this)];
                     case 1:
                         _a.sent();

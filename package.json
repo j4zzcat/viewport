@@ -4,7 +4,8 @@
     "@rushstack/ts-command-line": "^4.22.0",
     "shelljs": "^0.8.5",
     "tsx": "^4.16.2",
-    "unifi-protect": "^4.11.1"
+    "unifi-protect": "^4.11.1",
+    "winston": "^3.13.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.9"
