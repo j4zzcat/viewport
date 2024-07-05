@@ -1,4 +1,4 @@
-#!/usr/bin/env node --import tsx
+#!/usr/bin/env node --no-warnings --import tsx
 
 import {UnifiProtocolManager, RTSPProtocolManager} from "./protocols";
 import {Backend, TranscoderFactory} from "./backend";

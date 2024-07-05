@@ -1,4 +1,4 @@
-#!/usr/bin/env node --import tsx
+#!/usr/bin/env node --no-warnings --import tsx
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var protocols_1 = require("./protocols");
