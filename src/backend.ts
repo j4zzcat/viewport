@@ -1,4 +1,5 @@
 import {logger} from "./logger";
+import * as winston from "winston";
 
 export interface IProtocolManager {
     canHandle(url: URL): boolean
@@ -38,6 +39,7 @@ export class Backend {
 
     public set verbosity(flag: boolean) {
         this._verbose = flag;
+        logger.level = 'debug';
     }
 
     public set outputDir(dir: string) {

@@ -84,6 +84,7 @@ var NVR = /** @class */ (function () {
 }());
 var UnifiProtocolManager = /** @class */ (function () {
     function UnifiProtocolManager() {
+        this._logger = logger_1.logger.child({ 'class': 'UnifiProtocolManager' });
         this._supportedProtocols = ['unifi'];
         this._nvrCache = new utils_1.CachingFactory(NVR);
     }
@@ -92,29 +93,29 @@ var UnifiProtocolManager = /** @class */ (function () {
     };
     UnifiProtocolManager.prototype.createTranscoder = function (url) {
         return __awaiter(this, void 0, void 0, function () {
-            var maskedUrl, nvr, splitPathname, cameraInfoList, camerasFilter, _i, _a, camera;
+            var nvr, splitPathname, cameras, filter, _i, _a, camera;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        maskedUrl = new URL(url);
-                        maskedUrl.password = '*****';
-                        logger_1.logger.info("Creating transcoder for ".concat(maskedUrl));
+                        logger_1.redact.push(url.password);
+                        this._logger.info("Creating transcoder(s) for ".concat(url));
                         return [4 /*yield*/, this._nvrCache.getOrCreate(url.host, url.username, url.password)];
                     case 1:
                         nvr = _b.sent();
                         splitPathname = url.pathname.split('/');
                         if (splitPathname[1] != 'camera') {
-                            logger_1.logger.error("Expecting url.pathname to start with '/camera' but got '".concat(maskedUrl.pathname, "'"));
+                            this._logger.error("Expecting url.pathname to start with '/camera' but got '".concat(url.pathname, "'"));
                             throw new index_1.ProtocolManagerError();
                         }
-                        cameraInfoList = [];
-                        camerasFilter = splitPathname[2].slice(3, -3);
-                        if (camerasFilter == 'all') {
+                        cameras = [];
+                        filter = splitPathname[2].slice(3, -3);
+                        this._logger.debug("Camera filter is '".concat(filter, "'"));
+                        if (filter == 'all') {
                             for (_i = 0, _a = nvr.cameras; _i < _a.length; _i++) {
                                 camera = _a[_i];
-                                cameraInfoList.push([camera.id, camera.name]);
+                                cameras.push(camera.id);
                             }
-                            logger_1.logger.info(cameraInfoList);
+                            process.exit(0);
                         }
                         else {
                         }
@@ -129,33 +130,36 @@ exports.UnifiProtocolManager = UnifiProtocolManager;
 var LoggerDelegate = /** @class */ (function () {
     function LoggerDelegate() {
     }
+    LoggerDelegate.prototype.log = function (level, message) {
+        logger_1.logger.log(level, message);
+    };
     LoggerDelegate.prototype.debug = function (message) {
         var parameters = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             parameters[_i - 1] = arguments[_i];
         }
-        logger_1.logger.debug(message);
+        this.log('debug', message);
     };
     LoggerDelegate.prototype.error = function (message) {
         var parameters = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             parameters[_i - 1] = arguments[_i];
         }
-        logger_1.logger.error(message);
-    };
-    LoggerDelegate.prototype.info = function (message) {
-        var parameters = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            parameters[_i - 1] = arguments[_i];
-        }
-        logger_1.logger.info(message);
+        this.log('error', message);
     };
     LoggerDelegate.prototype.warn = function (message) {
         var parameters = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             parameters[_i - 1] = arguments[_i];
         }
-        logger_1.logger.warn(message);
+        this.log('warn', message);
+    };
+    LoggerDelegate.prototype.info = function (message) {
+        var parameters = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            parameters[_i - 1] = arguments[_i];
+        }
+        this.log('info', message);
     };
     return LoggerDelegate;
 }());

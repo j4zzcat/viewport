@@ -5,7 +5,8 @@ export interface ICacheable {
 }
 
 export class CachingFactory<T extends ICacheable> {
-    private _ctor: { new(): T };
+    private _logger = logger.child({ 'class': 'CachingFactory' });
+    private readonly _ctor: { new(): T };
     private readonly _keyGenerator;
     private _cache: Map<string, T> = new Map();
 
@@ -17,12 +18,12 @@ export class CachingFactory<T extends ICacheable> {
     public async getOrCreate(...args: any[]): Promise<T> {
         let key = this._keyGenerator(...args);
         if (this._cache.has(key)) {
-            logger.debug(`found ${key}`)
+            this._logger.debug(`Found ${key}`)
 
             return this._cache.get(key) as T;
         }
 
-        logger.debug(`creating ${key}`)
+        this._logger.debug(`Creating entry for key '${key}'`)
 
         const instance = new this._ctor();
         await instance.initialize(...args);

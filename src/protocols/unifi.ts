@@ -1,4 +1,4 @@
-import {logger} from "../logger";
+import {logger, redact} from "../logger";
 import {IProtocolManager, ITranscoder} from '../backend';
 import {ProtectApi, ProtectLogging} from "unifi-protect";
 import {CachingFactory, ICacheable} from "../utils";
@@ -9,6 +9,7 @@ class NVR implements ICacheable {
     private _username;
     private _password;
     private _protectApi;
+    private _cameras;
 
     public async initialize(host, username, password): Promise<void> {
         this._host = host;
@@ -36,6 +37,7 @@ class NVR implements ICacheable {
 }
 
 export class UnifiProtocolManager implements IProtocolManager {
+    private _logger = logger.child({ 'class': 'UnifiProtocolManager' });
     private _supportedProtocols: string[] = ['unifi'];
     private _nvrCache = new CachingFactory<NVR>(NVR);
 
@@ -44,55 +46,43 @@ export class UnifiProtocolManager implements IProtocolManager {
     }
 
     public async createTranscoder(url: URL): Promise<ITranscoder[]> {
-        let maskedUrl = new URL(url);
-        maskedUrl.password = '*****';
-        logger.info(`Creating transcoder for ${maskedUrl}`);
+        redact.push(url.password);
+        this._logger.info(`Creating transcoder(s) for ${url}`);
 
-        // let nvr = this._nvrCache.getOrCreate(url.host, url.username, url.password);
         let nvr = await this._nvrCache.getOrCreate(url.host, url.username, url.password);
-
-        type CameraInfo = [string, string];
-        let camerasInfo: CameraInfo[] = [];
-        for(let camera of nvr.cameras) {
-            camerasInfo.push([camera.id, camera.name]);
-        }
 
         let splitPathname = url.pathname.split('/');
         if(splitPathname[1] != 'camera') {
-            logger.error(`Expecting url.pathname to start with '/camera' but got '${maskedUrl.pathname}'`)
+            this._logger.error(`Expecting url.pathname to start with '/camera' but got '${url.pathname}'`)
             throw new ProtocolManagerError();
         }
 
+        const cameras = [];
+        const filter = splitPathname[2].slice(3, -3);
+        this._logger.debug(`Camera filter is '${filter}'`);
 
+        if(filter == 'all') {
+            for(let camera of nvr.cameras) {
+                cameras.push(camera.id);
+            }
 
-        let camerasFilter = splitPathname[2].slice(3, -3);
-        if(camerasFilter == 'all') {
-
-            logger.info(cameraInfoList);
+            process.exit(0);
         } else {
 
         }
-
-
 
         return undefined;
     }
 }
 
+
 class LoggerDelegate implements ProtectLogging {
-    debug(message: string, ...parameters: unknown[]): void {
-        logger.debug(message);
+    log(level: string, message: string) {
+        logger.log(level, message);
     }
 
-    error(message: string, ...parameters: unknown[]): void {
-        logger.error(message);
-    }
-
-    info(message: string, ...parameters: unknown[]): void {
-        logger.info(message);
-    }
-
-    warn(message: string, ...parameters: unknown[]): void {
-        logger.warn(message);
-    }
+    debug(message: string, ...parameters: unknown[]): void { this.log('debug', message); }
+    error(message: string, ...parameters: unknown[]): void { this.log('error', message); }
+    warn(message: string, ...parameters: unknown[]): void { this.log('warn', message); }
+    info(message: string, ...parameters: unknown[]): void { this.log('info', message); }
 }

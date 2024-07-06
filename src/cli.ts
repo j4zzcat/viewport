@@ -4,6 +4,7 @@ import {
     CommandLineParser, CommandLineStringListParameter, CommandLineStringParameter
 } from "@rushstack/ts-command-line";
 import {Backend} from "./backend";
+import {logger} from "./logger";
 
 export class StreamsAction extends CommandLineAction {
     private _backend: Backend;
@@ -96,6 +97,7 @@ export class MainCommandLine extends CommandLineParser {
     }
 
     protected async onExecute(): Promise<void> {
+        logger.info('Starting...');
         this._backend.verbosity = this._verbose.value;
         this._backend.outputDir = this._outputDir.value;
         await super.onExecute();

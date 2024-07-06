@@ -47,6 +47,7 @@ var CachingFactory = /** @class */ (function () {
             }
             return args.join(':');
         }; }
+        this._logger = logger_1.logger.child({ 'class': 'CachingFactory' });
         this._cache = new Map();
         this._keyGenerator = keyGenerator;
         this._ctor = ctor;
@@ -63,10 +64,10 @@ var CachingFactory = /** @class */ (function () {
                     case 0:
                         key = this._keyGenerator.apply(this, args);
                         if (this._cache.has(key)) {
-                            logger_1.logger.debug("found ".concat(key));
+                            this._logger.debug("Found ".concat(key));
                             return [2 /*return*/, this._cache.get(key)];
                         }
-                        logger_1.logger.debug("creating ".concat(key));
+                        this._logger.debug("Creating entry for key '".concat(key, "'"));
                         instance = new this._ctor();
                         return [4 /*yield*/, instance.initialize.apply(instance, args)];
                     case 1:

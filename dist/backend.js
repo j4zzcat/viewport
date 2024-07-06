@@ -62,6 +62,7 @@ var Backend = /** @class */ (function () {
     Object.defineProperty(Backend.prototype, "verbosity", {
         set: function (flag) {
             this._verbose = flag;
+            logger_1.logger.level = 'debug';
         },
         enumerable: false,
         configurable: true

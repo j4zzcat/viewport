@@ -53,6 +53,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MainCommandLine = exports.RemoteAction = exports.StreamsAction = void 0;
 var ts_command_line_1 = require("@rushstack/ts-command-line");
+var logger_1 = require("./logger");
 var StreamsAction = /** @class */ (function (_super) {
     __extends(StreamsAction, _super);
     function StreamsAction(backend) {
@@ -153,6 +154,7 @@ var MainCommandLine = /** @class */ (function (_super) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        logger_1.logger.info('Starting...');
                         this._backend.verbosity = this._verbose.value;
                         this._backend.outputDir = this._outputDir.value;
                         return [4 /*yield*/, _super.prototype.onExecute.call(this)];
