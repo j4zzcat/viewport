@@ -2,10 +2,9 @@ import {logger} from "../logger";
 import {IProtocolManager, ITranscoder} from '../backend';
 import {ProtectApi, ProtectLogging} from "unifi-protect";
 import {CachingFactory, ICacheable} from "../utils";
+import {ProtocolManagerError} from "./index";
 
-
-
-class UnifiNVRDelegate implements ICacheable {
+class NVR implements ICacheable {
     private _host;
     private _username;
     private _password;
@@ -32,35 +31,44 @@ class UnifiNVRDelegate implements ICacheable {
     }
 
     public get cameras() {
-        return
+        return this._protectApi.bootstrap.cameras;
     }
 }
 
 export class UnifiProtocolManager implements IProtocolManager {
     private _supportedProtocols: string[] = ['unifi'];
-    private _nvrCache = new CachingFactory<UnifiNVRDelegate>(UnifiNVRDelegate);
+    private _nvrCache = new CachingFactory<NVR>(NVR);
 
     canHandle(url: URL): boolean {
         return this._supportedProtocols.includes(url.protocol.split(':')[0]);
     }
 
-    createTranscoder(url: URL): ITranscoder[] {
+    public async createTranscoder(url: URL): Promise<ITranscoder[]> {
         let maskedUrl = new URL(url);
         maskedUrl.password = '*****';
         logger.info(`Creating transcoder for ${maskedUrl}`);
 
         // let nvr = this._nvrCache.getOrCreate(url.host, url.username, url.password);
-        let nvr = this._nvrCache.getOrCreate(url.host, url.username, url.password);
+        let nvr = await this._nvrCache.getOrCreate(url.host, url.username, url.password);
+
+        type CameraInfo = [string, string];
+        let camerasInfo: CameraInfo[] = [];
+        for(let camera of nvr.cameras) {
+            camerasInfo.push([camera.id, camera.name]);
+        }
 
         let splitPathname = url.pathname.split('/');
         if(splitPathname[1] != 'camera') {
             logger.error(`Expecting url.pathname to start with '/camera' but got '${maskedUrl.pathname}'`)
-            process.exit(1);
+            throw new ProtocolManagerError();
         }
 
-        let cameraFilter = splitPathname[2].slice(3, -3);
-        if(cameraFilter == 'all') {
-            nvr.cameraNames
+
+
+        let camerasFilter = splitPathname[2].slice(3, -3);
+        if(camerasFilter == 'all') {
+
+            logger.info(cameraInfoList);
         } else {
 
         }

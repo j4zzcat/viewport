@@ -40,10 +40,11 @@ exports.UnifiProtocolManager = void 0;
 var logger_1 = require("../logger");
 var unifi_protect_1 = require("unifi-protect");
 var utils_1 = require("../utils");
-var UnifiNVRDelegate = /** @class */ (function () {
-    function UnifiNVRDelegate() {
+var index_1 = require("./index");
+var NVR = /** @class */ (function () {
+    function NVR() {
     }
-    UnifiNVRDelegate.prototype.initialize = function (host, username, password) {
+    NVR.prototype.initialize = function (host, username, password) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -72,42 +73,55 @@ var UnifiNVRDelegate = /** @class */ (function () {
             });
         });
     };
-    Object.defineProperty(UnifiNVRDelegate.prototype, "cameras", {
+    Object.defineProperty(NVR.prototype, "cameras", {
         get: function () {
-            return;
+            return this._protectApi.bootstrap.cameras;
         },
         enumerable: false,
         configurable: true
     });
-    return UnifiNVRDelegate;
+    return NVR;
 }());
 var UnifiProtocolManager = /** @class */ (function () {
     function UnifiProtocolManager() {
         this._supportedProtocols = ['unifi'];
-        this._nvrCache = new utils_1.CachingFactory(UnifiNVRDelegate);
+        this._nvrCache = new utils_1.CachingFactory(NVR);
     }
     UnifiProtocolManager.prototype.canHandle = function (url) {
         return this._supportedProtocols.includes(url.protocol.split(':')[0]);
     };
     UnifiProtocolManager.prototype.createTranscoder = function (url) {
-        var maskedUrl = new URL(url);
-        maskedUrl.password = '*****';
-        logger_1.logger.info("Creating transcoder for ".concat(maskedUrl));
-        // let nvr = this._nvrCache.getOrCreate(url.host, url.username, url.password);
-        var nvr = this._nvrCache.getOrCreate(url.host, url.username, url.password);
-        logger_1.logger.info(nvr);
-        var splitPathname = url.pathname.split('/');
-        if (splitPathname[1] != 'camera') {
-            logger_1.logger.error("Expecting url.pathname to start with '/camera' but got '".concat(maskedUrl.pathname, "'"));
-            process.exit(1);
-        }
-        var cameraFilter = splitPathname[2].slice(3, -3);
-        if (cameraFilter == 'all') {
-            nvr.cameraNames;
-        }
-        else {
-        }
-        return undefined;
+        return __awaiter(this, void 0, void 0, function () {
+            var maskedUrl, nvr, splitPathname, cameraInfoList, camerasFilter, _i, _a, camera;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        maskedUrl = new URL(url);
+                        maskedUrl.password = '*****';
+                        logger_1.logger.info("Creating transcoder for ".concat(maskedUrl));
+                        return [4 /*yield*/, this._nvrCache.getOrCreate(url.host, url.username, url.password)];
+                    case 1:
+                        nvr = _b.sent();
+                        splitPathname = url.pathname.split('/');
+                        if (splitPathname[1] != 'camera') {
+                            logger_1.logger.error("Expecting url.pathname to start with '/camera' but got '".concat(maskedUrl.pathname, "'"));
+                            throw new index_1.ProtocolManagerError();
+                        }
+                        cameraInfoList = [];
+                        camerasFilter = splitPathname[2].slice(3, -3);
+                        if (camerasFilter == 'all') {
+                            for (_i = 0, _a = nvr.cameras; _i < _a.length; _i++) {
+                                camera = _a[_i];
+                                cameraInfoList.push([camera.id, camera.name]);
+                            }
+                            logger_1.logger.info(cameraInfoList);
+                        }
+                        else {
+                        }
+                        return [2 /*return*/, undefined];
+                }
+            });
+        });
     };
     return UnifiProtocolManager;
 }());

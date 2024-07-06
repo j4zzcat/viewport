@@ -2,7 +2,7 @@ import {logger} from "./logger";
 
 export interface IProtocolManager {
     canHandle(url: URL): boolean
-    createTranscoder(url: URL): ITranscoder[];
+    createTranscoder(url: URL): Promise<ITranscoder[]>;
 }
 
 export interface ITranscoder {
@@ -18,7 +18,7 @@ export class TranscoderFactory {
         this._protocol_managers = protocol_managers;
     }
 
-    createTranscoder(url: URL): ITranscoder[] {
+    createTranscoder(url: URL): Promise<ITranscoder[]> {
         for(let pm of this._protocol_managers) {
             if(pm.canHandle(url) == false) continue;
             return pm.createTranscoder(url);
