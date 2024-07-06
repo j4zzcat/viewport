@@ -139,14 +139,6 @@ var MainCommandLine = /** @class */ (function (_super) {
             parameterShortName: '-v',
             description: 'Be verbose.'
         });
-        _this._outputDir = _this.defineStringParameter({
-            parameterShortName: '-o',
-            parameterLongName: '--output-dir',
-            argumentName: 'DIR',
-            defaultValue: '.',
-            description: 'Directory where the output should go',
-            required: false
-        });
         return _this;
     }
     MainCommandLine.prototype.onExecute = function () {
@@ -156,7 +148,6 @@ var MainCommandLine = /** @class */ (function (_super) {
                     case 0:
                         logger_1.logger.info('Starting...');
                         this._backend.verbosity = this._verbose.value;
-                        this._backend.outputDir = this._outputDir.value;
                         return [4 /*yield*/, _super.prototype.onExecute.call(this)];
                     case 1:
                         _a.sent();

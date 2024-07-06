@@ -69,7 +69,6 @@ export class RemoteAction extends CommandLineAction {
 export class MainCommandLine extends CommandLineParser {
     private readonly _backend: Backend;
     private _verbose: CommandLineFlagParameter;
-    private _outputDir: CommandLineStringParameter;
 
     public constructor(backend: Backend) {
         super({
@@ -84,22 +83,11 @@ export class MainCommandLine extends CommandLineParser {
             parameterLongName: '--verbose',
             parameterShortName: '-v',
             description: 'Be verbose.' });
-
-        // this._outputDir = this.defineStringParameter({
-        //     parameterShortName: '-o',
-        //     parameterLongName: '--output-dir',
-        //     argumentName: 'DIR',
-        //     defaultValue: '.',
-        //     description: 'Directory where the output should go',
-        //     required: false
-
-        })
     }
 
     protected async onExecute(): Promise<void> {
         logger.info('Starting...');
         this._backend.verbosity = this._verbose.value;
-        this._backend.outputDir = this._outputDir.value;
         await super.onExecute();
     }
 }

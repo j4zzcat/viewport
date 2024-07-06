@@ -1,9 +1,8 @@
 import {logger} from "./logger";
-import * as winston from "winston";
 
 export interface IProtocolManager {
     canHandle(url: URL): boolean
-    createTranscoder(url: URL): Promise<ITranscoder[]>;
+    createTranscoders(url: URL): Promise<ITranscoder[]>;
 }
 
 export interface ITranscoder {
@@ -19,16 +18,17 @@ export class TranscoderFactory {
         this._protocol_managers = protocol_managers;
     }
 
-    createTranscoder(url: URL): Promise<ITranscoder[]> {
+    createTranscoders(url: URL): Promise<ITranscoder[]> {
         for(let pm of this._protocol_managers) {
             if(pm.canHandle(url) == false) continue;
-            return pm.createTranscoder(url);
+            return pm.createTranscoders(url);
         }
         throw Error(`No suitable Protocol Manager for url '${url}'`);
     }
 }
 
 export class Backend {
+    private _logger = logger.child({ 'class': 'Backend' });
     private _transcoderFactory: TranscoderFactory;
     private _verbose: boolean;
     private _outputDir: string;
@@ -42,15 +42,16 @@ export class Backend {
         logger.level = 'debug';
     }
 
-    public set outputDir(dir: string) {
-        this._outputDir = dir;
-    }
-
     public async handleStreamsAction(grid: string, streams: string[]) {
         for(let stream of streams) {
             const url = new URL(stream);
             try {
-                const transcoders = this._transcoderFactory.createTranscoder(url);
+                const transcoders = await this._transcoderFactory.createTranscoders(url);
+                for(let transcoder of transcoders) {
+                    this._logger.info(`Starting transcoder`);
+                    transcoder.start();
+                
+                }
             } catch (e) {
                 logger.error(e);
                 process.exit(1);

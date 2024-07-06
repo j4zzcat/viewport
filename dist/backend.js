@@ -43,12 +43,12 @@ var TranscoderFactory = /** @class */ (function () {
         this._transcoders = new Map();
         this._protocol_managers = protocol_managers;
     }
-    TranscoderFactory.prototype.createTranscoder = function (url) {
+    TranscoderFactory.prototype.createTranscoders = function (url) {
         for (var _i = 0, _a = this._protocol_managers; _i < _a.length; _i++) {
             var pm = _a[_i];
             if (pm.canHandle(url) == false)
                 continue;
-            return pm.createTranscoder(url);
+            return pm.createTranscoders(url);
         }
         throw Error("No suitable Protocol Manager for url '".concat(url, "'"));
     };
@@ -57,6 +57,7 @@ var TranscoderFactory = /** @class */ (function () {
 exports.TranscoderFactory = TranscoderFactory;
 var Backend = /** @class */ (function () {
     function Backend(tf) {
+        this._logger = logger_1.logger.child({ 'class': 'Backend' });
         this._transcoderFactory = tf;
     }
     Object.defineProperty(Backend.prototype, "verbosity", {
@@ -67,29 +68,40 @@ var Backend = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    Object.defineProperty(Backend.prototype, "outputDir", {
-        set: function (dir) {
-            this._outputDir = dir;
-        },
-        enumerable: false,
-        configurable: true
-    });
     Backend.prototype.handleStreamsAction = function (grid, streams) {
         return __awaiter(this, void 0, void 0, function () {
-            var _i, streams_1, stream, url, transcoders;
-            return __generator(this, function (_a) {
-                for (_i = 0, streams_1 = streams; _i < streams_1.length; _i++) {
-                    stream = streams_1[_i];
-                    url = new URL(stream);
-                    try {
-                        transcoders = this._transcoderFactory.createTranscoder(url);
-                    }
-                    catch (e) {
-                        logger_1.logger.error(e);
+            var _i, streams_1, stream, url, transcoders, _a, transcoders_1, transcoder, e_1;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _i = 0, streams_1 = streams;
+                        _b.label = 1;
+                    case 1:
+                        if (!(_i < streams_1.length)) return [3 /*break*/, 6];
+                        stream = streams_1[_i];
+                        url = new URL(stream);
+                        _b.label = 2;
+                    case 2:
+                        _b.trys.push([2, 4, , 5]);
+                        return [4 /*yield*/, this._transcoderFactory.createTranscoders(url)];
+                    case 3:
+                        transcoders = _b.sent();
+                        for (_a = 0, transcoders_1 = transcoders; _a < transcoders_1.length; _a++) {
+                            transcoder = transcoders_1[_a];
+                            this._logger.info("Starting transcoder");
+                            transcoder.start();
+                        }
+                        return [3 /*break*/, 5];
+                    case 4:
+                        e_1 = _b.sent();
+                        logger_1.logger.error(e_1);
                         process.exit(1);
-                    }
+                        return [3 /*break*/, 5];
+                    case 5:
+                        _i++;
+                        return [3 /*break*/, 1];
+                    case 6: return [2 /*return*/];
                 }
-                return [2 /*return*/];
             });
         });
     };
