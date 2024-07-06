@@ -85,13 +85,13 @@ export class MainCommandLine extends CommandLineParser {
             parameterShortName: '-v',
             description: 'Be verbose.' });
 
-        this._outputDir = this.defineStringParameter({
-            parameterShortName: '-o',
-            parameterLongName: '--output-dir',
-            argumentName: 'DIR',
-            defaultValue: '.',
-            description: 'Directory where the output should go',
-            required: false
+        // this._outputDir = this.defineStringParameter({
+        //     parameterShortName: '-o',
+        //     parameterLongName: '--output-dir',
+        //     argumentName: 'DIR',
+        //     defaultValue: '.',
+        //     description: 'Directory where the output should go',
+        //     required: false
 
         })
     }
