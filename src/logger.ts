@@ -1,10 +1,10 @@
 const winston = require('winston');
-const { combine, colorize, timestamp, align, metadata, printf, padLevels } = winston.format;
+const { combine, colorize, timestamp, align, printf } = winston.format;
 
 export const redact: string[] = [];
 const redactSecrets = require('redact-secrets')('[REDACTED]');
 
-function formatter(info) {
+function messageFormatter(info): string {
     let s = info.message;
     s = redactSecrets.map(s);
     for(let needle of redact) {
@@ -24,7 +24,7 @@ export const logger = winston.createLogger({
         colorize({ info: true }),
         timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
         align(),
-        printf((info) => `[${info.timestamp}] [${info.level}] ${formatter(info)}`)
+        printf((info) => `[${info.timestamp}] [${info.level}] ${messageFormatter(info)}`)
     ),
     transports: [new winston.transports.Console()],
 });
