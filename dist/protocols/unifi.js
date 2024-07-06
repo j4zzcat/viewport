@@ -39,17 +39,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UnifiProtocolManager = void 0;
 var logger_1 = require("../logger");
 var unifi_protect_1 = require("unifi-protect");
-var NVR = /** @class */ (function () {
-    function NVR(host, username, password) {
-        this._host = host;
-        this._username = username;
-        this._password = password;
+var utils_1 = require("../utils");
+var UnifiNVRDelegate = /** @class */ (function () {
+    function UnifiNVRDelegate() {
     }
-    NVR.prototype.connect = function () {
+    UnifiNVRDelegate.prototype.initialize = function (host, username, password) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        this._host = host;
+                        this._username = username;
+                        this._password = password;
+                        logger_1.logger.info("Connecting to NVR at '".concat(this._host, "' with username '").concat(this._username, "'..."));
                         this._protectApi = new unifi_protect_1.ProtectApi(new LoggerDelegate());
                         return [4 /*yield*/, this._protectApi.login(this._host, this._username, this._password)];
                     case 1:
@@ -64,56 +66,47 @@ var NVR = /** @class */ (function () {
                             logger_1.logger.error("Unable to bootstrap the Protect controller.");
                             process.exit(0);
                         }
+                        logger_1.logger.info('Connected successfully');
                         return [2 /*return*/];
                 }
             });
         });
     };
-    return NVR;
-}());
-var NVRCache = /** @class */ (function () {
-    function NVRCache() {
-        this._nvrMap = new Map();
-    }
-    NVRCache.prototype.getOrCreate = function (host, username, password) {
-        var key = "".concat(username, ":").concat(password, "@").concat(host);
-        if (this._nvrMap.has(key)) {
-            return this._nvrMap.get(key);
-        }
-        else {
-            var nvr = this.create(host, username, password);
-            this._nvrMap.set(key, nvr);
-            return nvr;
-        }
-    };
-    NVRCache.prototype.create = function (host, username, password) {
-        return __awaiter(this, void 0, void 0, function () {
-            var nvr;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        nvr = new NVR(host, username, password);
-                        return [4 /*yield*/, nvr.connect()];
-                    case 1:
-                        _a.sent();
-                        return [2 /*return*/, nvr];
-                }
-            });
-        });
-    };
-    return NVRCache;
+    Object.defineProperty(UnifiNVRDelegate.prototype, "cameras", {
+        get: function () {
+            return;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return UnifiNVRDelegate;
 }());
 var UnifiProtocolManager = /** @class */ (function () {
     function UnifiProtocolManager() {
         this._supportedProtocols = ['unifi'];
-        this._nvrCache = new NVRCache();
+        this._nvrCache = new utils_1.CachingFactory(UnifiNVRDelegate);
     }
     UnifiProtocolManager.prototype.canHandle = function (url) {
         return this._supportedProtocols.includes(url.protocol.split(':')[0]);
     };
     UnifiProtocolManager.prototype.createTranscoder = function (url) {
-        logger_1.logger.info("Creating transcoder for ".concat(url));
+        var maskedUrl = new URL(url);
+        maskedUrl.password = '*****';
+        logger_1.logger.info("Creating transcoder for ".concat(maskedUrl));
+        // let nvr = this._nvrCache.getOrCreate(url.host, url.username, url.password);
         var nvr = this._nvrCache.getOrCreate(url.host, url.username, url.password);
+        logger_1.logger.info(nvr);
+        var splitPathname = url.pathname.split('/');
+        if (splitPathname[1] != 'camera') {
+            logger_1.logger.error("Expecting url.pathname to start with '/camera' but got '".concat(maskedUrl.pathname, "'"));
+            process.exit(1);
+        }
+        var cameraFilter = splitPathname[2].slice(3, -3);
+        if (cameraFilter == 'all') {
+            nvr.cameraNames;
+        }
+        else {
+        }
         return undefined;
     };
     return UnifiProtocolManager;
