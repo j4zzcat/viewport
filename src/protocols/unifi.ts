@@ -21,19 +21,22 @@ class UnifiTranscoder implements ITranscoder {
             '-loglevel', '8',
             '-hide_banner', '-nostats',
             '-i', 'pipe:0',
-            '-fflags', '+discardcorrupt',
-            '-max_delay', '50000',
-            '-flags', '-low_delay',
-            "-enc_time_base", "-1",
-            "-fps_mode", "passthrough",
-            "-muxdelay", "0",
-            "-video_track_timescale", "90000",
-            '-hls_time', '2',
-            '-hls_list_size', '3',
-            '-hls_flags', 'delete_segments',
-            '-vcodec', 'copy',
-            '-y', '/Users/snd/.tmp/index.m3u8'
-        ]);
+            '-c', 'copy', '-f', 'rtsp', 'rtsp://localhost:8554/mystream' ]);
+
+
+        //     '-fflags', '+discardcorrupt',
+        //     '-max_delay', '50000',
+        //     '-flags', '-low_delay',
+        //     "-enc_time_base", "-1",
+        //     "-fps_mode", "passthrough",
+        //     "-muxdelay", "0",
+        //     "-video_track_timescale", "90000",
+        //     '-hls_time', '2',
+        //     '-hls_list_size', '3',
+        //     '-hls_flags', 'delete_segments',
+        //     '-vcodec', 'copy',
+        //     '-y', '/Users/snd/.tmp/index.m3u8'
+        // ]);
 
         this._ffmpeg.stderr.on('data', (data) => {
             console.error(`stderr: ${data}`);

@@ -6,8 +6,8 @@ export class RTSPProtocolManager implements IProtocolManager {
         return false;
     }
 
-    createTranscoder(url: URL): ITranscoder[] {
-        return undefined;
+    createTranscoders(url: URL): Promise<ITranscoder[]> {
+        return Promise.resolve([]);
     }
 }
 
