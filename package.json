@@ -2,6 +2,7 @@
   "name": "streamline-viewport",
   "dependencies": {
     "@rushstack/ts-command-line": "^4.22.0",
+    "mpegts.js": "^1.7.3",
     "redact-secrets": "^1.0.0",
     "shelljs": "^0.8.5",
     "ts-node": "^10.9.2",

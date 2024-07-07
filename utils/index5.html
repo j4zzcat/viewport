@@ -1,0 +1,15 @@
+<script src="mpegts.js"></script>
+<video id="videoElement"></video>
+<script>
+    if (mpegts.getFeatureList().mseLivePlayback) {
+        var videoElement = document.getElementById('videoElement');
+        var player = mpegts.createPlayer({
+            type: 'flv',  // could also be mpegts, m2ts, flv
+            isLive: true,
+            url: 'http://localhost:8080/live/livestream.flv'
+        });
+        player.attachMediaElement(videoElement);
+        player.load();
+        player.play();
+    }
+</script>

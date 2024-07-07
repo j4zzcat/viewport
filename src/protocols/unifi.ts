@@ -21,7 +21,8 @@ class UnifiTranscoder implements ITranscoder {
             '-loglevel', '8',
             '-hide_banner', '-nostats',
             '-i', 'pipe:0',
-            '-c', 'copy', '-f', 'rtsp', 'rtsp://localhost:8554/mystream' ]);
+            // '-c', 'copy', '-f', 'rtsp', 'rtsp://localhost:8554/mystream' ]);
+            '-c', 'copy', '-f', 'flv', 'rtmp://localhost/live/livestream' ]);
 
 
         //     '-fflags', '+discardcorrupt',
