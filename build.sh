@@ -38,18 +38,17 @@ if [[ "$ALL" == 'true' ]]; then
 
   docker buildx build \
     --tag "$image_name:$image_tag" \
+    --tag "$image_name:latest" \
     --platform linux/arm64,linux/amd64 \
     --builder container \
     --push \
     -f docker/Dockerfile .
 
-  docker image tag "$image_name:$image_tag" latest
-  docker image push "$image_name:latest"
-
 else
   # Default, no hassle build
   docker buildx build \
     -t "$image_name:$image_tag" \
+    -t "$image_name:latest" \
     -f docker/Dockerfile .
 fi
 
