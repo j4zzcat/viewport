@@ -8,14 +8,23 @@ export class BasePlugin {
     }
 }
 
-export interface IStreamManagerPlugin {
+export interface IStreamManager {
     canHandle(url: URL): boolean
+    getOrCreateStream(url: URL): IStream[]
 };
 
-export interface ILayoutManagerPlugin {
+export interface IStream {
+    id: string;
+    codec: string;
+    endpoint: string;
+
+    start()
 }
 
-export class UnifiStreamManager extends BasePlugin implements IStreamManagerPlugin {
+export interface ILayoutManager {
+}
+
+export class UnifiStreamManager extends BasePlugin implements IStreamManager {
     constructor() {
         super('unifi');
     }
@@ -28,9 +37,13 @@ export class UnifiStreamManager extends BasePlugin implements IStreamManagerPlug
                 return false;
         }
     }
+
+    public getOrCreateStream(url: URL): IStream[] {
+        throw new Error("Method not implemented.");
+    }
 }
 
-export class RTSPStreamManager extends BasePlugin implements IStreamManagerPlugin {
+export class RTSPStreamManager extends BasePlugin implements IStreamManager {
     constructor() {
         super('rtsp');
     }
@@ -44,9 +57,30 @@ export class RTSPStreamManager extends BasePlugin implements IStreamManagerPlugi
                 return false;
         }
     }
+
+    public getOrCreateStream(url: URL): IStream[] {
+        return [new RTSPStream(url) ]
+    }
 }
 
-export class GridLayoutManager extends BasePlugin implements ILayoutManagerPlugin {
+export class RTSPStream implements IStream {
+    private _logger = Logger.createLogger(RTSPStream.name);
+    private _url;
+    codec: string;
+    endpoint: string;
+    id: string;
+
+    constructor(url: URL) {
+        this._url = url;
+    }
+
+    start() {
+        this._logger.info(`Starting stream '${this.id}'`);
+    }
+}
+
+
+export class GridLayoutManager extends BasePlugin implements ILayoutManager {
     constructor() {
         super('grid');
     }
@@ -54,24 +88,25 @@ export class GridLayoutManager extends BasePlugin implements ILayoutManagerPlugi
 
 export class PluginRegistry {
     private _logger = Logger.createLogger(PluginRegistry.name);
-    private _streamManagerPlugins = [];
-    private _layoutPlugins = [];
+    private _streamManagers = [];
+    private _layoutManagers = [];
 
-    public addStreamManagerPlugins(...plugins): PluginRegistry {
+    public addStreamManager(...plugins): PluginRegistry {
         this._logger.debug(`Adding stream manager plugins '${plugins.map((value) => value.id)}'`);
-        this._streamManagerPlugins = [...this._streamManagerPlugins, ...plugins];
+        this._streamManagers = [...this._streamManagers, ...plugins];
         return this;
     }
 
-    public addLayoutManagerPlugins(...plugins): PluginRegistry {
+    public addLayoutManager(...plugins): PluginRegistry {
         this._logger.debug(`Adding layout manager plugins '${plugins.map((value) => value.id)}'`);
-        this._layoutPlugins = [...this._layoutPlugins, ...plugins];
+        this._layoutManagers = [...this._layoutManagers, ...plugins];
         return this;
     }
 
-    public streamManagerFor(url: URL) {
-        for(let streamManager of this._streamManagerPlugins) {
+    public getStreamManager(url: URL) {
+        for(let streamManager of this._streamManagers) {
             if(streamManager.canHandle(url)) {
+                this._logger.debug(`Stream manager '${streamManager.id}' can handle '${url}'`);
                 return streamManager;
             }
         }
@@ -88,10 +123,10 @@ export class Backend {
         this._logger.debug('Filling plugin registry...');
 
         this._pluginRegistry = new PluginRegistry()
-            .addStreamManagerPlugins(
+            .addStreamManager(
                 new UnifiStreamManager(),
                 new RTSPStreamManager())
-            .addLayoutManagerPlugins(
+            .addLayoutManager(
                 new GridLayoutManager()
             );
     }
@@ -108,8 +143,12 @@ export class Backend {
                 throw new Error(`Failed to process stream url '${stream}', got '${e}'`);
             }
 
-            let streamManager = this._pluginRegistry.streamManagerFor(url);
-            this._logger.debug(streamManager)
+            let streamManager = this._pluginRegistry.getStreamManager(url);
+            let streams = streamManager.getOrCreateStream(url);
+            for(let stream of streams) {
+                stream.start();
+                this._logger.info(`Started stream '${stream.id}', codec is '${stream.codec}', endpoint is '${stream.endpoint}'`)
+            }
 
             // const protocolManager pm = this._pluginRegistry.protocolManagerFor(url);
             // const videoStreams: IVideoStream[] = pm.createStreams(url);
@@ -131,36 +170,6 @@ export class Backend {
             //     process.exit(1);
             // }
         }
-    }
-}
-
-export interface ILayoutPlugin {
-}
-
-export interface IProtocolPlugin {
-    canHandle(url: URL): boolean
-    createTranscoders(url: URL): Promise<ITranscoder[]>;
-}
-
-export interface ITranscoder {
-    start();
-    stop();
-}
-
-export class PluginFactory {
-    private _plugins: IProtocolPlugin[];
-    private _transcoders: Map<URL, ITranscoder> = new Map<URL, ITranscoder>();
-
-    public constructor(protocol_managers: IProtocolPlugin[]) {
-        this._plugins = protocol_managers;
-    }
-
-    createTranscoders(url: URL): Promise<ITranscoder[]> {
-        for(let pm of this._plugins) {
-            if(pm.canHandle(url) == false) continue;
-            return pm.createTranscoders(url);
-        }
-        throw Error(`No suitable Protocol Manager for url '${url}'`);
     }
 }
 
