@@ -1,7 +1,7 @@
 import {logger, redact} from "../logger";
-import {IProtocolPlugin, ITranscoder} from '../backend';
+import {IProtocolPlugin, ITranscoder} from '../../backend/backend';
 import {ProtectApi, ProtectLogging} from "unifi-protect";
-import {CachingFactory, ICacheable} from "../utils";
+import {CachingFactory, ICacheable} from "../../utils";
 import {PluginError} from "./index";
 import {spawn} from "child_process";
 import WebSocket from 'ws';

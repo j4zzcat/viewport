@@ -1,15 +1,7 @@
 #!/usr/bin/env node --no-warnings --import tsx
 
-import {UnifiPlugin, RTSPPlugin} from "./plugins";
-import {Backend, PluginFactory} from "./backend";
-import {MainCommandLine} from "./cli";
+import {Backend, PluginRegistry, GridLayoutManager, RTSPStreamManager, UnifiStreamManager} from "./backend/backend";
+import {MainCommandLine} from "./frontend/cli";
 
-const pluginFactory = new PluginFactory([
-    new RTSPPlugin(),
-    new UnifiPlugin()
-]);
-
-const backend = new Backend(pluginFactory);
-
-const commandLine: MainCommandLine = new MainCommandLine(backend);
+const commandLine: MainCommandLine = new MainCommandLine();
 commandLine.executeAsync();
