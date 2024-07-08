@@ -9,7 +9,7 @@ trap "cat $PANIC_MESSAGE_FILE; exit 127" SIGUSR1
 
 # Defaults and constants
 MAX_GRID_SIZE=30
-VIEWPORT_TEMPLATE_FILE="$SCRIPT_DIR/streamline-viewport.html.template"
+VIEWPORT_TEMPLATE_FILE="$SCRIPT_DIR/viewport.html.template"
 VIEWPORT_PAGE=viewport.html
 
 DEFAULT_OUTPUT_DIR='.'
