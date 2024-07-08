@@ -9,6 +9,7 @@ export class BasePlugin {
 }
 
 export interface IStreamManagerPlugin {
+    canHandle(url: URL): boolean
 };
 
 export interface ILayoutManagerPlugin {
@@ -18,6 +19,15 @@ export class UnifiStreamManager extends BasePlugin implements IStreamManagerPlug
     constructor() {
         super('unifi');
     }
+
+    public canHandle(url: URL): boolean {
+        switch(url.protocol.split(':')[0]) {
+            case 'unifi':
+                return true;
+            default:
+                return false;
+        }
+    }
 }
 
 export class RTSPStreamManager extends BasePlugin implements IStreamManagerPlugin {
@@ -25,6 +35,15 @@ export class RTSPStreamManager extends BasePlugin implements IStreamManagerPlugi
         super('rtsp');
     }
 
+    public canHandle(url: URL): boolean {
+        switch(url.protocol.split(':')[0]) {
+            case 'rtsp':
+            case 'rtsps':
+                return true;
+            default:
+                return false;
+        }
+    }
 }
 
 export class GridLayoutManager extends BasePlugin implements ILayoutManagerPlugin {
@@ -35,12 +54,12 @@ export class GridLayoutManager extends BasePlugin implements ILayoutManagerPlugi
 
 export class PluginRegistry {
     private _logger = Logger.createLogger(PluginRegistry.name);
-    private _protocolManagerPlugins = [];
+    private _streamManagerPlugins = [];
     private _layoutPlugins = [];
 
     public addStreamManagerPlugins(...plugins): PluginRegistry {
         this._logger.debug(`Adding stream manager plugins '${plugins.map((value) => value.id)}'`);
-        this._protocolManagerPlugins = [...this._protocolManagerPlugins, ...plugins];
+        this._streamManagerPlugins = [...this._streamManagerPlugins, ...plugins];
         return this;
     }
 
@@ -48,6 +67,16 @@ export class PluginRegistry {
         this._logger.debug(`Adding layout manager plugins '${plugins.map((value) => value.id)}'`);
         this._layoutPlugins = [...this._layoutPlugins, ...plugins];
         return this;
+    }
+
+    public streamManagerFor(url: URL) {
+        for(let streamManager of this._streamManagerPlugins) {
+            if(streamManager.canHandle(url)) {
+                return streamManager;
+            }
+        }
+
+        throw new Error(`Failed to find suitable stream manager to handle '${url}'`);
     }
 }
 
@@ -70,7 +99,18 @@ export class Backend {
     public async handleStreamAction(layout: string, streams: readonly string[]) {
         for(let stream of streams) {
             this._logger.debug(`Processing stream '${stream}'`);
-            // const url = new URL(stream);
+
+            let url;
+            try {
+                url = new URL(stream);
+            } catch(e) {
+                this._logger.error(e);
+                throw new Error(`Failed to process stream url '${stream}', got '${e}'`);
+            }
+
+            let streamManager = this._pluginRegistry.streamManagerFor(url);
+            this._logger.debug(streamManager)
+
             // const protocolManager pm = this._pluginRegistry.protocolManagerFor(url);
             // const videoStreams: IVideoStream[] = pm.createStreams(url);
             //
