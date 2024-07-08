@@ -31,7 +31,7 @@ while :; do
 done
 
 image_tag=$(git describe --tags 2>/dev/null || echo 'latest')
-image_name='j4zzcat/streamline-viewport'
+image_name='j4zzcat/viewport'
 
 if [[ "$ALL" == 'true' ]]; then
   docker buildx create --name container --driver=docker-container 2>/dev/null
