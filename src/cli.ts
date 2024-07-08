@@ -4,60 +4,60 @@ import {
     CommandLineParser, CommandLineStringListParameter, CommandLineStringParameter
 } from "@rushstack/ts-command-line";
 import {Backend} from "./backend";
-import {logger} from "./logger";
+import {Logger} from "./viewport-utils";
 
-export class StreamsAction extends CommandLineAction {
+export class StreamAction extends CommandLineAction {
     private _backend: Backend;
-    private _grid: CommandLineStringParameter;
+    private layout: CommandLineStringParameter;
     private _stream: CommandLineStringListParameter;
 
     public constructor(backend: Backend) {
         super({
-            actionName: 'streams',
-            summary: 'Launch a viewport with specified streams.',
+            actionName: 'stream',
+            summary: 'Create a viewport with specified stream(s).',
             documentation: 'Here we provide a longer description of how our action works.'
         });
 
         this._backend = backend;
 
-        this._grid = this.defineStringParameter({
-            argumentName: "SIZE",
-            defaultValue: '2x2',
-            description: 'Grid layout in rows x columns.',
-            parameterLongName: '--grid',
+        this.layout = this.defineStringParameter({
+            argumentName: "LAYOUT",
+            defaultValue: 'grid:2x2',
+            description: 'Layout of the viewport. Supported layouts: grid:NxM, unifi:N',
+            parameterLongName: '--layout',
             required: false })
 
         this._stream = this.defineStringListParameter( {
             argumentName: "URL",
-            description: "Stream url, supported protocols: rtsp, rtsps, unifi.",
+            description: "Stream url. Supported protocols: rtsp(s), unifi.",
             parameterLongName: "--stream",
             required: true })
     }
 
     protected async onExecute(): Promise<void> {
         // @ts-ignore
-        await this._backend.handleStreamsAction(this._grid.value, this._stream.values);
+        await this._backend.handleStreamsAction(this.layout.value, this._stream.values);
     }
 }
 
-export class RemoteAction extends CommandLineAction {
+export class ViewAction extends CommandLineAction {
     private _backend: Backend;
     private _remote: CommandLineStringParameter;
 
     public constructor(backend: Backend) {
         super({
-            actionName: 'remote',
-            summary: 'Launch a remote viewport.',
-            documentation: 'Here we provide a longer description of how our action works.'
+            actionName: 'view',
+            summary: 'Create a viewport based on a remote view.',
+            documentation: 'Create a viewport based on a remote view.'
         });
 
         this._backend = backend;
 
         this._remote = this.defineStringParameter({
             argumentName: "URL",
-            description: 'Remote viewport URL.',
+            description: 'Remote view URL.',
             parameterLongName: '--url',
-            required: true })
+            required: true });
     }
 
     protected async onExecute(): Promise<void> {
@@ -67,17 +67,18 @@ export class RemoteAction extends CommandLineAction {
 }
 
 export class MainCommandLine extends CommandLineParser {
+    private _logger = Logger.createLogger(MainCommandLine.name);
     private readonly _backend: Backend;
     private _verbose: CommandLineFlagParameter;
 
     public constructor(backend: Backend) {
         super({
-            toolFilename: 'streamline-viewport',
-            toolDescription: 'Create a web-based viewport for rtsp/rtsps/unifi video streams.' });
+            toolFilename: 'viewport',
+            toolDescription: 'Create a web-based viewport for RTSP(S) and Unifi Protect video streams.' });
 
         this._backend = backend;
-        this.addAction(new StreamsAction(this._backend));
-        this.addAction(new RemoteAction(this._backend));
+        this.addAction(new StreamAction(this._backend));
+        this.addAction(new ViewAction(this._backend));
 
         this._verbose = this.defineFlagParameter({
             parameterLongName: '--verbose',
@@ -86,7 +87,7 @@ export class MainCommandLine extends CommandLineParser {
     }
 
     protected async onExecute(): Promise<void> {
-        logger.info('Starting...');
+        this._logger.info('Starting...');
         this._backend.verbosity = this._verbose.value;
         await super.onExecute();
     }

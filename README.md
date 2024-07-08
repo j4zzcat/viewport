@@ -15,7 +15,7 @@ The program is available both as standalone and as a Docker image.
 &nbsp;
 
 ## Theory of Operation
-unifi-nvr -> fMPEG -> websocket <- unifi-protect-livestream -> ffmpeg -> flv/rtmp -> srs <- mpegts.js 
+( unifi-nvr -> fMPEG -> websocket ) <- ( universal-livestream -> ffmpeg ) -> flv/rtmp -> ( srs ) <- ( mpegts.js ) 
 
 
 ## Unifi Protect Quickstart

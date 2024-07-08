@@ -1,15 +1,15 @@
 #!/usr/bin/env node --no-warnings --import tsx
 
-import {UnifiProtocolManager, RTSPProtocolManager} from "./protocols";
-import {Backend, TranscoderFactory} from "./backend";
+import {UnifiPlugin, RTSPPlugin} from "./plugins";
+import {Backend, PluginFactory} from "./backend";
 import {MainCommandLine} from "./cli";
 
-const transcoderFactory = new TranscoderFactory([
-    new RTSPProtocolManager(),
-    new UnifiProtocolManager()
+const pluginFactory = new PluginFactory([
+    new RTSPPlugin(),
+    new UnifiPlugin()
 ]);
 
-const backend = new Backend(transcoderFactory);
+const backend = new Backend(pluginFactory);
 
 const commandLine: MainCommandLine = new MainCommandLine(backend);
 commandLine.executeAsync();

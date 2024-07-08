@@ -31,3 +31,10 @@ streamline-viewport -v \
     --url 'unifi://dev-user:'$(security find-generic-password -l dev-user -a unifi-protect -w)'@192.168.4.10/liveview/kiosk'
 
 
+viewport liveview 'unifi://userid:password@192.168.4.10/liveview/_default'
+viewport stream -l 2x2 'unifi://userid:password@192.168.4.10/camera/_all'
+viewport stream -l 3x2 \
+  rtsp://1.2.3.4:4447/ABCDEFXX?night=no \
+  rtsps://1.2.3.4:44448/CCEDEEXSSDFAA22 \
+  unifi://userid:password@1.2.3.4/camera/indoors kitchen,backyard,driveway \
+  unifi://userid:password@4.5.6.7/camera/_all

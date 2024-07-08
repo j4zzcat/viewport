@@ -1,37 +1,9 @@
 import {logger} from "./logger";
 
-export interface IProtocolManager {
-    canHandle(url: URL): boolean
-    createTranscoders(url: URL): Promise<ITranscoder[]>;
-}
-
-export interface ITranscoder {
-    start();
-    stop();
-}
-
-export class TranscoderFactory {
-    private _protocol_managers: IProtocolManager[];
-    private _transcoders: Map<URL, ITranscoder> = new Map<URL, ITranscoder>();
-
-    public constructor(protocol_managers: IProtocolManager[]) {
-        this._protocol_managers = protocol_managers;
-    }
-
-    createTranscoders(url: URL): Promise<ITranscoder[]> {
-        for(let pm of this._protocol_managers) {
-            if(pm.canHandle(url) == false) continue;
-            return pm.createTranscoders(url);
-        }
-        throw Error(`No suitable Protocol Manager for url '${url}'`);
-    }
-}
-
 export class Backend {
     private _logger = logger.child({ 'class': 'Backend' });
-    private _transcoderFactory: TranscoderFactory;
+    private _transcoderFactory: PluginFactory;
     private _verbose: boolean;
-    private _outputDir: string;
 
     public constructor(tf) {
         this._transcoderFactory = tf;
@@ -59,3 +31,34 @@ export class Backend {
         }
     }
 }
+
+export interface ILayoutPlugin {
+}
+
+export interface IProtocolPlugin {
+    canHandle(url: URL): boolean
+    createTranscoders(url: URL): Promise<ITranscoder[]>;
+}
+
+export interface ITranscoder {
+    start();
+    stop();
+}
+
+export class PluginFactory {
+    private _plugins: IProtocolPlugin[];
+    private _transcoders: Map<URL, ITranscoder> = new Map<URL, ITranscoder>();
+
+    public constructor(protocol_managers: IProtocolPlugin[]) {
+        this._plugins = protocol_managers;
+    }
+
+    createTranscoders(url: URL): Promise<ITranscoder[]> {
+        for(let pm of this._plugins) {
+            if(pm.canHandle(url) == false) continue;
+            return pm.createTranscoders(url);
+        }
+        throw Error(`No suitable Protocol Manager for url '${url}'`);
+    }
+}
+

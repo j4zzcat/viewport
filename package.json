@@ -2,13 +2,16 @@
   "name": "streamline-viewport",
   "dependencies": {
     "@rushstack/ts-command-line": "^4.22.0",
+    "argparse": "^2.0.1",
+    "http-server": "^14.1.1",
     "mpegts.js": "^1.7.3",
     "redact-secrets": "^1.0.0",
     "shelljs": "^0.8.5",
     "ts-node": "^10.9.2",
     "tsx": "^4.16.2",
     "unifi-protect": "^4.11.1",
-    "winston": "^3.13.0"
+    "winston": "^3.13.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",

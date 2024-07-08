@@ -1,9 +1,11 @@
 import {logger, redact} from "../logger";
-import {IProtocolManager, ITranscoder} from '../backend';
+import {IProtocolPlugin, ITranscoder} from '../backend';
 import {ProtectApi, ProtectLogging} from "unifi-protect";
 import {CachingFactory, ICacheable} from "../utils";
-import {ProtocolManagerError} from "./index";
+import {PluginError} from "./index";
 import {spawn} from "child_process";
+import WebSocket from 'ws';
+
 
 class UnifiTranscoder implements ITranscoder {
     private _logger = logger.child({ 'class': 'UnifiTranscoder' });
@@ -17,12 +19,12 @@ class UnifiTranscoder implements ITranscoder {
     }
 
     public start() {
-        this._ffmpeg = spawn('/opt/homebrew/bin/ffmpeg', [
-            '-loglevel', '8',
-            '-hide_banner', '-nostats',
-            '-i', 'pipe:0',
-            // '-c', 'copy', '-f', 'rtsp', 'rtsp://localhost:8554/mystream' ]);
-            '-c', 'copy', '-f', 'flv', 'rtmp://localhost/live/livestream' ]);
+        // this._ffmpeg = spawn('/opt/homebrew/bin/ffmpeg', [
+        //     '-loglevel', '8',
+        //     '-hide_banner', '-nostats',
+        //     '-i', 'pipe:0',
+        //     // '-c', 'copy', '-f', 'rtsp', 'rtsp://localhost:8554/mystream' ]);
+        //     '-c', 'copy', '-f', 'flv', 'rtmp://localhost/live/livestream' ]);
 
 
         //     '-fflags', '+discardcorrupt',
@@ -39,15 +41,30 @@ class UnifiTranscoder implements ITranscoder {
         //     '-y', '/Users/snd/.tmp/index.m3u8'
         // ]);
 
-        this._ffmpeg.stderr.on('data', (data) => {
-            console.error(`stderr: ${data}`);
+        // this._ffmpeg.stderr.on('data', (data) => {
+        //     console.error(`stderr: ${data}`);
+        // });
+        //
+        // this._ffmpeg.on('close', (code) => {
+        //     console.log(`child process exited with code ${code}`);
+        // });
+
+
+        const wss = new WebSocket.Server({ port: 8087 });
+
+        wss.on('connection', (ws: WebSocket) => {
+            console.log('New client connected');
+
+            ws.on('close', () => {
+                console.log('Client disconnected');
+                this._nvr.removeListener()
+            });
+
+            this._nvr.addListener(this._cameraId, (buffer) => ws.send(buffer));
+
         });
 
-        this._ffmpeg.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
-        });
-
-        this._nvr.addListener(this._cameraId, (buffer) => this._ffmpeg.stdin.write(buffer));
+        // this._nvr.addListener(this._cameraId, (buffer) => this._ffmpeg.stdin.write(buffer));
     }
 
     public stop() {
@@ -93,9 +110,13 @@ class UnifiNVR implements ICacheable {
         protectLiveStream.start(cameraId, 0);
 
     }
+
+    public removeListener(listener) {
+
+    }
 }
 
-export class UnifiProtocolManager implements IProtocolManager {
+export class UnifiPlugin implements IProtocolPlugin {
     private _logger = logger.child({ 'class': 'UnifiProtocolManager' });
     private _supportedProtocols: string[] = ['unifi'];
     private _nvrCache = new CachingFactory<UnifiNVR>(UnifiNVR);
@@ -113,7 +134,7 @@ export class UnifiProtocolManager implements IProtocolManager {
         let splitPathname = decodeURI(url.pathname).split('/');
         if(splitPathname[1] != 'camera') {
             this._logger.error(`Expecting url.pathname to start with '/camera' but got '${url.pathname}'`)
-            throw new ProtocolManagerError();
+            throw new PluginError();
         }
 
         const cameras = [];

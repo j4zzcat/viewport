@@ -1,7 +1,7 @@
 import {logger} from "../logger";
-import {IProtocolManager, ITranscoder} from '../backend';
+import {IProtocolPlugin, ITranscoder} from '../backend';
 
-export class RTSPProtocolManager implements IProtocolManager {
+export class RTSPPlugin implements IProtocolPlugin {
     canHandle(url: URL): boolean {
         return false;
     }
