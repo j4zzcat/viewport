@@ -1,0 +1,57 @@
+<body>
+<video id="local" autoplay muted></video>
+<video id="remote" autoplay></video>
+
+<button onclick="start(this)">start video</button>
+<button id="stream" onclick="stream(this)" disabled>stream video</button>
+
+<script>
+    // get video elements
+    const local = document.querySelector("video#local");
+    const remote = document.querySelector("video#remote");
+
+    function start(e) {
+        e.disabled = true;
+        navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+            .then((stream) => {
+                local.srcObject = stream;
+                document.getElementById("stream").disabled = false;  // enable the stream button
+            })
+            .catch(() => e.disabled = false);
+    }
+
+    function stream(e) {
+        // disable the stream button
+        e.disabled = true;
+
+        const config = {};
+        const localPeerConnection = new RTCPeerConnection(config);  // local peer
+        const remotePeerConnection = new RTCPeerConnection(config);  // remote peer
+
+        // if an icecandidate event is triggered in a peer add the ice candidate to the other peer
+        localPeerConnection.addEventListener("icecandidate", e => remotePeerConnection.addIceCandidate(e.candidate));
+        remotePeerConnection.addEventListener("icecandidate", e => localPeerConnection.addIceCandidate(e.candidate));
+
+        // if the remote peer detects a track in the connection, it forwards it to the remote video element
+        remotePeerConnection.addEventListener("track", e => remote.srcObject = e.streams[0]);
+
+        // get camera and microphone source tracks and add it to the local peer
+        local.srcObject.getTracks()
+            .forEach(track => localPeerConnection.addTrack(track, local.srcObject));
+
+        // Start the handshake process
+        localPeerConnection.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true })
+            .then(async offer => {
+                await localPeerConnection.setLocalDescription(offer);
+                await remotePeerConnection.setRemoteDescription(offer);
+                console.log("Created offer");
+            })
+            .then(() => remotePeerConnection.createAnswer())
+            .then(async answer => {
+                await remotePeerConnection.setLocalDescription(answer);
+                await localPeerConnection.setRemoteDescription(answer);
+                console.log("Created answer");
+            });
+    }
+</script>
+</body>
