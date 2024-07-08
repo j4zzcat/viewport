@@ -76,7 +76,7 @@ export class PluginRegistry {
             }
         }
 
-        throw new Error(`Failed to find suitable stream manager to handle '${url}'`);
+        throw new Error(`No suitable stream manager to handle '${url}'`);
     }
 }
 
