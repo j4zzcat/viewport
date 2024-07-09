@@ -1,11 +1,13 @@
 import {Logger} from "../utils/logger";
 
 export class BasePlugin {
-    id: string;
+    private readonly _id;
 
     constructor(id: string) {
-        this.id = id;
+        this._id = id;
     }
+
+    public get id(): string { return this._id; }
 }
 
 export interface IStreamManager {
@@ -14,11 +16,13 @@ export interface IStreamManager {
 };
 
 export interface IStream {
-    id: string;
-    codec: string;
-    endpoint: string;
+    get id(): string;
+    get codec(): string;
+    get container(): string;
+    get endpoint(): string;
 
-    start()
+    start();
+    stop();
 }
 
 export interface ILayoutManager {
@@ -39,7 +43,35 @@ export class UnifiStreamManager extends BasePlugin implements IStreamManager {
     }
 
     public getOrCreateStream(url: URL): IStream[] {
-        throw new Error("Method not implemented.");
+        return [new UnifiStream(url)];
+    }
+}
+
+export class UnifiStream implements IStream {
+    private _logger = Logger.createLogger(RTSPStream.name);
+    private readonly _url;
+    private readonly _id: string;
+    private _codec: string;
+    private _container: string;
+    private _endpoint: string;
+
+    constructor(url: URL) {
+        this._url = url;
+        this._id = this._url;
+    }
+
+    public get id(): string { return this._id; }
+    public get codec(): string { return this._codec; }
+    public get container(): string { return this._container }
+    public get endpoint(): string { return this._endpoint }
+
+    public start() {
+        this._logger.debug(`Starting stream '${this.id}'...`);
+        this._logger.debug(`Connecting to Unifi fMPEG web socket for camera ${this._camera.name }`);
+    }
+
+    public stop() {
+        this._logger.debug(`Stopping stream '${this.id}'`);
     }
 }
 
@@ -68,20 +100,30 @@ export class RTSPStreamManager extends BasePlugin implements IStreamManager {
 
 export class RTSPStream implements IStream {
     private _logger = Logger.createLogger(RTSPStream.name);
-    private _url;
-    codec: string;
-    endpoint: string;
-    id: string;
+    private readonly _url;
+    private readonly _id: string;
+    private _codec: string;
+    private _container: string;
+    private _endpoint: string;
 
     constructor(url: URL) {
         this._url = url;
-        this.id = this._url;
+        this._id = this._url;
     }
 
-    start() {
+    public get id(): string { return this._id; }
+    public get codec(): string { return this._codec; }
+    public get container(): string { return this._container }
+    public get endpoint(): string { return this._endpoint }
+
+    public start() {
         this._logger.debug(`Starting stream '${this.id}'...`);
         this._logger.debug(`Starting ffmpeg to transcode the RTSP stream into FLV stream`);
         this._logger.debug(`ffmpeg is running, pid is '4311'`);
+    }
+
+    public stop() {
+        this._logger.debug(`Stopping stream '${this.id}'`);
     }
 }
 
@@ -140,42 +182,24 @@ export class Backend {
     public async handleStreamAction(layout: string, streams: readonly string[]) {
         this._logger.debug(`Handling stream action`);
         for(let stream of streams) {
-            this._logger.debug(`Processing stream '${stream}'`);
-
             let url;
+
             try {
                 url = new URL(stream);
             } catch(e) {
                 this._logger.error(e);
-                throw new Error(`Failed to process stream url '${stream}', got '${e}'`);
+                throw new Error(`Failed to process stream url, got '${e}'`);
             }
+
+            this._logger.debug(`Processing stream '${stream}'`);
+            Logger.addRedaction(url.password);
 
             let streamManager = this._pluginRegistry.getStreamManager(url);
             let streams = streamManager.getOrCreateStream(url);
             for(let stream of streams) {
                 stream.start();
-                this._logger.info(`Started stream '${stream.id}', codec is '${stream.codec}', endpoint is '${stream.endpoint}'`)
+                this._logger.info(`Started stream '${stream.id}', codec is '${stream.codec}', container is '${stream.container}' endpoint is '${stream.endpoint}'`)
             }
-
-            // const protocolManager pm = this._pluginRegistry.protocolManagerFor(url);
-            // const videoStreams: IVideoStream[] = pm.createStreams(url);
-            //
-            // for(let stream of videoStreams) {
-            //     stream.start();
-            //     this._logger(`Started video stream '${stream.id}', endpoint is '${stream.endpoint}'`);
-            // }
-
-            // try {
-            //     const transcoders = await this._transcoderFactory.createTranscoders(url);
-            //     for(let transcoder of transcoders) {
-            //         this._logger.info(`Starting transcoder`);
-            //         transcoder.start();
-            //
-            //     }
-            // } catch (e) {
-            //     logger.error(e);
-            //     process.exit(1);
-            // }
         }
     }
 }

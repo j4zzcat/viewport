@@ -31,7 +31,9 @@ class SimpleLogger {
     private _redactions: string[] = [];
 
     public addRedaction(s: string) {
-        this._redactions.push(s);
+        if(!this._redactions.includes(s)) {
+            this._redactions.push(s);
+        }
     }
 
     // Format the message and redact secrets
