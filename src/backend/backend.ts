@@ -38,27 +38,27 @@ export class Backend {
             .addPlugin(new GridLayoutManager());
     }
 
-    public async handleStreamAction(layout: string, streams: readonly string[]): Promise<void> {
+    public async handleStreamAction(layout: string, sUrls: readonly string[]): Promise<void> {
         this._logger.debug(`Handling stream action`);
-        for(let stream of streams) {
+        for(let sUrl of sUrls) {
             let url;
 
             try {
-                url = new URL(stream);
+                url = new URL(sUrl);
             } catch(e) {
                 this._logger.error(e);
                 throw new Error(`Failed to process stream url, got '${e}'`);
             }
 
-            this._logger.debug(`Processing stream '${stream}'`);
             Logger.addRedaction(url.password);
+            this._logger.debug(`Processing stream url '${sUrl}'`);
 
             let streamsManager = this._streamsManagersRegistry.getPlugin(url);
-            let streams = streamsManager.getOrCreateStreams(url);
-            for(let stream of streams) {
+            let streams = await streamsManager.getOrCreateStreams(url);
+            streams.forEach((stream) => {
                 stream.start();
                 this._logger.info(`Started stream '${stream.id}', codec is '${stream.codec}', container is '${stream.container}' endpoint is '${stream.endpoint}'`)
-            }
+            });
         }
     }
 }

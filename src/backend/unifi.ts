@@ -1,7 +1,6 @@
 import {Logger} from "../utils/logger";
 import {IStream, IStreamsManager} from "./backend";
 import {BasePlugin} from "../utils/plugin";
-import {ProtectApi} from "unifi-protect";
 import {CachingFactory, ICacheable} from "../utils/cache";
 
 export class UnifiStreamsManager extends BasePlugin implements IStreamsManager {
@@ -75,8 +74,11 @@ class UnifiNVR implements ICacheable {
         this._username = username;
         this._password = password;
 
+        // Jest blues
+        let unifiProtectPackage = await import('unifi-protect');
+        this._protectApi = new unifiProtectPackage.ProtectApi();
+
         this._logger.info(`Connecting to NVR at '${this._host}' with username '${this._username}'...`)
-        this._protectApi = new ProtectApi();
         if(!(await this._protectApi.login(this._host, this._username, this._password))) {
             this._logger.error('Invalid login credentials.');
             process.exit(0);

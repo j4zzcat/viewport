@@ -2,17 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/jest.config.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/backend.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/cli.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/logger.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/protocols/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/protocols/rtsp.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/protocols/unifi.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/streamline-viewport.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/dist/utils.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/backend.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/backend.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/rtsp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/rtsp.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/unifi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/unifi.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/plugins/protocol/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/plugins/protocol/rtsp-plugin.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/index.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/unifi.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/unifi.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/unifi.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,7 +86,7 @@
       <updated>1720477268899</updated>
       <workItem from="1720477270444" duration="2288000" />
       <workItem from="1720479563050" duration="3753000" />
-      <workItem from="1720506679208" duration="11129000" />
+      <workItem from="1720506679208" duration="15534000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
