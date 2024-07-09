@@ -44,6 +44,8 @@ export class UnifiStreamManager extends BasePlugin implements IStreamManager {
 }
 
 export class RTSPStreamManager extends BasePlugin implements IStreamManager {
+    private _logger = Logger.createLogger(RTSPStreamManager.name);
+
     constructor() {
         super('rtsp');
     }
@@ -59,6 +61,7 @@ export class RTSPStreamManager extends BasePlugin implements IStreamManager {
     }
 
     public getOrCreateStream(url: URL): IStream[] {
+        this._logger.debug(`Creating new RTSPStream to handle '${url}'`);
         return [new RTSPStream(url) ]
     }
 }
@@ -72,10 +75,13 @@ export class RTSPStream implements IStream {
 
     constructor(url: URL) {
         this._url = url;
+        this.id = this._url;
     }
 
     start() {
-        this._logger.info(`Starting stream '${this.id}'`);
+        this._logger.debug(`Starting stream '${this.id}'...`);
+        this._logger.debug(`Starting ffmpeg to transcode the RTSP stream into FLV stream`);
+        this._logger.debug(`ffmpeg is running, pid is '4311'`);
     }
 }
 
@@ -88,30 +94,30 @@ export class GridLayoutManager extends BasePlugin implements ILayoutManager {
 
 export class PluginRegistry {
     private _logger = Logger.createLogger(PluginRegistry.name);
-    private _streamManagers = [];
+    private _streamsManagers = [];
     private _layoutManagers = [];
 
-    public addStreamManager(...plugins): PluginRegistry {
-        this._logger.debug(`Adding stream manager plugins '${plugins.map((value) => value.id)}'`);
-        this._streamManagers = [...this._streamManagers, ...plugins];
+    public addStreamsManager(...plugins): PluginRegistry {
+        this._logger.debug(`Adding '${plugins.length}' streams managers: '${plugins.map((value) => value.id)}'`);
+        this._streamsManagers = [...this._streamsManagers, ...plugins];
         return this;
     }
 
     public addLayoutManager(...plugins): PluginRegistry {
-        this._logger.debug(`Adding layout manager plugins '${plugins.map((value) => value.id)}'`);
+        this._logger.debug(`Adding '${plugins.length}' layout managers: '${plugins.map((value) => value.id)}'`);
         this._layoutManagers = [...this._layoutManagers, ...plugins];
         return this;
     }
 
     public getStreamManager(url: URL) {
-        for(let streamManager of this._streamManagers) {
-            if(streamManager.canHandle(url)) {
-                this._logger.debug(`Stream manager '${streamManager.id}' can handle '${url}'`);
-                return streamManager;
+        for(let streamsManager of this._streamsManagers) {
+            if(streamsManager.canHandle(url)) {
+                this._logger.debug(`Streams manager '${streamsManager.id}' can handle '${url}'`);
+                return streamsManager;
             }
         }
 
-        throw new Error(`No suitable stream manager to handle '${url}'`);
+        throw new Error(`No suitable streams manager to handle '${url}'`);
     }
 }
 
@@ -123,7 +129,7 @@ export class Backend {
         this._logger.debug('Filling plugin registry...');
 
         this._pluginRegistry = new PluginRegistry()
-            .addStreamManager(
+            .addStreamsManager(
                 new UnifiStreamManager(),
                 new RTSPStreamManager())
             .addLayoutManager(
@@ -132,6 +138,7 @@ export class Backend {
     }
 
     public async handleStreamAction(layout: string, streams: readonly string[]) {
+        this._logger.debug(`Handling stream action`);
         for(let stream of streams) {
             this._logger.debug(`Processing stream '${stream}'`);
 
