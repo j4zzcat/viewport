@@ -4,7 +4,7 @@ import {BasePlugin} from "../utils/plugin";
 import {CachingFactory, ICacheable} from "../utils/cache";
 
 export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
-    private _logger = Logger.createLogger(UnifiVideoProvider.name);
+    _logger = Logger.createLogger(UnifiVideoProvider.name);
     private _unifiNvrFactory = new CachingFactory<UnifiNVR>(
         UnifiNVR,
         (...args: any[]) => `${args[0]}:${args[1]}`);

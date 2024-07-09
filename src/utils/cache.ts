@@ -10,7 +10,10 @@ export class CachingFactory<T extends ICacheable> {
     private readonly _keyGenerator;
     private _cache: Map<string, T> = new Map();
 
-    public constructor(ctor: { new(): T }, keyGenerator: (...args: any[]) => string = (...args: any[]) => { return args.join(':')}) {
+    public constructor(
+        ctor: { new(): T },
+        keyGenerator: (...args: any[]) => string = (...args: any[]) => { return args.join(':')}) {
+
         this._keyGenerator = keyGenerator;
         this._ctor = ctor;
     }

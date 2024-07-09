@@ -1,7 +1,7 @@
 import {Logger} from "./logger";
 
 export class BasePlugin {
-    private _logger = Logger.createLogger(BasePlugin.name);
+    protected _logger = Logger.createLogger(BasePlugin.name);
     private readonly _id;
 
     constructor(id: string) {
