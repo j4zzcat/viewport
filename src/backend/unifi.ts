@@ -34,9 +34,39 @@ export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
         let unifiNvr = await this._unifiNvrFactory.getOrCreate(
             url.host,
             url.username,
-            url.host);
+            url.password);
 
-        return [new UnifiStream(url)];
+        const cameras = [];
+        const requestedCameras = splitPathname[2];
+        this._logger.debug(`Requested cameras: '${requestedCameras}'`);
+
+        if(requestedCameras == '_all') {
+            for(let camera of unifiNvr.cameras) {
+                cameras.push({
+                    id: camera.id,
+                    name: camera.name
+                });
+            }
+        } else {
+            const requestedCamerasList: string[] = requestedCameras.split(',').map(val => val.trim());
+            for(let requestedCamera of requestedCamerasList) {
+                let camera = unifiNvr.cameras.filter((val) => requestedCameras == val.name);
+                if(camera.length == 1) {
+                    cameras.push({
+                        id: camera[0].id,
+                        name: camera[0].name
+                    });
+                } else {
+                    this._logger.error(`Cannot find camera named '${requestedCamera}' in Unifi NVR at '${unifiNvr.host}'`);
+                    throw new Error(`Camera '${requestedCamera}' not found`);
+                }
+            }
+        }
+
+        this._logger.debug(`Found '${cameras.length}' cameras: '${cameras.map((val) => val.name)}'`);
+        this._logger.info(`Creating '${cameras.length}' transcoders`);
+        process.exit(0);
+
     }
 }
 
@@ -86,21 +116,18 @@ class UnifiNVR implements ICacheable {
 
         this._logger.info(`Connecting to NVR at '${this._host}' with username '${this._username}'...`)
         if(!(await this._protectApi.login(this._host, this._username, this._password))) {
-            this._logger.error('Invalid login credentials.');
-            process.exit(0);
+            throw new Error('Invalid login credentials');
         };
 
         if(!(await this._protectApi.getBootstrap())) {
-            this._logger.error("Unable to bootstrap the Protect controller.");
-            process.exit(0);
+            throw new Error("Unable to bootstrap the Protect controller");
         }
 
         this._logger.info('Connected successfully');
     }
 
-    public get cameras() {
-        return this._protectApi.bootstrap.cameras;
-    }
+    public get host() { return this._host; };
+    public get cameras() { return this._protectApi.bootstrap.cameras; };
 
     public addListener(cameraId, listener) {
         let protectLiveStream = this._protectApi.createLivestream();

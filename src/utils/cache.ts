@@ -26,7 +26,7 @@ export class CachingFactory<T extends ICacheable> {
             return this._cache.get(key) as T;
         }
 
-        this._logger.debug(`Creating entry for key '${key}'`)
+        this._logger.debug(`Storing '${this._ctor.name}' instance under key '${key}'`)
 
         const instance = new this._ctor();
         await instance.initialize(...args);
