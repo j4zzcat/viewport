@@ -19,7 +19,7 @@ export class RTSPStreamsManager extends BasePlugin implements IStreamsManager {
         }
     }
 
-    public getOrCreateStreams(url: URL): IStream[] {
+    public async getOrCreateStreams(url: URL): Promise<IStream[]> {
         this._logger.debug(`Creating new RTSPStream to handle '${url}'`);
         return [new RTSPStream(url) ]
     }
@@ -43,13 +43,13 @@ export class RTSPStream implements IStream {
     public get container(): string { return this._container }
     public get endpoint(): string { return this._endpoint }
 
-    public start() {
+    public async start(): Promise<void> {
         this._logger.debug(`Starting stream '${this.id}'...`);
         this._logger.debug(`Starting ffmpeg to transcode the RTSP stream into FLV stream`);
         this._logger.debug(`ffmpeg is running, pid is '4311'`);
     }
 
-    public stop() {
+    public async stop(): Promise<void> {
         this._logger.debug(`Stopping stream '${this.id}'`);
     }
 }

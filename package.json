@@ -1,5 +1,5 @@
 {
-  "name": "streamline-viewport",
+  "name": "viewport",
   "dependencies": {
     "@rushstack/ts-command-line": "^4.22.0",
     "argparse": "^2.0.1",
@@ -17,8 +17,12 @@
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.9",
     "jest": "^29.7.0",
-    "ts-jest": "^29.1.5"
+    "ts-jest": "^29.2.0",
+    "typescript": "^5.5.3"
   },
   "main": "src/index.ts",
-  "bin": "src/index.ts"
+  "bin": "src/index.ts",
+  "scripts": {
+    "test": "jest"
+  }
 }

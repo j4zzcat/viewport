@@ -6,7 +6,7 @@ import {PluginRegistry} from "../utils/plugin";
 
 export interface IStreamsManager {
     canHandle(url: URL): boolean
-    getOrCreateStreams(url: URL): IStream[]
+    getOrCreateStreams(url: URL): Promise<IStream[]>
 };
 
 export interface IStream {
@@ -38,7 +38,7 @@ export class Backend {
             .addPlugin(new GridLayoutManager());
     }
 
-    public async handleStreamAction(layout: string, streams: readonly string[]) {
+    public async handleStreamAction(layout: string, streams: readonly string[]): Promise<void> {
         this._logger.debug(`Handling stream action`);
         for(let stream of streams) {
             let url;
