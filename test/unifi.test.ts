@@ -20,4 +20,6 @@ describe('Testing UnifiVideoProvider', () => {
         expect(usm.canHandle(new URL('unifi://u:p@host/xcamera'))).toBe(false);
         expect(usm.canHandle(new URL('xunifi://192.168.4.10/camera'))).toBe(false);
     });
+
+    
 });

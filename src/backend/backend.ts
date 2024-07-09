@@ -47,14 +47,24 @@ export class Backend {
                 url = new URL(sUrl);
             } catch(e) {
                 this._logger.error(e);
-                throw new Error(`Failed to process stream url, got '${e}'`);
+                throw new Error(`Failed to parse stream url, got '${e}'`);
             }
 
             Logger.addRedaction(url.password);
             this._logger.debug(`Processing stream url '${sUrl}'`);
 
-            let streamsManager = this._videoProvidersRegistry.getPlugin(url);
-            let streams = await streamsManager.getOrCreateStreams(url);
+            this._logger.debug(`Looking for a suitable video provider`);
+            let videoProvider = this._videoProvidersRegistry.getPlugin(url);
+            let streams;
+
+            try {
+                this._logger.debug(`Trying to create streams...`);
+                streams = await videoProvider.getOrCreateStreams(url);
+            } catch(e) {
+                this._logger.error(`Cannot create stream`);
+                throw e;
+            }
+
             streams.forEach((stream) => {
                 stream.start();
                 this._logger.info(`Started stream '${stream.id}', codec is '${stream.codec}', container is '${stream.container}' endpoint is '${stream.endpoint}'`)

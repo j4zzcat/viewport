@@ -20,17 +20,23 @@ export class CachingFactory<T extends ICacheable> {
 
     public async getOrCreate(...args: any[]): Promise<T> {
         let key = this._keyGenerator(...args);
+        this._logger.debug(`Looking for '${this._ctor.name}' with key '${key}'`)
+
         if (this._cache.has(key)) {
             this._logger.debug(`Found ${key}`)
 
             return this._cache.get(key) as T;
+
+        } else {
+            this._logger.debug(`Key not found, creating new instance of '${this._ctor.name}'`);
+
+            const instance = new this._ctor();
+            await instance.initialize(...args);
+
+            this._logger.debug(`Storing '${this._ctor.name}' instance under key '${key}'`)
+            this._cache.set(key, instance);
+
+            return instance;
         }
-
-        this._logger.debug(`Storing '${this._ctor.name}' instance under key '${key}'`)
-
-        const instance = new this._ctor();
-        await instance.initialize(...args);
-        this._cache.set(key, instance);
-        return instance;
     }
 }
