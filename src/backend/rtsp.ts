@@ -1,9 +1,9 @@
 import {Logger} from "../utils/logger";
-import {IStream, IStreamsManager} from "./backend";
+import {IStream, IVideoProvider} from "./backend";
 import {BasePlugin} from "../utils/plugin";
 
-export class RTSPStreamsManager extends BasePlugin implements IStreamsManager {
-    private _logger = Logger.createLogger(RTSPStreamsManager.name);
+export class RTSPVideoProvider extends BasePlugin implements IVideoProvider {
+    private _logger = Logger.createLogger(RTSPVideoProvider.name);
 
     constructor() {
         super('rtsp');

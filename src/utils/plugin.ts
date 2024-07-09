@@ -1,14 +1,16 @@
 import {Logger} from "./logger";
 
 export class BasePlugin {
+    private _logger = Logger.createLogger(BasePlugin.name);
     private readonly _id;
 
     constructor(id: string) {
         this._id = id;
+        this._logger.debug(`Plugin '${this.id}' created`);
     }
 
     public get id(): string { return this._id; }
-    public canHandle(something) { return false; }
+    public canHandle(specification) { return false; }
 }
 
 export class PluginRegistry {
@@ -20,15 +22,15 @@ export class PluginRegistry {
         return this;
     }
 
-    public getPlugin(canHandlePredicate): any {
+    public getPlugin(specification): any {
         // @ts-ignore
         for (let plugin of this._plugins.values()) {
-            if (plugin.canHandle(canHandlePredicate)) {
-                this._logger.debug(`Plugin '${plugin.id}' can handle '${canHandlePredicate}'`);
+            if (plugin.canHandle(specification)) {
+                this._logger.debug(`Plugin '${plugin.id}' can handle '${specification}'`);
                 return plugin;
             }
         }
 
-        throw new Error(`No suitable plugin to handle '${canHandlePredicate}'`);
+        throw new Error(`No suitable plugin to handle '${specification}'`);
     }
 }

@@ -1,11 +1,13 @@
 import {Logger} from "../utils/logger";
-import {IStream, IStreamsManager} from "./backend";
+import {IStream, IVideoProvider} from "./backend";
 import {BasePlugin} from "../utils/plugin";
 import {CachingFactory, ICacheable} from "../utils/cache";
 
-export class UnifiStreamsManager extends BasePlugin implements IStreamsManager {
-    private _logger = Logger.createLogger(UnifiStreamsManager.name);
-    private _unifiNvrFactory = new CachingFactory<UnifiNVR>(UnifiNVR);
+export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
+    private _logger = Logger.createLogger(UnifiVideoProvider.name);
+    private _unifiNvrFactory = new CachingFactory<UnifiNVR>(
+        UnifiNVR,
+        (...args: any[]) => `${args[0]}:${args[1]}`);
 
     constructor() {
         super('unifi');
@@ -29,7 +31,11 @@ export class UnifiStreamsManager extends BasePlugin implements IStreamsManager {
             throw new Error(`Expecting url.pathname to specify either '/camera/_all' or /camera/camera1,camera2... but got '${splitPathname[2]}'`);
         }
 
-        let unifiNvr = await this._unifiNvrFactory.getOrCreate(url.username, url.host);
+        let unifiNvr = await this._unifiNvrFactory.getOrCreate(
+            url.host,
+            url.username,
+            url.host);
+
         return [new UnifiStream(url)];
     }
 }

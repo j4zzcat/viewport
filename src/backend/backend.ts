@@ -1,10 +1,10 @@
 import {Logger} from "../utils/logger";
-import {UnifiStreamsManager} from "./unifi";
-import {RTSPStreamsManager} from "./rtsp";
+import {UnifiVideoProvider} from "./unifi";
+import {RTSPVideoProvider} from "./rtsp";
 import {GridLayoutManager} from "./layout";
 import {PluginRegistry} from "../utils/plugin";
 
-export interface IStreamsManager {
+export interface IVideoProvider {
     canHandle(url: URL): boolean
     getOrCreateStreams(url: URL): Promise<IStream[]>
 };
@@ -24,15 +24,15 @@ export interface ILayoutManager {
 
 export class Backend {
     private _logger = Logger.createLogger(Backend.name);
-    private _streamsManagersRegistry: PluginRegistry;
+    private _videoProvidersRegistry: PluginRegistry;
     private _layoutManagersRegistry: PluginRegistry;
 
     public constructor() {
         this._logger.debug('Filling plugin registries...');
 
-        this._streamsManagersRegistry = new PluginRegistry()
-            .addPlugin(new UnifiStreamsManager())
-            .addPlugin(new RTSPStreamsManager());
+        this._videoProvidersRegistry = new PluginRegistry()
+            .addPlugin(new UnifiVideoProvider())
+            .addPlugin(new RTSPVideoProvider());
 
         this._layoutManagersRegistry = new PluginRegistry()
             .addPlugin(new GridLayoutManager());
@@ -53,7 +53,7 @@ export class Backend {
             Logger.addRedaction(url.password);
             this._logger.debug(`Processing stream url '${sUrl}'`);
 
-            let streamsManager = this._streamsManagersRegistry.getPlugin(url);
+            let streamsManager = this._videoProvidersRegistry.getPlugin(url);
             let streams = await streamsManager.getOrCreateStreams(url);
             streams.forEach((stream) => {
                 stream.start();
