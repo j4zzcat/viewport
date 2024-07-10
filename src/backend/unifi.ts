@@ -1,5 +1,5 @@
 import {Logger} from "../utils/logger";
-import {IStream, IVideoProvider} from "./backend";
+import {IStreamController, IVideoProvider} from "./backend";
 import {BasePlugin} from "../utils/plugin";
 import {CachingFactory, ICacheable} from "../utils/cache";
 import {WebSocket} from "ws";
@@ -9,10 +9,11 @@ export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
 
     private _unifiNvrFactory = new CachingFactory<UnifiNVR>(UnifiNVR, (...args: any[]) => `${args[0]}:${args[1]}`);
     private _webSocketServer = new WebSocket.Server({ port: 8087 });
-    private _streamsById = new Map<string, IStream>()
+    private _streamsById = new Map<string, IStreamController>()
 
     constructor() {
         super('unifi');
+        this.createWebSocketServer();
     }
 
     private createWebSocketServer() {
@@ -63,7 +64,7 @@ export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
         }
     }
 
-    public async getOrCreateStreams(url: URL): Promise<IStream[]> {
+    public async getOrCreateStreams(url: URL): Promise<IStreamController[]> {
         let splitPathname = decodeURI(url.pathname).split('/');
         if(splitPathname[2].trim().length == 0) {
             throw new Error(`Expecting url.pathname to specify either '/camera/_all' or /camera/camera1,camera2... but got '${splitPathname[2]}'`);
@@ -115,7 +116,7 @@ export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
     }
 }
 
-export class UnifiStream implements IStream {
+export class UnifiStream implements IStreamController {
     private _logger = Logger.createLogger(UnifiStream.name);
     private readonly _unifiCameraName;
     private readonly _unifiCameraId;
@@ -139,9 +140,15 @@ export class UnifiStream implements IStream {
     public get container(): string { return this._container }
     public get endpoint(): string { return this._endpoint }
 
-    public start() {
+    public start(ws) {
         this._logger.debug(`Starting stream '${this.id}'...`);
-        //this._logger.debug(`Connecting to Unifi fMPEG web socket for camera ${this._camera.name }`);
+
+        let livestream = this._unifiNvr.createLivestream();
+        livestream.on("message", (buffer) => {
+            ws.send(buffer);
+        })
+
+        this._logger.debug(`Connecting to Unifi fMPEG web socket for camera ${this._unifiCameraName}`);
     }
 
     public stop() {
@@ -153,8 +160,8 @@ class UnifiNVR implements ICacheable {
     private _logger = Logger.createLogger(UnifiNVR.name);
     private _host;
     private _username;
-    private _password;
     private _protectApi;
+    private _livestream;
 
     static _unifiProtectModule;
 
@@ -163,17 +170,16 @@ class UnifiNVR implements ICacheable {
 
         this._host = host;
         this._username = username;
-        this._password = password;
 
-        // TODO Fix this Jest-induced kludge, possible race condition
+        // TODO Fix this Jest-induced kludge, it creates a possible race condition
         if(UnifiNVR._unifiProtectModule == undefined) {
-            UnifiNVR._unifiProtectModule = await import('unifi-protect');
+            UnifiNVR._unifiProtectModule = await import("unifi-protect");
         }
         this._protectApi = new UnifiNVR._unifiProtectModule.ProtectApi();
 
         this._logger.info(`Connecting to NVR at '${this._host}' with username '${this._username}'...`)
-        if(!(await this._protectApi.login(this._host, this._username, this._password))) {
-            throw new Error('Invalid login credentials');
+        if(!(await this._protectApi.login(this._host, this._username, password))) {
+            throw new Error("Invalid login credentials");
         };
 
         if(!(await this._protectApi.getBootstrap())) {
@@ -185,4 +191,8 @@ class UnifiNVR implements ICacheable {
 
     public get host() { return this._host; };
     public get cameras() { return this._protectApi.bootstrap.cameras; };
+
+    public createLivestream() {
+        return this._protectApi.createLivestream();
+    }
 }

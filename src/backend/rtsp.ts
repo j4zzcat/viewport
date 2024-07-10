@@ -1,5 +1,5 @@
 import {Logger} from "../utils/logger";
-import {IStream, IVideoProvider} from "./backend";
+import {IStreamController, IVideoProvider} from "./backend";
 import {BasePlugin} from "../utils/plugin";
 
 export class RTSPVideoProvider extends BasePlugin implements IVideoProvider {
@@ -19,13 +19,13 @@ export class RTSPVideoProvider extends BasePlugin implements IVideoProvider {
         }
     }
 
-    public async getOrCreateStreams(url: URL): Promise<IStream[]> {
+    public async getOrCreateStreams(url: URL): Promise<IStreamController[]> {
         this._logger.debug(`Creating new RTSPStream to handle '${url}'`);
         return [new RTSPStream(url) ]
     }
 }
 
-export class RTSPStream implements IStream {
+export class RTSPStream implements IStreamController {
     private _logger = Logger.createLogger(RTSPStream.name);
     private readonly _url;
     private readonly _id: string;
