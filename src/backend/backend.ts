@@ -6,10 +6,10 @@ import {PluginRegistry} from "../utils/plugin";
 
 export interface IVideoProvider {
     canHandle(url: URL): boolean
-    getOrCreateStreams(url: URL): Promise<IStream[]>
+    createStreamController(url: URL): Promise<IStreamController[]>
 };
 
-export interface IStream {
+export interface IStreamController {
     get id(): string;
     get codec(): string;
     get container(): string;
