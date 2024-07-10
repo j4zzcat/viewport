@@ -1,8 +1,10 @@
-import {afterAll, describe, expect, test} from '@jest/globals';
+import {afterAll, beforeAll, describe, expect, test} from '@jest/globals';
 import {UnifiStreamProvider} from "../src/backend/unifi";
+import {context} from "../src/context";
+import {WebSocketServer} from "ws";
 
 describe(`Testing ${UnifiStreamProvider.name}`, () => {
-    let usm = new UnifiStreamProvider();
+    let usm = context.createUnifiStreamProvider();
 
     test('Valid URLs can be handled', () => {
         expect(usm.canHandle(new URL('unifi://u:p@host/camera'))).toBe(true);
@@ -23,9 +25,13 @@ describe(`Testing ${UnifiStreamProvider.name}`, () => {
 });
 
 describe(`Testing ${UnifiStreamProvider.name} WebSocket Server`, () => {
-    let usm = new UnifiStreamProvider();
+    context.createWebSocketServer = (port) => {
+        return new WebSocketServer({port: 5055});
+    }
+
+    let usm = context.createUnifiStreamProvider();
 
     test(`Connection mechanics`, () => {
-       // let ws = new WebSocket("localhost:9080");
+       let ws = new WebSocket("localhost:5055/192.168.4.10:מדשאה");
     });
 });
