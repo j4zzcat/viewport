@@ -9,19 +9,25 @@ export class UnifiStreamProvider extends BasePlugin implements IStreamProvider {
 
     private _unifiNvrCache = context.createCachingFactory<UnifiNvr>(UnifiNvr, (...args: any[]) => `${args[0]}:${args[1]}`);
     private _streamsById = new Map<string, IStreamController>()
-    private _webSocketServer;
+    private _wss;
 
     constructor() {
         super("unifi");
-        // this.createWebSocketServer();
+        this.createWebSocketServer();
     }
 
     private createWebSocketServer() {
         const clientId = (request) => `${request.socket.remoteAddress}:${request.socket.remotePort}`;
 
-        this._webSocketServer = context.createWebSocketServer(8087);
-        this._webSocketServer.on("connection", (ws: WebSocket, request) => {
+        this._wss = context.createWebSocketServer(8087);
+        this._wss.once("listening", () => {
+            this._logger.debug(`WebSocketServer listening on port '${this._wss.address().port}'`);
+            // console.log(`WebSocketServer listening on port '${this._wss.address().port}'`);
+        })
+
+        this._wss.on("connection", (ws: WebSocket, request) => {
             this._logger.debug(`Client '${clientId(request)}' wants to connect, request path is '${request.url}'`);
+            // console.log(`Client '${clientId(request)}' wants to connect, request path is '${request.url}'`);
 
             // ws.on("message", (ws: WebSocket, request) => {
             //     const { type, topic } = JSON.parse(request);

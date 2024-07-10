@@ -51,4 +51,3 @@ export class DefaultLogger {
         return s;
     }
 }
-

@@ -26,7 +26,7 @@ export class RTSPStreamProvider extends BasePlugin implements IStreamProvider {
 }
 
 export class RTSPStream implements IStreamController {
-    private _logger = Logger.createLogger(RTSPStream.name);
+    private _logger = context.createChildLogger(RTSPStream.name);
     private readonly _url;
     private readonly _id: string;
     private _codec: string;

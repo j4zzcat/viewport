@@ -21,6 +21,23 @@ export class DefaultContext {
         return this._logger.createLogger(clazz);
     }
 
+    private createLoggingProxy<T>(obj: T): T {
+        const _logger = this.createChildLogger("Proxy");
+
+        return new Proxy(obj, {
+            get(target, prop, receiver) {
+                const original = Reflect.get(target, prop, receiver);
+                if (typeof original === 'function') {
+                    return (...args: any[]): any => {
+                        receiver._logger.debug(`${String(prop)}: ${JSON.stringify(args)}`);
+                        return (original as Function).apply(target, args);
+                    };
+                }
+                return original;
+            }
+        });
+    }
+
     public createCachingFactory<T extends ICacheable>(
         ctor: { new(): T },
         keyGenerator: (...args: any[]) => string = (...args: any[]) => { return args.join(':')}): CachingFactory<T> {
@@ -41,7 +58,7 @@ export class DefaultContext {
     }
 
     public createUnifiStreamProvider(): UnifiStreamProvider {
-        return new UnifiStreamProvider();
+        return this.createLoggingProxy(new UnifiStreamProvider());
     }
 
     public createUnifiStreamController(
@@ -50,12 +67,12 @@ export class DefaultContext {
         unifiStreamProvider: UnifiStreamProvider,
         unifiNvr: UnifiNvr): UnifiStreamController {
 
-        return new UnifiStreamController(
+        return this.createLoggingProxy(new UnifiStreamController(
             cameraName,
             cameraId,
             unifiStreamProvider,
             unifiNvr
-        );
+        ));
     }
 
     public createRTSPStreamProvider(): RTSPStreamProvider {
