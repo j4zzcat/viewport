@@ -2,23 +2,61 @@ import {Logger} from "../utils/logger";
 import {IStream, IVideoProvider} from "./backend";
 import {BasePlugin} from "../utils/plugin";
 import {CachingFactory, ICacheable} from "../utils/cache";
+import {WebSocket} from "ws";
 
 export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
     _logger = Logger.createLogger(UnifiVideoProvider.name);
-    private _unifiNvrFactory = new CachingFactory<UnifiNVR>(
-        UnifiNVR,
-        (...args: any[]) => `${args[0]}:${args[1]}`);
+
+    private _unifiNvrFactory = new CachingFactory<UnifiNVR>(UnifiNVR, (...args: any[]) => `${args[0]}:${args[1]}`);
+    private _webSocketServer = new WebSocket.Server({ port: 8087 });
+    private _streamsById = new Map<string, IStream>()
 
     constructor() {
         super('unifi');
+    }
+
+    private createWebSocketServer() {
+        const clientId = (request) => `${request.socket.remoteAddress}:${request.socket.remotePort}`
+
+        this._webSocketServer.on("connection", (ws: WebSocket, request) => {
+            this._logger.debug(`Client '${clientId(request)}' wants to connect`);
+
+            ws.on("message", (ws: WebSocket, request) => {
+                const { type, topic } = JSON.parse(request);
+                switch(type) {
+                    case "subscribe":
+                        this._logger.debug(`Client '${clientId(request)}' wants to subscribe to '${topic}'`);
+
+                        let stream = this._streamsById.get(topic);
+                        if(stream != undefined) {
+                            this._logger.debug(`Found Stream '${stream.id}'`);
+                            stream.start(ws);
+
+                        } else {
+                            this._logger.warn(`Can't find stream with topic '${topic}'`);
+                            ws.send(JSON.stringify({error: "Unknown stream id"}))
+                            ws.close();
+                        }
+
+                        break;
+
+                    case "unsubscribe":
+                        break;
+
+                    default:
+                        ws.send(JSON.stringify({ error: "Unknown message type" }));
+                }
+
+            })
+        });
     }
 
     /**
      * Handles URLs in the form of unifi://.../camera/...
      */
     public canHandle(url: URL): boolean {
-        if(url.protocol.split(':')[0] == 'unifi' &&
-            decodeURI(url.pathname).split('/')[1] == 'camera') {
+        if(url.protocol.split(':')[0] == "unifi" &&
+            decodeURI(url.pathname).split('/')[1] == "camera") {
             return true;
         } else {
             return false;
@@ -31,7 +69,7 @@ export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
             throw new Error(`Expecting url.pathname to specify either '/camera/_all' or /camera/camera1,camera2... but got '${splitPathname[2]}'`);
         }
 
-        this._logger.debug(`Getting or creating the UnifiNVR for url '${url}'`);
+        this._logger.debug(`Creating (or getting from the cache) UnifiNVR for url '${url}'`);
         let unifiNvr = await this._unifiNvrFactory.getOrCreate(
             url.host,
             url.username,
@@ -43,7 +81,7 @@ export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
         const requestedCameras = splitPathname[2];
         this._logger.debug(`Requested cameras: '${requestedCameras}'`);
 
-        if(requestedCameras == '_all') {
+        if(requestedCameras == "_all") {
             for(let camera of unifiNvr.cameras) {
                 cameras.push({
                     id: camera.id,
@@ -67,26 +105,36 @@ export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
         }
 
         this._logger.debug(`Found '${cameras.length}' cameras: '${cameras.map((val) => val.name)}'`);
-        this._logger.info(`Creating '${cameras.length}' transcoders`);
-        process.exit(0);
+        this._logger.info(`Creating '${cameras.length}' Streams`);
+        for(let camera of cameras) {
+            this._logger.debug(`Creating Stream to handle camera: '${camera.name}'`);
 
+            let unifiStream = new UnifiStream(camera.name, camera.id, this, unifiNvr);
+            this._streamsById.set(unifiStream.id, unifiStream);
+        }
     }
 }
 
 export class UnifiStream implements IStream {
     private _logger = Logger.createLogger(UnifiStream.name);
-    private readonly _url;
-    private readonly _id: string;
+    private readonly _unifiCameraName;
+    private readonly _unifiCameraId;
+    private readonly _unifiVideoProvider;
+    private readonly _unifiNvr;
     private _codec: string;
     private _container: string;
     private _endpoint: string;
 
-    constructor(url: URL) {
-        this._url = url;
-        this._id = this._url;
+    constructor(cameraName: string, cameraId: string, videoProvider: UnifiVideoProvider, nvr: UnifiNVR) {
+        this._unifiCameraName = cameraName;
+        this._unifiCameraId = cameraId;
+        this._unifiVideoProvider = videoProvider;
+        this._unifiNvr = nvr;
+
+        this._logger.debug(`Stream '${this.id}' created`);
     }
 
-    public get id(): string { return this._id; }
+    public get id(): string { return `${this._unifiNvr.host}:${this._unifiCameraName}`; }
     public get codec(): string { return this._codec; }
     public get container(): string { return this._container }
     public get endpoint(): string { return this._endpoint }
@@ -117,7 +165,7 @@ class UnifiNVR implements ICacheable {
         this._username = username;
         this._password = password;
 
-        // TODO Fix this Jest-induced kludge
+        // TODO Fix this Jest-induced kludge, possible race condition
         if(UnifiNVR._unifiProtectModule == undefined) {
             UnifiNVR._unifiProtectModule = await import('unifi-protect');
         }
@@ -137,16 +185,4 @@ class UnifiNVR implements ICacheable {
 
     public get host() { return this._host; };
     public get cameras() { return this._protectApi.bootstrap.cameras; };
-
-    public addListener(cameraId, listener) {
-        let protectLiveStream = this._protectApi.createLivestream();
-        protectLiveStream.addListener('codec', (codec) => this._logger.info(codec));
-        protectLiveStream.addListener('message', listener);
-        protectLiveStream.start(cameraId, 0);
-
-    }
-
-    public removeListener(listener) {
-
-    }
 }

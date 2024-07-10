@@ -15,7 +15,7 @@ export interface IStream {
     get container(): string;
     get endpoint(): string;
 
-    start();
+    start(context: any);
     stop();
 }
 
@@ -28,7 +28,7 @@ export class Backend {
     private _layoutManagersRegistry: PluginRegistry;
 
     public constructor() {
-        this._logger.debug('Filling plugin registries...');
+        this._logger.debug("Filling plugin registries...");
 
         this._videoProvidersRegistry = new PluginRegistry()
             .addPlugin(new UnifiVideoProvider())
@@ -39,7 +39,7 @@ export class Backend {
     }
 
     public async handleStreamAction(layout: string, sUrls: readonly string[]): Promise<void> {
-        this._logger.debug(`Handling stream action`);
+        this._logger.debug("Handling stream action");
         for(let sUrl of sUrls) {
             let url;
 
@@ -53,15 +53,15 @@ export class Backend {
             Logger.addRedaction(url.password);
             this._logger.debug(`Processing stream url '${sUrl}'`);
 
-            this._logger.debug(`Looking for a suitable video provider`);
+            this._logger.debug("Looking for a suitable video provider");
             let videoProvider = this._videoProvidersRegistry.getPlugin(url);
             let streams;
 
             try {
-                this._logger.debug(`Trying to create streams...`);
+                this._logger.debug("Trying to create streams...");
                 streams = await videoProvider.getOrCreateStreams(url);
             } catch(e) {
-                this._logger.error(`Cannot create stream`);
+                this._logger.error("Cannot create stream");
                 throw e;
             }
 
