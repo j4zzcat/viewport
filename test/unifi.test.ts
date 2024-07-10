@@ -1,9 +1,10 @@
-import {describe, expect, test} from '@jest/globals';
-import {UnifiVideoProvider} from "../src/backend/unifi";
+import {afterAll, describe, expect, test} from '@jest/globals';
+import {UnifiStreamProvider} from "../src/backend/unifi";
 
-describe('Testing UnifiVideoProvider', () => {
+describe(`Testing ${UnifiStreamProvider.name}`, () => {
+    let usm = new UnifiStreamProvider();
+
     test('Valid URLs can be handled', () => {
-        let usm = new UnifiVideoProvider();
         expect(usm.canHandle(new URL('unifi://u:p@host/camera'))).toBe(true);
         expect(usm.canHandle(new URL('unifi://u@host/camera/'))).toBe(true);
         expect(usm.canHandle(new URL('unifi://u@host/camera//'))).toBe(true);
@@ -14,12 +15,17 @@ describe('Testing UnifiVideoProvider', () => {
     });
 
     test('Invalid URLs cannot be handled', () => {
-        let usm = new UnifiVideoProvider();
         expect(usm.canHandle(new URL('unifi://u:p@host'))).toBe(false);
         expect(usm.canHandle(new URL('xunifi://u:p@host/camera'))).toBe(false);
         expect(usm.canHandle(new URL('unifi://u:p@host/xcamera'))).toBe(false);
         expect(usm.canHandle(new URL('xunifi://192.168.4.10/camera'))).toBe(false);
     });
+});
 
-    
+describe(`Testing ${UnifiStreamProvider.name} WebSocket Server`, () => {
+    let usm = new UnifiStreamProvider();
+
+    test(`Connection mechanics`, () => {
+       // let ws = new WebSocket("localhost:9080");
+    });
 });

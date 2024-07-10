@@ -1,12 +1,9 @@
-import {Logger} from "../utils/logger";
-import {UnifiVideoProvider} from "./unifi";
-import {RTSPVideoProvider} from "./rtsp";
-import {GridLayoutManager} from "./layout";
+import {context} from "../context";
 import {PluginRegistry} from "../utils/plugin";
 
-export interface IVideoProvider {
+export interface IStreamProvider {
     canHandle(url: URL): boolean
-    createStreamController(url: URL): Promise<IStreamController[]>
+    createStreamControllers(url: URL): Promise<IStreamController[]>
 };
 
 export interface IStreamController {
@@ -15,7 +12,7 @@ export interface IStreamController {
     get container(): string;
     get endpoint(): string;
 
-    start(context: any);
+    start();
     stop();
 }
 
@@ -23,19 +20,19 @@ export interface ILayoutManager {
 }
 
 export class Backend {
-    private _logger = Logger.createLogger(Backend.name);
-    private _videoProvidersRegistry: PluginRegistry;
+    private _logger = context.createChildLogger(Backend.name);
+    private _streamProvidersRegistry: PluginRegistry;
     private _layoutManagersRegistry: PluginRegistry;
 
     public constructor() {
         this._logger.debug("Filling plugin registries...");
 
-        this._videoProvidersRegistry = new PluginRegistry()
-            .addPlugin(new UnifiVideoProvider())
-            .addPlugin(new RTSPVideoProvider());
+        this._streamProvidersRegistry = context.createPluginRegistry()
+            .addPlugin(context.createUnifiStreamProvider())
+            .addPlugin(context.createRTSPStreamProvider());
 
-        this._layoutManagersRegistry = new PluginRegistry()
-            .addPlugin(new GridLayoutManager());
+        this._layoutManagersRegistry = context.createPluginRegistry()
+            .addPlugin(context.createGridLayoutManager());
     }
 
     public async handleStreamAction(layout: string, sUrls: readonly string[]): Promise<void> {
@@ -50,24 +47,24 @@ export class Backend {
                 throw new Error(`Failed to parse stream url, got '${e}'`);
             }
 
-            Logger.addRedaction(url.password);
+            context.rootLogger.addRedaction(url.password);
             this._logger.debug(`Processing stream url '${sUrl}'`);
 
             this._logger.debug("Looking for a suitable video provider");
-            let videoProvider = this._videoProvidersRegistry.getPlugin(url);
-            let streams;
+            let streamProvider = this._streamProvidersRegistry.getPlugin(url);
+            let streamControllers;
 
             try {
-                this._logger.debug("Trying to create streams...");
-                streams = await videoProvider.getOrCreateStreams(url);
+                this._logger.debug("Trying to create stream controllers...");
+                streamControllers = await streamProvider.createStreamControllers(url);
             } catch(e) {
-                this._logger.error("Cannot create stream");
+                this._logger.error("Cannot create stream controller");
                 throw e;
             }
 
-            streams.forEach((stream) => {
-                stream.start();
-                this._logger.info(`Started stream '${stream.id}', codec is '${stream.codec}', container is '${stream.container}' endpoint is '${stream.endpoint}'`)
+            streamControllers.forEach((streamController) => {
+                streamController.start();
+                this._logger.info(`Started stream controller '${streamController.id}', codec is '${streamController.codec}', container is '${streamController.container}' endpoint is '${streamController.endpoint}'`)
             });
         }
     }

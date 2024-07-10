@@ -1,12 +1,10 @@
-import {Logger} from "./logger";
+import {context} from "../context";
 
-export class BasePlugin {
-    protected _logger = Logger.createLogger(BasePlugin.name);
+export abstract class BasePlugin {
     private readonly _id;
 
-    constructor(id: string) {
+    protected constructor(id: string) {
         this._id = id;
-        this._logger.debug(`Plugin '${this.id}' created`);
     }
 
     public get id(): string { return this._id; }
@@ -14,7 +12,7 @@ export class BasePlugin {
 }
 
 export class PluginRegistry {
-    private _logger = Logger.createLogger(PluginRegistry.name);
+    private _logger = context.createChildLogger(PluginRegistry.name);
     private _plugins = new Map<String, BasePlugin>();
 
     public addPlugin(plugin) {

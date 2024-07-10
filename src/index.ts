@@ -1,6 +1,6 @@
 #!/usr/bin/env node --no-warnings --import tsx
 
-import {MainCommandLine} from "./frontend/cli";
+import {context} from "./context";
 
-const commandLine: MainCommandLine = new MainCommandLine();
+const commandLine = context.createMainCommandLine();
 commandLine.executeAsync();

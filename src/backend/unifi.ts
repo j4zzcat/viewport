@@ -1,54 +1,54 @@
-import {Logger} from "../utils/logger";
-import {IStreamController, IVideoProvider} from "./backend";
-import {BasePlugin} from "../utils/plugin";
+import {context} from "../context";
 import {CachingFactory, ICacheable} from "../utils/cache";
+import {BasePlugin} from "../utils/plugin";
+import {IStreamController, IStreamProvider} from "./backend";
 import {WebSocket} from "ws";
 
-export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
-    _logger = Logger.createLogger(UnifiVideoProvider.name);
+export class UnifiStreamProvider extends BasePlugin implements IStreamProvider {
+    private _logger = context.createChildLogger(UnifiStreamProvider.name);
 
-    private _unifiNvrFactory = new CachingFactory<UnifiNVR>(UnifiNVR, (...args: any[]) => `${args[0]}:${args[1]}`);
-    private _webSocketServer = new WebSocket.Server({ port: 8087 });
+    private _unifiNvrCache = context.createCachingFactory<UnifiNvr>(UnifiNvr, (...args: any[]) => `${args[0]}:${args[1]}`);
     private _streamsById = new Map<string, IStreamController>()
+    private _webSocketServer;
 
     constructor() {
-        super('unifi');
-        this.createWebSocketServer();
+        super("unifi");
+        // this.createWebSocketServer();
     }
 
     private createWebSocketServer() {
-        const clientId = (request) => `${request.socket.remoteAddress}:${request.socket.remotePort}`
+        const clientId = (request) => `${request.socket.remoteAddress}:${request.socket.remotePort}`;
 
+        this._webSocketServer = context.createWebSocketServer(8087);
         this._webSocketServer.on("connection", (ws: WebSocket, request) => {
-            this._logger.debug(`Client '${clientId(request)}' wants to connect`);
+            this._logger.debug(`Client '${clientId(request)}' wants to connect, request path is '${request.url}'`);
 
-            ws.on("message", (ws: WebSocket, request) => {
-                const { type, topic } = JSON.parse(request);
-                switch(type) {
-                    case "subscribe":
-                        this._logger.debug(`Client '${clientId(request)}' wants to subscribe to '${topic}'`);
-
-                        let stream = this._streamsById.get(topic);
-                        if(stream != undefined) {
-                            this._logger.debug(`Found Stream '${stream.id}'`);
-                            stream.start(ws);
-
-                        } else {
-                            this._logger.warn(`Can't find stream with topic '${topic}'`);
-                            ws.send(JSON.stringify({error: "Unknown stream id"}))
-                            ws.close();
-                        }
-
-                        break;
-
-                    case "unsubscribe":
-                        break;
-
-                    default:
-                        ws.send(JSON.stringify({ error: "Unknown message type" }));
-                }
-
-            })
+            // ws.on("message", (ws: WebSocket, request) => {
+            //     const { type, topic } = JSON.parse(request);
+            //     switch(type) {
+            //         case "subscribe":
+            //             this._logger.debug(`Client '${clientId(request)}' wants to subscribe to '${topic}'`);
+            //
+            //             let stream = this._streamsById.get(topic);
+            //             if(stream != undefined) {
+            //                 this._logger.debug(`Found Stream '${stream.id}'`);
+            //                 // stream.start(ws);
+            //
+            //             } else {
+            //                 this._logger.warn(`Can't find stream with topic '${topic}'`);
+            //                 ws.send(JSON.stringify({error: "Unknown stream id"}))
+            //                 ws.close();
+            //             }
+            //
+            //             break;
+            //
+            //         case "unsubscribe":
+            //             break;
+            //
+            //         default:
+            //             ws.send(JSON.stringify({ error: "Unknown message type" }));
+            //     }
+            // })
         });
     }
 
@@ -64,14 +64,14 @@ export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
         }
     }
 
-    public async getOrCreateStreams(url: URL): Promise<IStreamController[]> {
+    public async createStreamControllers(url: URL): Promise<IStreamController[]> {
         let splitPathname = decodeURI(url.pathname).split('/');
         if(splitPathname[2].trim().length == 0) {
             throw new Error(`Expecting url.pathname to specify either '/camera/_all' or /camera/camera1,camera2... but got '${splitPathname[2]}'`);
         }
 
         this._logger.debug(`Creating (or getting from the cache) UnifiNVR for url '${url}'`);
-        let unifiNvr = await this._unifiNvrFactory.getOrCreate(
+        let unifiNvr = await this._unifiNvrCache.getOrCreate(
             url.host,
             url.username,
             url.password);
@@ -107,30 +107,35 @@ export class UnifiVideoProvider extends BasePlugin implements IVideoProvider {
 
         this._logger.debug(`Found '${cameras.length}' cameras: '${cameras.map((val) => val.name)}'`);
         this._logger.info(`Creating '${cameras.length}' Streams`);
+
+        let result = [];
         for(let camera of cameras) {
             this._logger.debug(`Creating Stream to handle camera: '${camera.name}'`);
 
-            let unifiStream = new UnifiStream(camera.name, camera.id, this, unifiNvr);
+            let unifiStream = context.createUnifiStreamController(camera.name, camera.id, this, unifiNvr);
             this._streamsById.set(unifiStream.id, unifiStream);
+            result.push(unifiStream);
         }
+
+        return result;
     }
 }
 
-export class UnifiStream implements IStreamController {
-    private _logger = Logger.createLogger(UnifiStream.name);
+export class UnifiStreamController implements IStreamController {
+    private _logger = context.createChildLogger(UnifiStreamController.name);
     private readonly _unifiCameraName;
     private readonly _unifiCameraId;
-    private readonly _unifiVideoProvider;
+    private readonly _unifiStreamProvider;
     private readonly _unifiNvr;
     private _codec: string;
     private _container: string;
     private _endpoint: string;
 
-    constructor(cameraName: string, cameraId: string, videoProvider: UnifiVideoProvider, nvr: UnifiNVR) {
+    constructor(cameraName: string, cameraId: string, unifiStreamProvider: UnifiStreamProvider, unifiNvr: UnifiNvr) {
         this._unifiCameraName = cameraName;
         this._unifiCameraId = cameraId;
-        this._unifiVideoProvider = videoProvider;
-        this._unifiNvr = nvr;
+        this._unifiStreamProvider = unifiStreamProvider;
+        this._unifiNvr = unifiNvr;
 
         this._logger.debug(`Stream '${this.id}' created`);
     }
@@ -140,13 +145,19 @@ export class UnifiStream implements IStreamController {
     public get container(): string { return this._container }
     public get endpoint(): string { return this._endpoint }
 
-    public start(ws) {
-        this._logger.debug(`Starting stream '${this.id}'...`);
+
+    public start() {
+        this._logger.debug(`Starting stream controller '${this.id}'...`);
+    }
+
+    public wire(ws) {
 
         let livestream = this._unifiNvr.createLivestream();
         livestream.on("message", (buffer) => {
             ws.send(buffer);
         })
+
+        livestream.start(this._unifiCameraId, 0);
 
         this._logger.debug(`Connecting to Unifi fMPEG web socket for camera ${this._unifiCameraName}`);
     }
@@ -156,26 +167,25 @@ export class UnifiStream implements IStreamController {
     }
 }
 
-class UnifiNVR implements ICacheable {
-    private _logger = Logger.createLogger(UnifiNVR.name);
+export class UnifiNvr implements ICacheable {
+    private _logger = context.createChildLogger(UnifiNvr.name);
     private _host;
     private _username;
     private _protectApi;
-    private _livestream;
 
     static _unifiProtectModule;
 
     public async initialize(host, username, password): Promise<void> {
-        this._logger.debug(`Initializing new ${UnifiNVR.name} instance`);
+        this._logger.debug(`Initializing new ${UnifiNvr.name} instance`);
 
         this._host = host;
         this._username = username;
 
         // TODO Fix this Jest-induced kludge, it creates a possible race condition
-        if(UnifiNVR._unifiProtectModule == undefined) {
-            UnifiNVR._unifiProtectModule = await import("unifi-protect");
+        if(UnifiNvr._unifiProtectModule == undefined) {
+            UnifiNvr._unifiProtectModule = await import("unifi-protect");
         }
-        this._protectApi = new UnifiNVR._unifiProtectModule.ProtectApi();
+        this._protectApi = new UnifiNvr._unifiProtectModule.ProtectApi();
 
         this._logger.info(`Connecting to NVR at '${this._host}' with username '${this._username}'...`)
         if(!(await this._protectApi.login(this._host, this._username, password))) {

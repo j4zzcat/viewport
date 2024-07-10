@@ -1,14 +1,14 @@
 const winston = require('winston');
 const { combine, colorize, timestamp, align, printf } = winston.format;
 
-class SimpleLogger {
+export class DefaultLogger {
     private _winston;
 
     constructor() {
         this._winston = winston.createLogger({
             level: process.env.LOG_LEVEL || 'info',
             format: combine(
-                colorize({ info: true }),
+                colorize(),
                 timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
                 align(),
                 printf((info) => `[${info.timestamp}] [${info.level}] ${this.messageFormatter(info)}`)
@@ -51,6 +51,4 @@ class SimpleLogger {
         return s;
     }
 }
-
-export const Logger = new SimpleLogger();
 

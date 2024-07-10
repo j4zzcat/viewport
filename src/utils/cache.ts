@@ -1,11 +1,11 @@
-import {Logger} from "./logger";
+import {context} from "../context";
 
 export interface ICacheable {
     initialize(...args: any[]): Promise<void>;
 }
 
 export class CachingFactory<T extends ICacheable> {
-    private _logger = Logger.createLogger(CachingFactory.name);
+    private _logger = context.createChildLogger(CachingFactory.name);
     private readonly _ctor: { new(): T };
     private readonly _keyGenerator;
     private _cache: Map<string, T> = new Map();

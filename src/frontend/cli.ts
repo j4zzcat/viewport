@@ -1,10 +1,9 @@
+import {context} from "../context";
 import {
     CommandLineAction,
     CommandLineFlagParameter,
     CommandLineParser, CommandLineStringListParameter, CommandLineStringParameter
 } from "@rushstack/ts-command-line";
-import {Backend} from "../backend/backend";
-import {Logger} from "../utils/logger";
 
 export class StreamAction extends CommandLineAction {
     private _layout: CommandLineStringParameter;
@@ -32,7 +31,7 @@ export class StreamAction extends CommandLineAction {
     }
 
     protected async onExecute(): Promise<void> {
-        await new Backend().handleStreamAction(this._layout.value, this._stream.values);
+        await context.createBackend().handleStreamAction(this._layout.value, this._stream.values);
     }
 }
 
@@ -59,7 +58,7 @@ export class ViewAction extends CommandLineAction {
 }
 
 export class MainCommandLine extends CommandLineParser {
-    private _logger = Logger.createLogger(MainCommandLine.name);
+    private _logger = context.createChildLogger(MainCommandLine.name);
     private readonly _verbose: CommandLineFlagParameter;
 
     public constructor() {
@@ -78,8 +77,9 @@ export class MainCommandLine extends CommandLineParser {
 
     protected async onExecute(): Promise<void> {
         this._logger.info('Starting...');
-        if(this._verbose) {
-            Logger.rootLevel = 'debug';
+
+        if(this._verbose.value == true) {
+            context.rootLogger.rootLevel = 'debug';
         }
 
         await super.onExecute();
