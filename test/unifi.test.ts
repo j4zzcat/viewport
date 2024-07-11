@@ -3,8 +3,11 @@ import {UnifiStreamProvider} from "../src/backend/unifi";
 import {context} from "../src/context";
 import {WebSocketServer} from "ws";
 
-describe(`Testing ${UnifiStreamProvider.name}`, () => {
+describe(`${UnifiStreamProvider.name}.canHandle`, () => {
     let usm = context.createUnifiStreamProvider();
+    afterAll(() => {
+        usm.dispose();
+    })
 
     test('Valid URLs can be handled', () => {
         expect(usm.canHandle(new URL('unifi://u:p@host/camera'))).toBe(true);
@@ -30,8 +33,11 @@ describe(`Testing ${UnifiStreamProvider.name} WebSocket Server`, () => {
     }
 
     let usm = context.createUnifiStreamProvider();
+    afterAll(() => {
+        usm.dispose();
+    })
 
     test(`Connection mechanics`, () => {
-       let ws = new WebSocket("localhost:5055/192.168.4.10:מדשאה");
+       let ws = new WebSocket("ws://localhost:5055/192.168.4.10:camera1");
     });
 });
