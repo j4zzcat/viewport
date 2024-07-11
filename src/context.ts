@@ -21,7 +21,7 @@ export class DefaultContext {
         return this._logger.createLogger(clazz);
     }
 
-    private createLoggingProxy<T>(obj: T): T {
+    private createLoggingProxy<T extends object>(obj: T): T {
         const _logger = this.createChildLogger("Proxy");
 
         return new Proxy(obj, {
