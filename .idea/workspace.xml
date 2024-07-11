@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/backend.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/backend.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/rtsp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/rtsp.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/unifi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/unifi.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/context.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/context.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/unifi.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/unifi.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testbed/unifi-testbed.ts" beforeDir="false" afterPath="$PROJECT_DIR$/testbed/unifi-testbed.ts" afterDir="false" />
-    </list>
+    <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -137,7 +127,7 @@
       <workItem from="1720479563050" duration="3753000" />
       <workItem from="1720506679208" duration="24254000" />
       <workItem from="1720594444505" duration="34765000" />
-      <workItem from="1720687219120" duration="3289000" />
+      <workItem from="1720687219120" duration="3731000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
