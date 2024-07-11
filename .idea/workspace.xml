@@ -2,39 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
-      <change afterPath="$PROJECT_DIR$/testbed/fmpegp/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/fmpegp/main.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/fmpegp/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/fmpegp/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/fmpegp/tsconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/index1.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/index2.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/index3.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/index4.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/index5.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/mpegts.js.map" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/test.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testbed/unifi-testbed.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/backend/backend.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/backend.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/rtsp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/rtsp.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/unifi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/unifi.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/context.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/context.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/logger.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/logger.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fmpegp/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fmpegp/main.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fmpegp/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fmpegp/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fmpegp/tsconfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/index1.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/index2.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/index3.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/index4.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/index5.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/mpegts.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/testbed.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/test/unifi.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/unifi.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/utils.test.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/unifi-testbed.ts" beforeDir="false" afterPath="$PROJECT_DIR$/testbed/unifi-testbed.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,8 +48,10 @@
     "TF_FMT": "false",
     "WebServerToolWindowFactoryState": "false",
     "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src",
+    "nodejs.jest.jest_package": "/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/jest",
     "nodejs_package_manager_path": "npm",
     "ruby.rails.projectView.checked": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "ts.external.directory.path": "/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/typescript/lib"
   }
 }]]></component>
@@ -94,17 +72,58 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Node.js.viewport">
+  <component name="RunManager" selected="Jest.UnifiStreamProvider.canHandle">
+    <configuration name="UnifiStreamProvider.canHandle" type="JavaScriptTestRunnerJest" temporary="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/test/unifi.test.ts" />
+      <test-names>
+        <test-name value="UnifiStreamProvider.canHandle" />
+        <test-name value="" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="Viewport Test" type="NodeJSConfigurationType" application-parameters="stream --stream unifi://dev-user:XXX@192.168.4.10/camera/_all" node-parameters="--no-warnings --import tsx" working-dir="$PROJECT_DIR$">
+      <method v="2" />
+    </configuration>
+    <configuration name="Viewport" type="NodeJSConfigurationType" application-parameters="stream --stream unifi://dev-user:XXX@192.168.4.10/camera/_all" node-parameters="--no-warnings --import tsx" path-to-js-file="src/index.ts" working-dir="$PROJECT_DIR$">
+      <method v="2" />
+    </configuration>
     <configuration name="unifi-testbed.ts" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="testbed/unifi-testbed.ts" show_console_on_std_out="true" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>
-    <configuration name="viewport" type="NodeJSConfigurationType" application-parameters="stream --stream unifi://dev-user:XXX@192.168.4.10/camera/_all" node-parameters="--no-warnings --import tsx" path-to-js-file="src/index.ts" working-dir="$PROJECT_DIR$">
+    <configuration name="Python tests in test" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="viewport" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/test&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Node.js.viewport" />
+      <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
+      <item itemvalue="Node.js.Viewport" />
+      <item itemvalue="Node.js.Viewport Test" />
       <item itemvalue="Node.js.unifi-testbed.ts" />
+      <item itemvalue="Python tests.Python tests in test" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
+        <item itemvalue="Python tests.Python tests in test" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -117,7 +136,8 @@
       <workItem from="1720477270444" duration="2288000" />
       <workItem from="1720479563050" duration="3753000" />
       <workItem from="1720506679208" duration="24254000" />
-      <workItem from="1720594444505" duration="34584000" />
+      <workItem from="1720594444505" duration="34765000" />
+      <workItem from="1720687219120" duration="3289000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -154,13 +174,11 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/backend/unifi.ts</url>
           <line>23</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="15" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/context.ts</url>
           <line>29</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="17" />
         </line-breakpoint>
       </breakpoints>
