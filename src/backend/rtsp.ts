@@ -55,4 +55,8 @@ export class RTSPStream implements IStreamController {
     public async stop(): Promise<void> {
         this._logger.debug(`Stopping stream '${this.id}'`);
     }
+
+    public dispose() {
+        this._logger.debug("Disposed");
+    }
 }

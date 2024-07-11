@@ -3,7 +3,7 @@ import {UnifiStreamProvider} from "../src/backend/unifi";
 import {context} from "../src/context";
 import {WebSocketServer} from "ws";
 
-describe(`${UnifiStreamProvider.name}.canHandle`, () => {
+describe(`${UnifiStreamProvider.name} protocol handling`, () => {
     let usm = context.createUnifiStreamProvider();
     afterAll(() => {
         usm.dispose();

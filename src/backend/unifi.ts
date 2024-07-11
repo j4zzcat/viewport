@@ -1,32 +1,24 @@
 import {context} from "../context";
-import {CachingFactory, ICacheable} from "../utils/cache";
 import {BasePlugin} from "../utils/plugin";
 import {IStreamController, IStreamProvider} from "./backend";
 import {WebSocket} from "ws";
 
-export class UnifiStreamProvider extends BasePlugin implements IStreamProvider {
+export class UnifiStreamsProxy {
     private _logger = context.createChildLogger(UnifiStreamProvider.name);
-
-    private _unifiNvrCache = context.createCachingFactory<UnifiNvr>(UnifiNvr, (...args: any[]) => `${args[0]}:${args[1]}`);
-    private _streamsById = new Map<string, IStreamController>()
     private _wss;
 
     constructor() {
-        super("unifi");
-        this.createWebSocketServer();
     }
 
-    private createWebSocketServer() {
-        const clientId = (request) => `${request.socket.remoteAddress}:${request.socket.remotePort}`;
-
+    private initialize() {
         this._wss = context.createWebSocketServer(8087);
         this._wss.once("listening", () => {
             this._logger.debug(`WebSocketServer listening on port '${this._wss.address().port}'`);
             // console.log(`WebSocketServer listening on port '${this._wss.address().port}'`);
         })
 
-        this._wss.on("connection", (ws: WebSocket, request) => {
-            this._logger.debug(`Client '${clientId(request)}' wants to connect, request path is '${request.url}'`);
+        // this._wss.on("connection", (ws: WebSocket, request) => {
+        // this._logger.debug(`Client '${clientId(request)}' wants to connect, request path is '${request.url}'`);
             // console.log(`Client '${clientId(request)}' wants to connect, request path is '${request.url}'`);
 
             // ws.on("message", (ws: WebSocket, request) => {
@@ -55,11 +47,36 @@ export class UnifiStreamProvider extends BasePlugin implements IStreamProvider {
             //             ws.send(JSON.stringify({ error: "Unknown message type" }));
             //     }
             // })
-        });
+        // });
+    }
+
+    public dispose() {
+        this._wss.close();
+    }
+}
+
+export class UnifiStreamProvider extends BasePlugin implements IStreamProvider {
+    private _logger = context.createChildLogger(UnifiStreamProvider.name);
+
+    private _unifiStreamsProxy = context.createUnifiStreamsProxy();
+    private _unifiNvrsById = new Map<string, UnifiNvr>();
+    private _unifiStreamsById = new Map<string, IStreamController>();
+
+    constructor() {
+        super("unifi");
     }
 
     dispose() {
-        this._wss.close();
+        this._unifiStreamsProxy.dispose();
+
+        this._unifiStreamsById.forEach((unifiStreamController, key) => {
+            unifiStreamController.stop();
+            unifiStreamController.dispose();
+        });
+
+        this._unifiNvrsById.forEach((unifiNvr, key) => {
+            unifiNvr.dispose();
+        });
     }
 
     /**
@@ -81,10 +98,7 @@ export class UnifiStreamProvider extends BasePlugin implements IStreamProvider {
         }
 
         this._logger.debug(`Creating (or getting from the cache) UnifiNVR for url '${url}'`);
-        let unifiNvr = await this._unifiNvrCache.getOrCreate(
-            url.host,
-            url.username,
-            url.password);
+        let unifiNvr = this.getOrCreateUnifiNvr(url.host, url.username, url.password);
 
         this._logger.debug(`Processing requested cameras`);
 
@@ -123,11 +137,22 @@ export class UnifiStreamProvider extends BasePlugin implements IStreamProvider {
             this._logger.debug(`Creating Stream to handle camera: '${camera.name}'`);
 
             let unifiStream = context.createUnifiStreamController(camera.name, camera.id, this, unifiNvr);
-            this._streamsById.set(unifiStream.id, unifiStream);
+            this._unifiStreamsById.set(unifiStream.id, unifiStream);
             result.push(unifiStream);
         }
 
         return result;
+    }
+
+    private getOrCreateUnifiNvr(host, username, password): UnifiNvr {
+        const key = `${username}:${host}`
+        let unifiNvr = this._unifiNvrsById.get(key);
+        if(unifiNvr == undefined) {
+            unifiNvr = context.createUnifiNvr(host, username, password);
+            this._unifiNvrsById.set(key, unifiNvr);
+        }
+
+        return unifiNvr;
     }
 }
 
@@ -175,21 +200,30 @@ export class UnifiStreamController implements IStreamController {
     public stop() {
         this._logger.debug(`Stopping stream '${this.id}'`);
     }
+
+    public dispose() {
+        this._logger.debug("Stopped");
+    }
 }
 
-export class UnifiNvr implements ICacheable {
+export class UnifiNvr {
     private _logger = context.createChildLogger(UnifiNvr.name);
-    private _host;
-    private _username;
+    private readonly _host;
+    private readonly _username;
+    private _password;
     private _protectApi;
 
     static _unifiProtectModule;
-
-    public async initialize(host, username, password): Promise<void> {
-        this._logger.debug(`Initializing new ${UnifiNvr.name} instance`);
-
+    public constructor(host: string, username: string, password: string) {
         this._host = host;
         this._username = username;
+        this._password = password;
+
+        this.initialize();
+    }
+
+    public async initialize(): Promise<void> {
+        this._logger.debug(`Initializing new ${UnifiNvr.name} instance`);
 
         // TODO Fix this Jest-induced kludge, it creates a possible race condition
         if(UnifiNvr._unifiProtectModule == undefined) {
@@ -198,7 +232,7 @@ export class UnifiNvr implements ICacheable {
         this._protectApi = new UnifiNvr._unifiProtectModule.ProtectApi();
 
         this._logger.info(`Connecting to NVR at '${this._host}' with username '${this._username}'...`)
-        if(!(await this._protectApi.login(this._host, this._username, password))) {
+        if(!(await this._protectApi.login(this._host, this._username, this._password))) {
             throw new Error("Invalid login credentials");
         };
 
@@ -214,5 +248,9 @@ export class UnifiNvr implements ICacheable {
 
     public createLivestream() {
         return this._protectApi.createLivestream();
+    }
+
+    public dispose() {
+        this._logger.debug("Stopped");
     }
 }

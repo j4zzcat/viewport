@@ -1,10 +1,9 @@
 import {DefaultLogger} from "./utils/logger";
 import {Logger} from "winston";
-import {CachingFactory, ICacheable} from "./utils/cache";
 import {PluginRegistry} from "./utils/plugin";
 import {MainCommandLine} from "./frontend/cli";
 import {Backend} from "./backend/backend";
-import {UnifiNvr, UnifiStreamController, UnifiStreamProvider} from "./backend/unifi";
+import {UnifiNvr, UnifiStreamController, UnifiStreamProvider, UnifiStreamsProxy} from "./backend/unifi";
 import {RTSPStreamProvider} from "./backend/rtsp";
 import {GridLayoutManager} from "./backend/layout";
 import {WebSocketServer} from "ws";
@@ -38,11 +37,8 @@ export class DefaultContext {
         });
     }
 
-    public createCachingFactory<T extends ICacheable>(
-        ctor: { new(): T },
-        keyGenerator: (...args: any[]) => string = (...args: any[]) => { return args.join(':')}): CachingFactory<T> {
-
-        return new CachingFactory<T>(ctor, keyGenerator);
+    public createUnifiNvr(host: string, username:string , password: string): UnifiNvr {
+        return this.createLoggingProxy(new UnifiNvr(host, username, password))
     }
 
     public createPluginRegistry() {
@@ -81,6 +77,10 @@ export class DefaultContext {
 
     public createGridLayoutManager(): GridLayoutManager {
         return new GridLayoutManager();
+    }
+
+    public createUnifiStreamsProxy() {
+        return this.createLoggingProxy(new UnifiStreamsProxy());
     }
 
     public createWebSocketServer(port: number): WebSocketServer {

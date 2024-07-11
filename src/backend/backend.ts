@@ -15,6 +15,7 @@ export interface IStreamController {
 
     start();
     stop();
+    dispose();
 }
 
 export interface ILayoutManager {
