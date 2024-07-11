@@ -7,4 +7,4 @@ context.createWebSocketServer = (port) => {
 }
 
 let usm = context.createUnifiStreamProvider();
-let ws = new WebSocket("ws://localhost:5055/192.168.4.10:מדשאה");
+let ws = new WebSocket("ws://localhost:5055/192.168.4.10:camera1");
