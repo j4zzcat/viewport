@@ -4,6 +4,7 @@ import {PluginRegistry} from "../utils/plugin";
 export interface IStreamProvider {
     canHandle(url: URL): boolean
     createStreamControllers(url: URL): Promise<IStreamController[]>
+    dispose();
 };
 
 export interface IStreamController {

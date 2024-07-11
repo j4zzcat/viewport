@@ -23,6 +23,9 @@ export class RTSPStreamProvider extends BasePlugin implements IStreamProvider {
         this._logger.debug(`Creating new RTSPStream to handle '${url}'`);
         return [];
     }
+
+    public dispose() {
+    }
 }
 
 export class RTSPStream implements IStreamController {

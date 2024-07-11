@@ -58,6 +58,10 @@ export class UnifiStreamProvider extends BasePlugin implements IStreamProvider {
         });
     }
 
+    dispose() {
+        this._wss.close();
+    }
+
     /**
      * Handles URLs in the form of unifi://.../camera/...
      */
