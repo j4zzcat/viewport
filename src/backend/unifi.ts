@@ -8,6 +8,7 @@ export class UnifiStreamsProxy {
     private _wss;
 
     constructor() {
+        this.initialize();
     }
 
     private initialize() {
