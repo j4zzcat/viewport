@@ -21,12 +21,13 @@ export class DefaultContext {
     }
 
     private createLoggingProxy<T extends object>(obj: T): T {
-        const _logger = this.createChildLogger("Proxy");
+        const _logger = this.createChildLogger("LoggingProxy");
+        _logger.debug(`Wrapping object ${obj} with logging`);
 
         return new Proxy(obj, {
             get(target, prop, receiver) {
                 const original = Reflect.get(target, prop, receiver);
-                if (typeof original === 'function') {
+                if (typeof original === "function") {
                     return (...args: any[]): any => {
                         receiver._logger.debug(`${String(prop)}: ${JSON.stringify(args)}`);
                         return (original as Function).apply(target, args);
@@ -37,11 +38,11 @@ export class DefaultContext {
         });
     }
 
-    public createUnifiNvr(host: string, username:string , password: string): UnifiNvr {
-        return this.createLoggingProxy(new UnifiNvr(host, username, password))
+    public async createUnifiNvr(host: string, username:string , password: string): Promise<UnifiNvr> {
+        return new UnifiNvr(host, username, password);
     }
 
-    public createPluginRegistry() {
+    public async createPluginRegistry(): Promise<PluginRegistry> {
         return new PluginRegistry();
     }
 
@@ -49,26 +50,26 @@ export class DefaultContext {
         return new MainCommandLine();
     }
 
-    public createBackend(): Backend {
+    public async createBackend(): Promise<Backend> {
         return new Backend();
     }
 
-    public createUnifiStreamProvider(): UnifiStreamProvider {
-        return this.createLoggingProxy(new UnifiStreamProvider());
+    public async createUnifiStreamProvider(): Promise<UnifiStreamProvider> {
+        return new UnifiStreamProvider();
     }
 
-    public createUnifiStreamController(
+    public async createUnifiStreamController(
+        unifiStreamsProxy: UnifiStreamsProxy,
+        unifiNvr: UnifiNvr,
         cameraName: string,
-        cameraId: string,
-        unifiStreamProvider: UnifiStreamProvider,
-        unifiNvr: UnifiNvr): UnifiStreamController {
+        cameraId: string): Promise<UnifiStreamController> {
 
-        return this.createLoggingProxy(new UnifiStreamController(
+        return new UnifiStreamController(
+            unifiStreamsProxy,
+            unifiNvr,
             cameraName,
-            cameraId,
-            unifiStreamProvider,
-            unifiNvr
-        ));
+            cameraId
+        );
     }
 
     public createRTSPStreamProvider(): RTSPStreamProvider {

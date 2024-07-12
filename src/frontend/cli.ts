@@ -31,7 +31,8 @@ export class StreamAction extends CommandLineAction {
     }
 
     protected async onExecute(): Promise<void> {
-        await context.createBackend().handleStreamAction(this._layout.value, this._stream.values);
+        let backend = await context.createBackend();
+        await backend.handleStreamAction(this._layout.value, this._stream.values);
     }
 }
 

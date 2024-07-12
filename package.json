@@ -3,6 +3,7 @@
   "dependencies": {
     "@rushstack/ts-command-line": "^4.22.0",
     "argparse": "^2.0.1",
+    "deasync": "^0.1.30",
     "http-server": "^14.1.1",
     "mpegts.js": "^1.7.3",
     "redact-secrets": "^1.0.0",

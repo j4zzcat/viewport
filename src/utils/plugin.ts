@@ -8,22 +8,22 @@ export abstract class BasePlugin {
     }
 
     public get id(): string { return this._id; }
-    public canHandle(specification) { return false; }
+    public async canHandle(specification): Promise<boolean> { return false; }
 }
 
 export class PluginRegistry {
     private _logger = context.createChildLogger(PluginRegistry.name);
     private _plugins = new Map<String, BasePlugin>();
 
-    public addPlugin(plugin) {
+    public async addPlugin(plugin): Promise<PluginRegistry> {
         this._plugins.set(plugin.id, plugin);
         return this;
     }
 
-    public getPlugin(specification): any {
+    public async getPlugin(specification): Promise<BasePlugin> {
         // @ts-ignore
         for (let plugin of this._plugins.values()) {
-            if (plugin.canHandle(specification)) {
+            if (await plugin.canHandle(specification)) {
                 this._logger.debug(`Plugin '${plugin.id}' can handle '${specification}'`);
                 return plugin;
             }

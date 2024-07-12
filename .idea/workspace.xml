@@ -3,7 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/backend/backend.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/backend.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/backend/unifi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/unifi.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/context.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/context.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/cli.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/cli.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/plugin.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/plugin.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,23 +37,23 @@
     <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "TF_FMT": "false",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src",
-    "nodejs.jest.jest_package": "/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/jest",
-    "nodejs_package_manager_path": "npm",
-    "ruby.rails.projectView.checked": "true",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "ts.external.directory.path": "/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/typescript/lib"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;TF_FMT&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/src&quot;,
+    &quot;nodejs.jest.jest_package&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/jest&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ruby.rails.projectView.checked&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/typescript/lib&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/test" />
@@ -65,7 +71,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Jest.UnifiStreamProvider.canHandle">
+  <component name="RunManager" selected="Node.js.Viewport">
     <configuration name="UnifiStreamProvider.canHandle" type="JavaScriptTestRunnerJest" temporary="true">
       <node-interpreter value="project" />
       <node-options value="" />
@@ -130,7 +136,9 @@
       <workItem from="1720479563050" duration="3753000" />
       <workItem from="1720506679208" duration="24254000" />
       <workItem from="1720594444505" duration="34765000" />
-      <workItem from="1720687219120" duration="9545000" />
+      <workItem from="1720687219120" duration="26688000" />
+      <workItem from="1720740098536" duration="94000" />
+      <workItem from="1720777526871" duration="531000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -165,9 +173,14 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/context.ts</url>
-          <line>28</line>
-          <option name="timeStamp" value="17" />
+          <url>file://$PROJECT_DIR$/src/backend/unifi.ts</url>
+          <line>266</line>
+          <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/backend/backend.ts</url>
+          <line>55</line>
+          <option name="timeStamp" value="20" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

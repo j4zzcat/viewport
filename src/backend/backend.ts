@@ -2,8 +2,8 @@ import {context} from "../context";
 import {PluginRegistry} from "../utils/plugin";
 
 export interface IStreamProvider {
-    canHandle(url: URL): boolean
-    createStreamControllers(url: URL): Promise<IStreamController[]>
+    canHandle(url: URL): Promise<boolean>;
+    createStreamControllers(url: URL): Promise<IStreamController[]>;
     dispose();
 };
 
@@ -27,14 +27,14 @@ export class Backend {
     private _layoutManagersRegistry: PluginRegistry;
 
     public constructor() {
+        this.initialize();
+    }
+
+    private async initialize() {
         this._logger.debug("Filling plugin registries...");
 
-        this._streamProvidersRegistry = context.createPluginRegistry()
-            .addPlugin(context.createUnifiStreamProvider())
-            .addPlugin(context.createRTSPStreamProvider());
-
-        this._layoutManagersRegistry = context.createPluginRegistry()
-            .addPlugin(context.createGridLayoutManager());
+        this._streamProvidersRegistry = await context.createPluginRegistry();
+        await this._streamProvidersRegistry.addPlugin(await context.createUnifiStreamProvider());
     }
 
     public async handleStreamAction(layout: string, sUrls: readonly string[]): Promise<void> {
@@ -53,7 +53,9 @@ export class Backend {
             this._logger.debug(`Processing stream url '${sUrl}'`);
 
             this._logger.debug("Looking for a suitable video provider");
-            let streamProvider = this._streamProvidersRegistry.getPlugin(url);
+            // let streamProvider = await this._streamProvidersRegistry.getPlugin(url) as IStreamProvider;
+            let streamProvider = await context.createUnifiStreamProvider();
+
             let streamControllers;
 
             try {
