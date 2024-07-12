@@ -15,7 +15,7 @@ function onSourceOpen() {
     if (MediaSource.isTypeSupported(mimeCodec)) {
         const sourceBuffer = mediaSource.addSourceBuffer(mimeCodec);
 
-        const socket = new WebSocket('ws://localhost:8087'); // replace with your WebSocket URL
+        const socket = new WebSocket('ws://localhost:4001/dev-user:dev10203040$Dx@192.168.4.10/65d741550170b803e4013dc4'); // replace with your WebSocket URL
 
         socket.binaryType = 'arraybuffer';
 
@@ -27,6 +27,7 @@ function onSourceOpen() {
         };
 
         socket.onmessage = (event) => {
+            console.log("buffer received")
             const data = new Uint8Array(event.data);
             sourceBuffer.appendBuffer(data);
         };
