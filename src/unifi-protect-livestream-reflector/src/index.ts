@@ -54,6 +54,7 @@ wss.on("connection", (ws:WebSocket, req) => {
             if (success == true) {
                 protectApi.getBootstrap().then((success) => {
                     if (success == true) {
+                        console.log(protectApi.bootstrap.cameras);
                         logger.debug("Wiring the livestream to the client's WebSocket")
 
                         let livestream = protectApi.createLivestream();

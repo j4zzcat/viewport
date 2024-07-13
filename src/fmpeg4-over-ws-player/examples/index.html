@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Kiosk</title>
+    <style>
+        body,
+        html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
+            width: 100%;
+            height: 100%;
+        }
+        .container > div {
+            border: 1px solid #000;
+            box-sizing: border-box;
+        }
+    </style>
+    <script src="../dist/main.js"></script>
+</head>
+<body>
+<div id="video-streams-placeholder" class="container">
+    <!-- Place holder for actual videos -->
+</div>
+</body>
+<script>
+    const cameraIds = [
+        "65d741550170b803e4013dc4",
+        "64ce1f5a01b8d203e40003ef",
+        "6575c590038b7d03e401b505",
+        "667b554f024e4603e400041b",
+        "64ce1f5a01d9d203e40003f0"
+    ];
+
+    const placeholderElement = document.getElementById("video-streams-placeholder");
+    cameraIds.forEach((cameraId, index) => {
+        let divElement = document.createElement("div");
+        let videoElement = document.createElement("video");
+
+        videoElement.setAttribute("id", `video-${index}`);
+        videoElement.setAttribute("width", "100%");
+        videoElement.muted = true;
+        videoElement.autoplay = true;
+
+        divElement.appendChild(videoElement);
+        placeholderElement.appendChild(divElement);
+
+        const videoPlayer = new fMPEG4OverWebSocketPlayer(
+            `video-${index}`,
+            'video/mp4; codecs="avc1.4d4032,mp4a.40.2"',
+            `ws://localhost:4001/dev-user:dev10203040$Dx@192.168.4.10/${cameraId}`);
+    })
+</script>
+</html>
