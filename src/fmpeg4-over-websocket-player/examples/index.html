@@ -50,6 +50,7 @@
 
         videoElement.setAttribute("id", `video-${index}`);
         videoElement.setAttribute("width", "100%");
+        videoElement.defaultMuted = true;
         videoElement.muted = true;
         videoElement.autoplay = true;
 
@@ -60,6 +61,7 @@
             `video-${index}`,
             'video/mp4; codecs="avc1.4d4032,mp4a.40.2"',
             `ws://localhost:4001/dev-user:dev10203040$Dx@192.168.4.10/${cameraId}`);
+
     })
 </script>
 </html>

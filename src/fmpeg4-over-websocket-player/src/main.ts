@@ -1,5 +1,24 @@
+/*
+ * This file is part of Viewport.
+ * By Sharon Dagan <https://github.com/j4zzcat>, (C) Copyright 2024.
+ *
+ * Viewport is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * This software. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 class fMPEG4OverWebSocketPlayer {
     private _mediaSource: MediaSource;
+    private _sourceBuffer: SourceBuffer;
     private _videoElementId: string;
     private _mimeCodec: string;
     private _url: string;
@@ -30,7 +49,7 @@ class fMPEG4OverWebSocketPlayer {
     }
 
     private onSourceOpen = () => {
-        const sourceBuffer = this._mediaSource.addSourceBuffer(this._mimeCodec);
+        this._sourceBuffer = this._mediaSource.addSourceBuffer(this._mimeCodec);
 
         const socket = new WebSocket(this._url);
         socket.binaryType = "arraybuffer";
@@ -44,7 +63,21 @@ class fMPEG4OverWebSocketPlayer {
 
         socket.onmessage = (event) => {
             const data = new Uint8Array(event.data);
-            sourceBuffer.appendBuffer(data);
+
+            let count = 0;
+            while(this._sourceBuffer.updating && count < 100) {
+                count++;
+            }
+
+            if(count == 100) {
+                return;
+            }
+
+            try {
+                this._sourceBuffer.appendBuffer(data);
+            } catch (e) {
+                console.log(e);
+            }
         };
 
         socket.onerror = (error) => {
