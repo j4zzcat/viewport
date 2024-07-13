@@ -5,6 +5,7 @@ if (!('MediaSource' in window)) {
 } else {
     const mediaSource = new MediaSource();
     videoElement.src = URL.createObjectURL(mediaSource);
+    videoElement.autoplay = true;
     mediaSource.addEventListener('sourceopen', onSourceOpen);
 }
 

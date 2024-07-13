@@ -18,73 +18,82 @@
 
 import {ProtectApi} from "unifi-protect";
 import {WebSocket, WebSocketServer} from "ws";
-import {DefaultLogger} from "./logger";
+import winston from 'winston';
+const { combine, timestamp, json } = winston.format;
 
-let Logger = new DefaultLogger();
+const Logger = winston.createLogger({
+    level: "debug",
+    format: combine(timestamp(), json()),
+    transports: [new winston.transports.Console()]
+});
+let logger = Logger.child({source: "unifi-protect-livestream-reflector"});
+
 let wss = new WebSocketServer({port: 4001});
-
-let logger = Logger.createLogger({class: "UnifiProtectLivestreamReflector"});
 wss.once("listening", () => {
     // @ts-ignore
     logger.info(`WebSocketServer listening on port ${wss.address().port}`);
 });
 
-
 wss.on("connection", (ws:WebSocket, req) => {
-    let url = new URL(`unifi:/${req.url}`);
-    let clientId = `${ws._socket.remoteAddress}:${ws._socket.remotePort}`;
-    let controller = url.host;
-    let username = url.username;
-    let password = url.password;
-    let cameraId = url.pathname.slice(1);
+    try {
+        let url = new URL(`unifi:/${req.url}`);
+        let clientId = `${ws._socket.remoteAddress}:${ws._socket.remotePort}`;
+        let controller = url.host;
+        let username = url.username;
+        let password = url.password;
+        let cameraId = url.pathname.slice(1);
 
-    let logger = Logger.createLogger({clientId: clientId, cameraId: cameraId});
-    Logger.redact(password);
+        let logger = Logger.child({clientId: clientId, controller: controller, cameraId: cameraId});
 
-    logger.info(`Client '${clientId}' asks for '${url}'`);
+        logger.info(`Client '${clientId}' asks for '${url}'`);
 
-    let protectApi = new ProtectApi();
+        let protectApi = new ProtectApi();
 
-    logger.debug(`Logging-in to the Protect Controller at '${controller}'`)
-    protectApi.login(controller, username, password).then( (success)=> {
-        if(success == true) {
-            protectApi.getBootstrap().then((success) => {
-                if(success == true) {
-                    logger.debug("Wiring the livestream to the client's WebSocket")
+        logger.debug(`Logging-in to the Protect Controller at '${controller}'`)
+        protectApi.login(controller, username, password).then((success) => {
+            if (success == true) {
+                protectApi.getBootstrap().then((success) => {
+                    if (success == true) {
+                        logger.debug("Wiring the livestream to the client's WebSocket")
 
-                    let livestream = protectApi.createLivestream();
-                    livestream.on("close", () => {
-                        logger.info("Livestream closed");
-                        // ws.close();
-                    });
+                        let livestream = protectApi.createLivestream();
+                        livestream.on("close", () => {
+                            logger.info("Livestream closed");
+                            // ws.close();
+                        });
 
-                    livestream.on("codec", (codec) => {
-                        logger.debug(`The livestream codec is '${codec}'`);
-                    });
+                        livestream.on("codec", (codec) => {
+                            logger.debug(`The livestream codec is '${codec}'`);
+                        });
 
-                    livestream.on("message", (buffer) => {
-                        ws.send(buffer);
-                    });
+                        livestream.on("message", (buffer) => {
+                            ws.send(buffer);
+                        });
 
-                    ws.on("close", (ws, code, reason) => {
-                        logger.info(`Client - close ${code} ${reason}`);
-                        livestream.stop();
-                    });
+                        ws.on("close", (ws, code, reason) => {
+                            logger.info(`Socket closed, code: ${code}, reason: ${reason}`);
 
-                    ws.on("error", (ws, error) => {
-                        logger.error(`Client - error: ${error}`);
-                        livestream.stop();
-                    });
+                            livestream.stop();
+                            logger.info("Livestream stopped");
+                        });
 
-                    logger.info(`Starting the livestream for camera id '${cameraId}'`);
-                    livestream.start(cameraId, 0);
+                        ws.on("error", (ws, error) => {
+                            logger.error(error);
+                            livestream.stop();
+                        });
 
-                } else {
-                    logger.error("Unable to bootstrap the Protect controller");
-                }
-            });
-        } else {
-            logger.error("Invalid login credentials");
-        }
-    });
+                        logger.info(`Starting the livestream`);
+                        livestream.start(cameraId, 0);
+
+                    } else {
+                        logger.error("Unable to bootstrap the Protect controller");
+                    }
+                });
+            } else {
+                logger.error("Invalid login credentials");
+            }
+        });
+    } catch (e) {
+        logger.error(e);
+    }
 });

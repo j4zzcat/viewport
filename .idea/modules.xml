@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/src/html5-fmpeg4-player/html5-fmpeg4-player.iml" filepath="$PROJECT_DIR$/src/html5-fmpeg4-player/html5-fmpeg4-player.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/mediasource-fmpeg4-player/mediasource-fmpeg4-player.iml" filepath="$PROJECT_DIR$/src/mediasource-fmpeg4-player/mediasource-fmpeg4-player.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/unifi-protect-livestream-reflector/unifi-protect-livestream-reflector.iml" filepath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/unifi-protect-livestream-reflector.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/viewport.iml" filepath="$PROJECT_DIR$/.idea/viewport.iml" />
     </modules>

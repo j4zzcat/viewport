@@ -6,6 +6,11 @@ if (!('MediaSource' in window)) {
     const mediaSource = new MediaSource();
     videoElement.src = URL.createObjectURL(mediaSource);
     mediaSource.addEventListener('sourceopen', onSourceOpen);
+    // videoElement.playsInline = true;
+    // videoElement.autoplay = true;
+    // videoElement.play();
+
+
 }
 
 function onSourceOpen() {
