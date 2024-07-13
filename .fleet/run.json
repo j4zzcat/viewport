@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "type": "node",
+            "name": "Node.js configuration",
+            "file": "~/Development/Projects/j4zzcat/viewport/testbed/unifi-testbed.ts",
+        },
+        
+    ]
+}

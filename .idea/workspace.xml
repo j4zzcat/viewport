@@ -1,15 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
+      <change afterPath="$PROJECT_DIR$/LICENSE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src/index.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src/logger.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/unifi-protect-livestream-reflector.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ts/testbed/fmpegp/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ts/testbed/fmpegp/main.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ts/testbed/fmpegp/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ts/testbed/fmpegp/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ts/testbed/fmpegp/tsconfig.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ts/testbed/unifi-testbed.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/backend.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/backend.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/backend/unifi.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/backend/unifi.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/context.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/context.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/frontend/cli.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/frontend/cli.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/plugin.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/plugin.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/backend/backend.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/backend/layout.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/backend/rtsp.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/backend/unifi.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/context.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/frontend/cli.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ts/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/ts/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ts/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/ts/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ts/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/unifi-fmpeg4-server/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/unifi-fmpeg4-server/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/unifi-fmpeg4-server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/unifi-fmpeg4-server/src/index.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/unifi-fmpeg4-server/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/ts/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/unifi-fmpeg4-server/unifi-fmpeg4-server.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/html5-fmpeg4-player/html5-fmpeg4-player.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/logger.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/plugin.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/unifi.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ts/test/unifi.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/fmpegp/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/html5-fmpeg4-player/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/fmpegp/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/html5-fmpeg4-player/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/fmpegp/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/html5-fmpeg4-player/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/fmpegp/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/html5-fmpeg4-player/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/fmpegp/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/html5-fmpeg4-player/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/index1.html" beforeDir="false" afterPath="$PROJECT_DIR$/ts/testbed/index1.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/index2.html" beforeDir="false" afterPath="$PROJECT_DIR$/ts/testbed/index2.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/index3.html" beforeDir="false" afterPath="$PROJECT_DIR$/ts/testbed/index3.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/index4.html" beforeDir="false" afterPath="$PROJECT_DIR$/ts/testbed/index4.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/index5.html" beforeDir="false" afterPath="$PROJECT_DIR$/ts/testbed/index5.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/mpegts.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/ts/testbed/mpegts.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/ts/testbed/test.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testbed/unifi-testbed.ts" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +66,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
   <component name="ProjectId" id="2iyymE50hJLsGbU9vwcIWhDVdjI" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -37,31 +79,46 @@
     <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;TF_FMT&quot;: &quot;false&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/src&quot;,
-    &quot;nodejs.jest.jest_package&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/jest&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;ruby.rails.projectView.checked&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/typescript/lib&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Node.js.unifi-fmpeg4-server.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "TF_FMT": "false",
+    "WebServerToolWindowFactoryState": "false",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/unifi-protect-livestream-reflector/src",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.jest.jest_package": "/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/jest",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "ruby.rails.projectView.checked": "true",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "ts.external.directory.path": "/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src" />
+      <recent name="$PROJECT_DIR$/src/unifi-fmpeg4-server" />
       <recent name="$PROJECT_DIR$/test" />
       <recent name="$PROJECT_DIR$/src/backend" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ts" />
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/src/ts" />
       <recent name="$PROJECT_DIR$/src/" />
-      <recent name="$PROJECT_DIR$/src/utils" />
     </key>
   </component>
   <component name="RubyModuleManagerSettings">
@@ -71,10 +128,9 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Node.js.Viewport">
+  <component name="RunManager" selected="Node.js.unifi-fmpeg4-server">
     <configuration name="UnifiStreamProvider.canHandle" type="JavaScriptTestRunnerJest" temporary="true">
       <node-interpreter value="project" />
-      <node-options value="" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
       <working-dir value="$PROJECT_DIR$" />
       <envs />
@@ -86,35 +142,28 @@
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="Viewport Test" type="NodeJSConfigurationType" application-parameters="stream --stream unifi://dev-user:XXX@192.168.4.10/camera/_all" node-parameters="--no-warnings --import tsx" working-dir="$PROJECT_DIR$">
-      <method v="2" />
-    </configuration>
-    <configuration name="Viewport" type="NodeJSConfigurationType" application-parameters="stream --stream unifi://dev-user:XXX@192.168.4.10/camera/_all" node-parameters="--no-warnings --import tsx" path-to-js-file="src/index.ts" working-dir="$PROJECT_DIR$">
-      <method v="2" />
-    </configuration>
-    <configuration name="unifi-testbed.ts" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="testbed/unifi-testbed.ts" show_console_on_std_out="true" working-dir="$PROJECT_DIR$">
+    <configuration name="unifi-fmpeg4-server" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src/index.ts" working-dir="$PROJECT_DIR$/src/unifi-protect-livestream-reflector">
       <method v="2" />
     </configuration>
     <configuration name="Python tests in test" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="viewport" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ts/test" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/test&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/ts/test&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
     <list>
       <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
-      <item itemvalue="Node.js.Viewport" />
-      <item itemvalue="Node.js.Viewport Test" />
-      <item itemvalue="Node.js.unifi-testbed.ts" />
+      <item itemvalue="Node.js.unifi-fmpeg4-server" />
       <item itemvalue="Python tests.Python tests in test" />
     </list>
     <recent_temporary>
@@ -123,6 +172,14 @@
         <item itemvalue="Python tests.Python tests in test" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.18034.62" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.18034.62" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -139,6 +196,8 @@
       <workItem from="1720687219120" duration="26688000" />
       <workItem from="1720740098536" duration="94000" />
       <workItem from="1720777526871" duration="531000" />
+      <workItem from="1720811967806" duration="41000" />
+      <workItem from="1720812013737" duration="19860000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
