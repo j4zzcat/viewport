@@ -16,7 +16,7 @@
  * This software. If not, see <https://www.gnu.org/licenses/>.
  */
 
-class fMPEG4OverWebSocketPlayer {
+class SimplePlayer {
     private _mediaSource: MediaSource;
     private _sourceBuffer: SourceBuffer;
     private _videoElementId: string;
@@ -50,15 +50,13 @@ class fMPEG4OverWebSocketPlayer {
 
         socket.onopen = () => {
             this.log("WebSocket connection opened.");
-
-            // Optionally send some initialization data to the server
-            // socket.send('Some initialization data');
         }
 
-        let firstMessage = true;
+        let messageCount = 0;
+        let updateEndCount = 0;
         let notReadyCount = 0;
+        let firstMessage = true;
         socket.onmessage = (event) => {
-            console.log(this._videoElementId);
             const data = new Uint8Array(event.data);
 
             if(firstMessage) {
@@ -71,18 +69,23 @@ class fMPEG4OverWebSocketPlayer {
                 }
 
                 this._sourceBuffer = this._mediaSource.addSourceBuffer(mimeCodec);
+
                 firstMessage = false;
                 return;
             }
 
-            // Spin around the status for several iterations
-            while (this._sourceBuffer.updating && notReadyCount < 100) {
-                notReadyCount++;
-                return
+            messageCount++;
+            if(messageCount % 100 == 0) {
+                this.log(`messageCount: ${messageCount}, updateEndCount: ${updateEndCount}, notReadyCount: ${notReadyCount}`);
             }
 
-            if (notReadyCount == 100) {
-                this.log("Should replace buffer");
+            // Spin around the status for several ticks
+            while(this._sourceBuffer.updating) {
+                notReadyCount++;
+                if(notReadyCount % 100 == 0) {
+                    this._sourceBuffer.abort();
+                    firstMessage = false;
+                }
             }
 
             try {
@@ -103,7 +106,7 @@ class fMPEG4OverWebSocketPlayer {
     }
 
     private log(message: string) {
-        console.log(`[${Date.now()}] [debug] fMPEG4OverWebSocketPlayer ${message}`);
+        console.log(`[${Date.now()}] [${this._videoElementId}] ${message}`);
     }
 }
 
