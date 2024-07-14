@@ -5,19 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
-      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/output.mp4" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-ws-player/examples/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/examples/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-ws-player/fmpeg4-over-ws-player.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/fmpeg4-over-websocket-player.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-ws-player/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-ws-player/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-ws-player/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/src/main.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-ws-player/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/src/app.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src/main.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/index5.html" beforeDir="false" afterPath="$PROJECT_DIR$/ts/testbed/index5.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src/app.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/ts/testbed/test.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +65,7 @@
     "project.structure.side.proportion": "0.0",
     "ruby.rails.projectView.checked": "true",
     "settings.editor.selected.configurable": "preferences.lookFeel",
-    "ts.external.directory.path": "/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/typescript/lib",
+    "ts.external.directory.path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/unifi-protect-livestream-reflector/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -112,7 +105,7 @@
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="unifi-protect-livestream-reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src/main.ts" working-dir="$PROJECT_DIR$/src/unifi-protect-livestream-reflector">
+    <configuration name="unifi-protect-livestream-reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src/app.ts" working-dir="$PROJECT_DIR$/src/unifi-protect-livestream-reflector">
       <method v="2" />
     </configuration>
     <configuration name="Python tests in test" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
@@ -169,7 +162,7 @@
       <workItem from="1720811967806" duration="41000" />
       <workItem from="1720812013737" duration="19923000" />
       <workItem from="1720863031087" duration="1697000" />
-      <workItem from="1720869159986" duration="22447000" />
+      <workItem from="1720869159986" duration="34997000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>

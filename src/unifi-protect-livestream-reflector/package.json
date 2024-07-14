@@ -18,7 +18,7 @@
     "ts-jest": "^29.2.2",
     "typescript": "^5.5.3"
   },
-  "main": "src/main.ts",
+  "main": "src/app.ts",
   "bin": "src/index.ts",
   "jest": {
     "transform": {

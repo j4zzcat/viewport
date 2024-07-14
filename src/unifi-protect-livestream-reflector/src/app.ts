@@ -109,6 +109,9 @@ class UnifiProtectLivestreamReflector {
             }
 
             this._protectApis.set(key, protectApi);
+
+        } else {
+            // Todo make sure the ProtectApi instance from the cache is not stale
         }
 
         return protectApi;
