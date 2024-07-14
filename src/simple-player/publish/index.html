@@ -27,7 +27,7 @@
             box-sizing: border-box;
         }
     </style>
-    <script src="../dist/bundle.js"></script>
+    <script src="bundle.js"></script>
 </head>
 <body>
 <div id="video-streams-placeholder" class="container">
@@ -57,7 +57,7 @@
         divElement.appendChild(videoElement);
         placeholderElement.appendChild(divElement);
 
-        const videoPlayer = new SimplePlayer(
+        const videoPlayer = new viewport.SimplePlayer(
             `video-${index}`,
             `ws://localhost:4001/dev-user:dev10203040$Dx@192.168.4.10/${cameraId}`
         );

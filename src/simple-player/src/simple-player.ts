@@ -16,7 +16,10 @@
  * This software. If not, see <https://www.gnu.org/licenses/>.
  */
 
-class SimplePlayer {
+import {Queue} from "typescript-collections";
+import {isTooManyTries, retryAsync} from "ts-retry";
+
+export class SimplePlayer {
     private _mediaSource: MediaSource;
     private _sourceBuffer: SourceBuffer;
     private _videoElementId: string;
@@ -26,6 +29,7 @@ class SimplePlayer {
         this._videoElementId = videoElementId;
         this._url = url;
 
+        this.log("debug", "Starting SimplePlayer");
         this.initialize();
     }
 
@@ -42,71 +46,133 @@ class SimplePlayer {
 
         videoElement.src = URL.createObjectURL(this._mediaSource);
         this._mediaSource.addEventListener("sourceopen", this.onSourceOpen);
+        this._mediaSource.addEventListener("sourceended", this.onSourceEnded);
+        this._mediaSource.addEventListener("sourceclose", this.onSourceClose);
     }
 
-    private onSourceOpen = () => {
-        const socket = new WebSocket(this._url);
-        socket.binaryType = "arraybuffer";
+    private onSourceOpen = async () => {
+        let queue = new Queue<Uint8Array>();
+        let ws = this.createWebSocket(this._url, queue);
 
-        socket.onopen = () => {
-            this.log("WebSocket connection opened.");
+        try {
+            await retryAsync(
+                async ()=> {
+                    return queue.isEmpty()
+                },
+                {
+                    delay: 1000,
+                    maxTry: 5,
+                    until: (lastResult) => lastResult == false,
+                }
+            );
+        } catch (err) {
+            if (isTooManyTries(err)) {
+                this.log("error", "Did not get codec in time!")
+            } else {
+                this.log("error", err);// something else goes wrong
+            }
         }
 
-        let messageCount = 0;
-        let updateEndCount = 0;
-        let notReadyCount = 0;
-        let firstMessage = true;
-        socket.onmessage = (event) => {
-            const data = new Uint8Array(event.data);
+        let codec = queue.dequeue() as unknown as string;
+        let mimeCodec = `video/mp4; codecs="${codec}"`
+        this.log("debug", `mimeCodec: ${mimeCodec}`);
 
-            if(firstMessage) {
-                let codec = event.data as string;
-                let mimeCodec = `video/mp4; codecs="${codec}"`
-                this.log(`mimeCodec: ${mimeCodec}`);
+        if(!MediaSource.isTypeSupported(mimeCodec)) {
+            throw new Error(`Mime Codec not supported: ${mimeCodec}`);
+        }
 
-                if(!MediaSource.isTypeSupported(mimeCodec)) {
-                    throw new Error(`Mime Codec not supported: ${mimeCodec}`);
-                }
+        this._sourceBuffer = this._mediaSource.addSourceBuffer(mimeCodec);
 
-                this._sourceBuffer = this._mediaSource.addSourceBuffer(mimeCodec);
-
-                firstMessage = false;
+        this._sourceBuffer.addEventListener("updateend", (event) => {
+            if(queue.peek() == undefined) {
                 return;
+            } else {
+                this._sourceBuffer.appendBuffer(queue.dequeue());
             }
+        });
 
-            messageCount++;
-            if(messageCount % 100 == 0) {
-                this.log(`messageCount: ${messageCount}, updateEndCount: ${updateEndCount}, notReadyCount: ${notReadyCount}`);
-            }
-
-            // Spin around the status for several ticks
-            while(this._sourceBuffer.updating) {
-                notReadyCount++;
-                if(notReadyCount % 100 == 0) {
-                    this._sourceBuffer.abort();
-                    firstMessage = false;
-                }
-            }
-
-            try {
-                this._sourceBuffer.appendBuffer(data);
-            } catch (e) {
-                this.log(`Error occurred in socket.onmessage: ${e}`);
-            }
-        };
-
-        socket.onerror = (error) => {
-            this.log(`WebSocket error: ${error}`);
-        };
-
-        socket.onclose = (event) => {
-            this.log("WebSocket connection closed:");
-            this._mediaSource.endOfStream();
-        };
     }
 
-    private log(message: string) {
-        console.log(`[${Date.now()}] [${this._videoElementId}] ${message}`);
+    private onSourceEnded = () => {
+        this.log("debug", "onSourceEnded");
+    }
+
+    private onSourceClose = () => {
+        this.log("debug", "onSourceClose");
+    }
+
+
+    private createWebSocket(url, queue) {
+        const ws = new WebSocket(url);
+        ws.binaryType = "arraybuffer";
+
+        ws.onopen = () => {
+            this.log("debug", "WebSocket connection opened.");
+        }
+
+        ws.onmessage = (event) => {
+            const data = new Uint8Array(event.data);
+            queue.enqueue(data);
+        }
+
+        return ws;
+    }
+    //
+    //     let messageCount = 0;
+    //     let updateEndCount = 0;
+    //     let notReadyCount = 0;
+    //     let firstMessage = true;
+    //     socket.onmessage = (event) => {
+    //         const data = new Uint8Array(event.data);
+    //
+    //         if(firstMessage) {
+    //             let codec = event.data as string;
+    //             let mimeCodec = `video/mp4; codecs="${codec}"`
+    //             this.log(`mimeCodec: ${mimeCodec}`);
+    //
+    //             if(!MediaSource.isTypeSupported(mimeCodec)) {
+    //                 throw new Error(`Mime Codec not supported: ${mimeCodec}`);
+    //             }
+    //
+    //             this._sourceBuffer = this._mediaSource.addSourceBuffer(mimeCodec);
+    //
+    //             firstMessage = false;
+    //             return;
+    //         }
+    //
+    //         messageCount++;
+    //         if(messageCount % 100 == 0) {
+    //             this.log(`messageCount: ${messageCount}, updateEndCount: ${updateEndCount}, notReadyCount: ${notReadyCount}`);
+    //         }
+    //
+    //         // Spin around the status for several ticks
+    //         while(this._sourceBuffer.updating) {
+    //             notReadyCount++;
+    //             if(notReadyCount % 100 == 0) {
+    //                 this._sourceBuffer.abort();
+    //                 firstMessage = false;
+    //             }
+    //         }
+    //
+    //         try {
+    //             this._sourceBuffer.appendBuffer(data);
+    //         } catch (e) {
+    //             this.log(`Error occurred in socket.onmessage: ${e}`);
+    //         }
+    //     };
+    //
+    //     socket.onerror = (error) => {
+    //         this.log(`WebSocket error: ${error}`);
+    //     };
+    //
+    //     socket.onclose = (event) => {
+    //         this.log("WebSocket connection closed:");
+    //         this._mediaSource.endOfStream();
+    //     };
+    // }
+
+    private log(level: string, message: string) {
+        console.log(`[${Date.now()}] [${level}] [${this._videoElementId}] ${message}`);
     }
 }
 

@@ -5,21 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/simple-player/publish/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/examples/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/examples/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/fmpeg4-over-websocket-player.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/simple-player.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/src/app.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/src/simple-player.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/tsconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-reflector/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-reflector/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-reflector/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src/app.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-reflector/src/simple-reflector.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-reflector/tsconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/unifi-protect-livestream-reflector.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-reflector/simple-reflector.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/test.sh" beforeDir="false" afterPath="$PROJECT_DIR$/ts/testbed/test.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/examples/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/examples/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/src/simple-player.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/src/simple-player.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +45,7 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Node.js.simple-reflector.executor": "Run",
     "Node.js.unifi-fmpeg4-server.executor": "Run",
     "Node.js.unifi-protect-livestream-reflector.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
@@ -62,7 +54,7 @@
     "TF_FMT": "false",
     "WebServerToolWindowFactoryState": "false",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/fmpeg4-over-websocket-player/src",
+    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/simple-player/publish",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -80,11 +72,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/simple-player/publish" />
       <recent name="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/src" />
       <recent name="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src" />
       <recent name="$PROJECT_DIR$/src/unifi-fmpeg4-server" />
       <recent name="$PROJECT_DIR$/test" />
-      <recent name="$PROJECT_DIR$/src/backend" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/fmpeg4-over-ws-player/examples" />
@@ -101,7 +93,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Node.js.unifi-protect-livestream-reflector">
+  <component name="RunManager" selected="Node.js.simple-reflector">
     <configuration name="UnifiStreamProvider.canHandle" type="JavaScriptTestRunnerJest" temporary="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
@@ -115,7 +107,7 @@
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="unifi-protect-livestream-reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="$PROJECT_DIR$/src/simple-reflector/src/simple-reflector.ts" working-dir="$PROJECT_DIR$/src/simple-reflector">
+    <configuration name="simple-reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="src/simple-reflector.ts" working-dir="$PROJECT_DIR$/src/simple-reflector">
       <method v="2" />
     </configuration>
     <configuration name="Python tests in test" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
@@ -136,7 +128,7 @@
     </configuration>
     <list>
       <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
-      <item itemvalue="Node.js.unifi-protect-livestream-reflector" />
+      <item itemvalue="Node.js.simple-reflector" />
       <item itemvalue="Python tests.Python tests in test" />
     </list>
     <recent_temporary>
@@ -173,7 +165,8 @@
       <workItem from="1720812013737" duration="19923000" />
       <workItem from="1720863031087" duration="1697000" />
       <workItem from="1720869159986" duration="34997000" />
-      <workItem from="1720946358278" duration="9516000" />
+      <workItem from="1720946358278" duration="11842000" />
+      <workItem from="1720987392717" duration="9622000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
