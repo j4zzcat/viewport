@@ -20,12 +20,10 @@ class fMPEG4OverWebSocketPlayer {
     private _mediaSource: MediaSource;
     private _sourceBuffer: SourceBuffer;
     private _videoElementId: string;
-    private _mimeCodec: string;
     private _url: string;
 
-    constructor(videoElementId, mimeCodec, url) {
+    constructor(videoElementId, url) {
         this._videoElementId = videoElementId;
-        this._mimeCodec = mimeCodec;
         this._url = url;
 
         this.initialize();
@@ -39,8 +37,6 @@ class fMPEG4OverWebSocketPlayer {
 
         if (!("MediaSource" in window)) {
             throw new Error("MediaSource API is not available in your browser.");
-        } else if(!MediaSource.isTypeSupported(this._mimeCodec)) {
-            throw new Error(`Mime Codec not supported: ${this._mimeCodec}`);
         }
         this._mediaSource = new MediaSource();
 
@@ -49,48 +45,65 @@ class fMPEG4OverWebSocketPlayer {
     }
 
     private onSourceOpen = () => {
-        this._sourceBuffer = this._mediaSource.addSourceBuffer(this._mimeCodec);
-
         const socket = new WebSocket(this._url);
         socket.binaryType = "arraybuffer";
 
         socket.onopen = () => {
-            console.log("WebSocket connection opened.");
+            this.log("WebSocket connection opened.");
 
             // Optionally send some initialization data to the server
             // socket.send('Some initialization data');
-        };
+        }
 
+        let firstMessage = true;
+        let notReadyCount = 0;
         socket.onmessage = (event) => {
+            console.log(this._videoElementId);
             const data = new Uint8Array(event.data);
 
-            // Spin around the status for several iterations
-            let count = 0;
-            while(this._sourceBuffer.updating && count < 100) {
-                count++;
+            if(firstMessage) {
+                let codec = event.data as string;
+                let mimeCodec = `video/mp4; codecs="${codec}"`
+                this.log(`mimeCodec: ${mimeCodec}`);
+
+                if(!MediaSource.isTypeSupported(mimeCodec)) {
+                    throw new Error(`Mime Codec not supported: ${mimeCodec}`);
+                }
+
+                this._sourceBuffer = this._mediaSource.addSourceBuffer(mimeCodec);
+                firstMessage = false;
+                return;
             }
 
-            // If the buffer is still not ready, leave to fight another time
-            // This implies that we're probably dropping a few video frames
-            if(count == 100) {
-                return;
+            // Spin around the status for several iterations
+            while (this._sourceBuffer.updating && notReadyCount < 100) {
+                notReadyCount++;
+                return
+            }
+
+            if (notReadyCount == 100) {
+                this.log("Should replace buffer");
             }
 
             try {
                 this._sourceBuffer.appendBuffer(data);
             } catch (e) {
-                console.log(e);
+                this.log(`Error occurred in socket.onmessage: ${e}`);
             }
         };
 
         socket.onerror = (error) => {
-            console.error("WebSocket error:", error);
+            this.log(`WebSocket error: ${error}`);
         };
 
         socket.onclose = (event) => {
-            console.log("WebSocket connection closed:", event);
+            this.log("WebSocket connection closed:");
             this._mediaSource.endOfStream();
         };
+    }
+
+    private log(message: string) {
+        console.log(`[${Date.now()}] [debug] fMPEG4OverWebSocketPlayer ${message}`);
     }
 }
 

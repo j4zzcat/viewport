@@ -27,7 +27,7 @@
             box-sizing: border-box;
         }
     </style>
-    <script src="../dist/main.js"></script>
+    <script src="../dist/player.js"></script>
 </head>
 <body>
 <div id="video-streams-placeholder" class="container">
@@ -59,9 +59,8 @@
 
         const videoPlayer = new fMPEG4OverWebSocketPlayer(
             `video-${index}`,
-            'video/mp4; codecs="avc1.4d4032,mp4a.40.2"',
-            `ws://localhost:4001/dev-user:dev10203040$Dx@192.168.4.10/${cameraId}`);
-
+            `ws://localhost:4001/dev-user:dev10203040$Dx@192.168.4.10/${cameraId}`
+        );
     })
 </script>
 </html>

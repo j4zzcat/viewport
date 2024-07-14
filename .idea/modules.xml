@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/src/fmpeg4-over-websocket-player/fmpeg4-over-websocket-player.iml" filepath="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/fmpeg4-over-websocket-player.iml" />
-      <module fileurl="file://$PROJECT_DIR$/src/unifi-protect-livestream-reflector/unifi-protect-livestream-reflector.iml" filepath="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/unifi-protect-livestream-reflector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/simple-player/simple-player.iml" filepath="$PROJECT_DIR$/src/simple-player/simple-player.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/simple-reflector/simple-reflector.iml" filepath="$PROJECT_DIR$/src/simple-reflector/simple-reflector.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/viewport.iml" filepath="$PROJECT_DIR$/.idea/viewport.iml" />
     </modules>
   </component>

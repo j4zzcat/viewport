@@ -27,8 +27,8 @@ const Logger = winston.createLogger({
     transports: [new winston.transports.Console()]
 });
 
-class UnifiProtectLivestreamReflector {
-    private _logger = Logger.child({source: UnifiProtectLivestreamReflector.name});
+class SimpleReflector {
+    private _logger = Logger.child({source: SimpleReflector.name});
     private _wss: WebSocketServer;
     private _protectApis = new Map<string, ProtectApi>();
 
@@ -63,15 +63,20 @@ class UnifiProtectLivestreamReflector {
                 let livestream = protectApi.createLivestream();
                 livestream.on("close", () => {
                     logger.info("Livestream closed");
-                    // ws.close();
+                    ws.close();
                 });
 
                 livestream.on("codec", (codec) => {
                     logger.debug(`The livestream codec is '${codec}'`);
-                });
+                    ws.send(codec);
 
-                livestream.on("message", (buffer) => {
-                    ws.send(buffer);
+                    livestream.on("message", (buffer) => {
+                        try {
+                            ws.send(buffer);
+                        } catch (e) {
+                            logger.error(e);
+                        }
+                    });
                 });
 
                 ws.on("close", (ws, code, reason) => {
@@ -88,6 +93,7 @@ class UnifiProtectLivestreamReflector {
 
                 logger.info(`Starting the livestream`);
                 await livestream.start(cameraId, 0);
+
             } catch (e) {
                 this._logger.error(e);
             }
@@ -119,4 +125,4 @@ class UnifiProtectLivestreamReflector {
     }
 }
 
-const dummy = new UnifiProtectLivestreamReflector();
+const dummy = new SimpleReflector();

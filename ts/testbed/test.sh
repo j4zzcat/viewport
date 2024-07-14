@@ -55,4 +55,6 @@ docker run --rm -it \
 PASSWORD=$(security find-generic-password -l dev-user -a unifi-protect -w) \
   websocat --binary -B 1000000 ws://localhost:4001/dev-user:${PASSWORD}@192.168.4.10/65d741550170b803e4013dc4 \
   | ffmpeg -i pipe:0 -c copy -f flv rtmp://localhost:1935/stream
-  
+
+
+mimeCodec 'video/mp4; codecs="avc1.4d4032,mp4a.40.2"'
