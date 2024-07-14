@@ -87,7 +87,7 @@ class UnifiProtectLivestreamReflector {
                 });
 
                 logger.info(`Starting the livestream`);
-                livestream.start(cameraId, 0);
+                await livestream.start(cameraId, 0);
             } catch (e) {
                 this._logger.error(e);
             }
@@ -111,7 +111,8 @@ class UnifiProtectLivestreamReflector {
             this._protectApis.set(key, protectApi);
 
         } else {
-            // Todo make sure the ProtectApi instance from the cache is not stale
+            // Todo If needed, refresh the cached ProtectApi instance, as it might get stale
+            // Todo Maybe by bootstrapping again?
         }
 
         return protectApi;

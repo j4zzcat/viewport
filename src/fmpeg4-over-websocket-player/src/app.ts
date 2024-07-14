@@ -64,11 +64,14 @@ class fMPEG4OverWebSocketPlayer {
         socket.onmessage = (event) => {
             const data = new Uint8Array(event.data);
 
+            // Spin around the status for several iterations
             let count = 0;
             while(this._sourceBuffer.updating && count < 100) {
                 count++;
             }
 
+            // If the buffer is still not ready, leave to fight another time
+            // This implies that we're probably dropping a few video frames
             if(count == 100) {
                 return;
             }
