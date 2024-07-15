@@ -5,39 +5,39 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
-      <change beforePath="$PROJECT_DIR$/.fleet/run.json" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/.rspec" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/.rubocop.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/.ruby-version" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/CHANGELOG.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/Gemfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/Rakefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/bin/console" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/bin/setup" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/controller.gemspec" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/controller.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/lib/controller.rb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/lib/controller/version.rb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/sig/controller.rbs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/spec/controller_spec.rb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/controller/spec/spec_helper.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/docker/build.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-player/examples/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/examples/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-reflector/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/backend/backend.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/backend/layout.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/backend/rtsp.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/backend/unifi.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/context.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/frontend/cli.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/test/unifi.test.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/fmpegp/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/fmpegp/main.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/fmpegp/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/fmpegp/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/fmpegp/tsconfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/index1.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/index2.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/index3.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/index4.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/index5.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/mpegts.js.map" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/test.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/testbed/unifi-testbed.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/tsconfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/utils/logger.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts/utils/plugin.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/examples/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/examples/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/simple-player.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/player.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/src/simple-player.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/src/simple-player.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/webpack.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-reflector/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-reflector/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-reflector/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-reflector/simple-reflector.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/reflector.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-reflector/src/simple-reflector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/src/simple-reflector.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-reflector/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,7 +59,7 @@
   &quot;associatedIndex&quot;: 6
 }</component>
   <component name="ProjectId" id="2iyymE50hJLsGbU9vwcIWhDVdjI" />
-  <component name="ProjectLevelVcsManager">
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
@@ -68,35 +68,36 @@
     <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Node.js.simple-reflector.executor&quot;: &quot;Run&quot;,
-    &quot;Node.js.unifi-fmpeg4-server.executor&quot;: &quot;Run&quot;,
-    &quot;Node.js.unifi-protect-livestream-reflector.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;TF_FMT&quot;: &quot;false&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/src/simple-player/publish&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs.jest.jest_package&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/jest&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;ruby.rails.projectView.checked&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/src/simple-reflector/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Node.js.simple-reflector.executor": "Run",
+    "Node.js.unifi-fmpeg4-server.executor": "Run",
+    "Node.js.unifi-protect-livestream-reflector.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "TF_FMT": "false",
+    "WebServerToolWindowFactoryState": "false",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/simple-player/publish",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.jest.jest_package": "/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/jest",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2589928",
+    "ruby.rails.projectView.checked": "true",
+    "ruby.structure.view.model.defaults.configured": "true",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/simple-reflector/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/simple-player/publish" />
@@ -117,10 +118,11 @@
     <option name="blackListedRootsPaths">
       <list>
         <option value="$PROJECT_DIR$" />
+        <option value="$PROJECT_DIR$/src/controller" />
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Node.js.simple-reflector">
+  <component name="RunManager" selected="Ruby.controller">
     <configuration name="UnifiStreamProvider.canHandle" type="JavaScriptTestRunnerJest" temporary="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
@@ -134,8 +136,24 @@
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="simple-reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="src/simple-reflector.ts" working-dir="$PROJECT_DIR$/src/simple-reflector">
+    <configuration name="reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="src/simple-reflector.ts" working-dir="$PROJECT_DIR$/src/reflector">
       <method v="2" />
+    </configuration>
+    <configuration name="controller" type="RubyRunConfigurationType" factoryName="Ruby">
+      <module name="controller" />
+      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <EXTENSION ID="BundlerRunConfigurationExtension" BUNDLE_MODE="AUTO" bundleExecEnabled="true" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" runner="rcov" />
+      <EXTENSION ID="org.jetbrains.plugins.ruby.rails.run.RailsRunConfigurationExtension" SCRATCH_USE_RAILS_RUNNER="false" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/src/controller/lib/controller.rb" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration name="Python tests in /Users/snd/Development/Projects/j4zzcat/viewport/ts/test" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="viewport" />
@@ -155,8 +173,9 @@
     </configuration>
     <list>
       <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
-      <item itemvalue="Node.js.simple-reflector" />
+      <item itemvalue="Node.js.reflector" />
       <item itemvalue="Python tests.Python tests in /Users/snd/Development/Projects/j4zzcat/viewport/ts/test" />
+      <item itemvalue="Ruby.controller" />
     </list>
     <recent_temporary>
       <list>
@@ -174,6 +193,7 @@
     </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SpringUtil" SPRING_PRE_LOADER_OPTION="true" RAKE_SPRING_PRE_LOADER_OPTION="true" RAILS_SPRING_PRE_LOADER_OPTION="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="" />
@@ -194,7 +214,7 @@
       <workItem from="1720869159986" duration="34997000" />
       <workItem from="1720946358278" duration="11842000" />
       <workItem from="1720987392717" duration="9836000" />
-      <workItem from="1721028311572" duration="27627000" />
+      <workItem from="1721028311572" duration="29781000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -222,6 +242,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/src/controller/controller" />
+    </ignored-roots>
     <MESSAGE value="Removed unused imports" />
     <option name="LAST_COMMIT_MESSAGE" value="Removed unused imports" />
   </component>

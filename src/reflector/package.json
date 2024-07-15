@@ -16,7 +16,7 @@
     "ts-jest": "^29.2.2",
     "typescript": "^5.5.3"
   },
-  "main": "src/simple-reflector.ts",
+  "main": "",
   "bin": "src/index.ts",
   "jest": {
     "transform": {
