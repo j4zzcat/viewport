@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
+      <change afterPath="$PROJECT_DIR$/src/simple-player/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-player/src/simple-player.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/src/simple-player.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/examples/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-reflector/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-reflector/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,11 +77,11 @@
       <recent name="$PROJECT_DIR$/test" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/simple-player" />
       <recent name="$PROJECT_DIR$/src/fmpeg4-over-ws-player/examples" />
       <recent name="$PROJECT_DIR$/src/fmpeg4-over-ws-player/src" />
       <recent name="$PROJECT_DIR$/ts" />
       <recent name="$PROJECT_DIR$/src" />
-      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
   <component name="RubyModuleManagerSettings">
@@ -163,7 +165,7 @@
       <workItem from="1720869159986" duration="34997000" />
       <workItem from="1720946358278" duration="11842000" />
       <workItem from="1720987392717" duration="9836000" />
-      <workItem from="1721028311572" duration="23969000" />
+      <workItem from="1721028311572" duration="24406000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
