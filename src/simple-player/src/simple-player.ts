@@ -19,8 +19,8 @@
 import {Queue} from "typescript-collections";
 
 export class SimplePlayer {
-    private _videoElementId: string;
-    private _url: string;
+    private readonly _videoElementId: string;
+    private readonly _url: string;
     private _mimeCodecs: string;
     private _ws: WebSocket;
     private _mediaSource: MediaSource;
@@ -56,7 +56,6 @@ export class SimplePlayer {
         this._mediaSource.addEventListener("sourceclose", this.onSourceClose);
     }
 
-    private firstMessage = true;
     private onSourceOpen = () => {
         this._ws = new WebSocket(this._url);
         this._ws.binaryType = "arraybuffer";
@@ -72,13 +71,17 @@ export class SimplePlayer {
         this._ws.onmessage = (event) => {
             messageCount++;
 
-            // Do housekeeping cycle every HOUSE_KEEPING_INTERVAL_MESSAGES messages
+            /*
+             * Do a housekeeping cycle every HOUSE_KEEPING_INTERVAL_MESSAGES messages.
+             */
             if(messageCount % this.HOUSEKEEPING_INTERVAL_MESSAGES == 0) {
-                // Log stats
-                this.log(`messageCount: ${messageCount}`);
+                this.log(`Starting housekeeping cycle, messageCount: ${messageCount}`);
 
-                // Start a cleaning cycle every CLEANUP_INTERVAL_SECONDS
-                if(cleanup == 0) {
+                /*
+                 * Request a cleaning cycle every CLEANUP_INTERVAL_SECONDS.
+                 * Without a cleanup, the SourceBuffer will eventually overflow.
+                 */
+                if (cleanup == 0) {
                     if((Date.now() - lastCleanup) > this.CLEANUP_INTERVAL_SECONDS * 1000) {
                         cleanup = 1;
                     }
@@ -136,13 +139,17 @@ export class SimplePlayer {
                     if (cleanup > 0) {
 
                         /*
-                         * If this is a cleanup cycle, start it now. Cleanup can
+                         * A cleanup cycle was requested, start it now. Cleanup can
                          * proceed only if the SourceBuffer is ready (i.e., not updating).
-                         * The SourceBuffer is cleaned, leaving in it only the last
-                         * KEEP_VIDEO_SECONDS seconds of video.
+                         * If successful, the SourceBuffer is reduced, leaving in it only
+                         * the last KEEP_VIDEO_SECONDS seconds of video.
                          */
 
-                        this.log(`Cleanup attempt: ${cleanup}`)
+                        if(cleanup == 1) {
+                            this.log("Starting cleanup cycle");
+                        } else {
+                            this.log(`Retrying cleanup cycle, this is attempt: ${cleanup}`)
+                        }
 
                         try {
                             let end = this._sourceBuffer.buffered.end(0);
@@ -160,31 +167,36 @@ export class SimplePlayer {
                         }
                     }
 
-                    // Dehydrate the queue and create one single buffer with
-                    // all the received messages
-
-                    const arrays: Uint8Array[] = [];
-
-                    let totalLength = 0;
-                    while (!this._queue.isEmpty()) {
-                        const array = this._queue.dequeue();
-                        arrays.push(array);
-                        totalLength += array.length;
-                    }
-
-                    const allBuffers = new Uint8Array(totalLength);
-                    let offset = 0;
-
-                    for (const arr of arrays) {
-                        allBuffers.set(arr, offset);
-                        offset += arr.length;
-                    }
-
-                    // Append the single large buffer
-                    this._sourceBuffer.appendBuffer(allBuffers);
+                    let allWaitingMessages = this.dehydrateQueue(this._queue);
+                    this._sourceBuffer.appendBuffer(allWaitingMessages);
                 }
             }
         }
+    }
+
+    /*
+     * Dequeues all Uint8Array elements from the provided queue, concatenates them,
+     * and returns a single Uint8Array containing all the data.
+     */
+    private dehydrateQueue(queue: Queue<Uint8Array>): Uint8Array {
+        const buffers: Uint8Array[] = [];
+
+        let totalLength = 0;
+        while (!this._queue.isEmpty()) {
+            const array = this._queue.dequeue();
+            buffers.push(array);
+            totalLength += array.length;
+        }
+
+        const combinedBuffers = new Uint8Array(totalLength);
+        let offset = 0;
+
+        for (const buffer of buffers) {
+            combinedBuffers.set(buffer, offset);
+            offset += buffer.length;
+        }
+
+        return combinedBuffers;
     }
 
     private onSourceEnded = () => {
