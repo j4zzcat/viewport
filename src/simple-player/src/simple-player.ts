@@ -27,7 +27,9 @@ export class SimplePlayer {
     private _sourceBuffer: SourceBuffer;
     private _queue: Queue<Uint8Array>;
 
+    private HOUSEKEEPING_INTERVAL_MESSAGES = 100;
     private CLEANUP_INTERVAL_SECONDS = 20;
+    private KEEP_VIDEO_SECONDS = 10
 
     constructor(videoElementId, url) {
         this._videoElementId = videoElementId;
@@ -69,9 +71,13 @@ export class SimplePlayer {
 
         this._ws.onmessage = (event) => {
             messageCount++;
-            if(messageCount % 100 == 0) {
+
+            // Do housekeeping cycle every HOUSE_KEEPING_INTERVAL_MESSAGES messages
+            if(messageCount % this.HOUSEKEEPING_INTERVAL_MESSAGES == 0) {
+                // Log stats
                 this.log(`messageCount: ${messageCount}`);
 
+                // Start a cleaning cycle every CLEANUP_INTERVAL_SECONDS
                 if(cleanup == 0) {
                     if((Date.now() - lastCleanup) > this.CLEANUP_INTERVAL_SECONDS * 1000) {
                         cleanup = 1;
@@ -80,6 +86,15 @@ export class SimplePlayer {
             }
 
             if (messageCount == 1) {
+
+                /*
+                 * The first message from the server contains the codecs of this stream, which
+                 * are usually avc1.4d4032 for video and mp4a.40.2 for audio. All other messages
+                 * are fragments of the H.264 fMP4 stream of the camera. Essentially, this is
+                 * the initialization section of the engine where the SourceBuffer and Queue
+                 * are allocated.
+                 */
+
                 this._mimeCodecs = `video/mp4; codecs="${event.data}"`
 
                 this.log(`mimeCodec: ${this._mimeCodecs}`);
@@ -91,22 +106,49 @@ export class SimplePlayer {
                 this._queue = new Queue<Uint8Array>();
 
             } else if(messageCount == 2) {
+
+                /*
+                 * The second message from the server is the first message of the stream.
+                 * It contains the Init segment of the stream and must be handled before
+                 * all other messages.
+                 */
+
                 const data = new Uint8Array(event.data);
                 this._sourceBuffer.appendBuffer(data);
 
             } else {
+
+                /*
+                 * All other messages are handled here. All of them are segments of the
+                 * H.264 fMP4 stream. Ideally, when a message arives it can be appended
+                 * to the SourceBuffer right away. However, there are times when the
+                 * SourceBuffer is not yet ready, and so the message is enqueued.
+                 * Whenever the SourceBuffer can be updated, all queued messages are
+                 * appended to the SourceBuffer, effectively cleaning the queue and
+                 * avoiding any lag accumulation.
+                 */
+
                 const data = new Uint8Array(event.data);
                 this._queue.enqueue(data);
 
                 if (this._sourceBuffer.updating == false) {
-                    if (cleanup == 1) {
-                        try {
-                            // Clean the source buffer, leaving only the last N seconds
 
+                    if (cleanup > 0) {
+
+                        /*
+                         * If this is a cleanup cycle, start it now. Cleanup can
+                         * proceed only if the SourceBuffer is ready (i.e., not updating).
+                         * The SourceBuffer is cleaned, leaving in it only the last
+                         * KEEP_VIDEO_SECONDS seconds of video.
+                         */
+
+                        this.log(`Cleanup attempt: ${cleanup}`)
+
+                        try {
                             let end = this._sourceBuffer.buffered.end(0);
                             this.log(`Cleaning up SourceBuffer, end: ${end}`);
 
-                            this._sourceBuffer.remove(0, end - 10);
+                            this._sourceBuffer.remove(0, end - this.KEEP_VIDEO_SECONDS);
                             this.log("SourceBuffer cleaned");
 
                             cleanup = 0;
@@ -114,7 +156,7 @@ export class SimplePlayer {
 
                         } catch (e) {
                             this.log(`Failed to clean up SourceBuffer: ${e}`);
-                            return;
+                            cleanup++;
                         }
                     }
 
