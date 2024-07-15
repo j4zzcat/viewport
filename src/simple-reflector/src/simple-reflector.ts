@@ -27,6 +27,15 @@ const Logger = winston.createLogger({
     transports: [new winston.transports.Console()]
 });
 
+/*
+ * SimpleReflector acts as a proxy/reflector server to retrieve video streams
+ * from Unifi cameras and deliver them to a Simple Player over WebSocket. It
+ * initializes a WebSocketServer on port 4001, listens for connections, and
+ * establishes the stream from Unifi Protect to the client. The video stream
+ * is sent in the correct format directly to the client without transcoding,
+ * ensuring low latency.
+ */
+
 class SimpleReflector {
     private _logger = Logger.child({source: SimpleReflector.name});
     private _wss: WebSocketServer;
@@ -45,8 +54,20 @@ class SimpleReflector {
         });
 
         this._wss.on("connection", async (ws: WebSocket, req) => {
+
+            /*
+             * Start the interaction with the client.
+             */
+
             try {
+
                 let url = new URL(`unifi:/${req.url}`);
+
+                /*
+                 * This initial request is expected to arrive over WebSocket and formatted as follows:
+                 * ws://server:port/<unifi-controller-ip>/<camera-id>
+                 */
+
                 // @ts-ignore
                 let clientId = `${ws._socket.remoteAddress}:${ws._socket.remotePort}`;
                 let controller = url.host;
@@ -57,19 +78,42 @@ class SimpleReflector {
                 let logger = this._logger.child({clientId: clientId, controller: controller, cameraId: cameraId});
                 logger.info(`Client '${clientId}' asks for '${url}'`);
 
+                /*
+                 * Get or create an instance of ProtectApi, fully initialized.
+                 * This is done asynchronously.
+                 */
+
                 let protectApi = await this.getOrCreateProtectApi(controller, username, password);
                 logger.debug("Wiring the livestream to the client's WebSocket")
 
+                /*
+                 * Create a new instance of the livestream controller of this particular
+                 * Unifi Protect controller. This anchor object is used to start and stop
+                 * the actual H.264 fMP4 stream of a specific camera id.
+                 */
                 let livestream = protectApi.createLivestream();
+
                 livestream.on("close", () => {
                     logger.info("Livestream closed");
                     ws.close();
                 });
 
+                /*
+                 * Listen for the Codec event, so that it can be transmitted
+                 * as the first messagr to the client.
+                 */
                 livestream.on("codec", (codec) => {
-                    logger.debug(`The livestream codec is '${codec}'`);
-                    ws.send(codec);
 
+                    /*
+                     * This is the first outgoing message to the client
+                     */
+                    ws.send(codec);
+                    logger.debug(`The livestream codec is '${codec}'`);
+
+                    /*
+                     * Now start listening for the H.264 fMP4 stream and simply
+                     * send it over WebSocket to the client.
+                     */
                     livestream.on("message", (buffer) => {
                         try {
                             ws.send(buffer);
@@ -100,6 +144,10 @@ class SimpleReflector {
         }); // on "connection"
     }
 
+    /*
+     * Login and bootstrap Unifi Protect controller, i.e., NVR and the likes.
+     * Once created and properly initialized, the instance is kept in a cache.
+     */
     private async getOrCreateProtectApi(controller, username, password): Promise<ProtectApi> {
         let key = `${username}:${controller}`;
         let protectApi = this._protectApis.get(key);

@@ -16,8 +16,10 @@
  * This software. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import {Queue} from "typescript-collections";
+
 /*
- * Simple Player - plays the video feed of a Unifi camera, with low latency.
+ * SimplePlayer - plays the video feed of a Unifi camera, with low latency.
  * The player receives the stream from the Simple Reflector, which handles
  * the mechanics of getting the stream from Unifi Protect, and then sends it
  * over WebSocket to this player. The video is then presented using MSE.
@@ -29,8 +31,6 @@
  *
  * Under normal circumstances, the player achieves latency of 0.5 - 1 second.
  */
-
-import {Queue} from "typescript-collections";
 
 export class SimplePlayer {
     private readonly _videoElementId: string;
