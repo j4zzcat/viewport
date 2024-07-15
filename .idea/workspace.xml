@@ -5,8 +5,39 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
+      <change beforePath="$PROJECT_DIR$/.fleet/run.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-reflector/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-reflector/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/docker/build.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-player/examples/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/examples/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/simple-reflector/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/backend/backend.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/backend/layout.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/backend/rtsp.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/backend/unifi.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/context.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/frontend/cli.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/index.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/test/unifi.test.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/fmpegp/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/fmpegp/main.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/fmpegp/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/fmpegp/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/fmpegp/tsconfig.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/index1.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/index2.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/index3.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/index4.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/index5.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/mpegts.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/test.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/testbed/unifi-testbed.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/tsconfig.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/utils/logger.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts/utils/plugin.ts" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,11 +106,11 @@
       <recent name="$PROJECT_DIR$/test" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docker" />
       <recent name="$PROJECT_DIR$/src/simple-player" />
       <recent name="$PROJECT_DIR$/src/fmpeg4-over-ws-player/examples" />
       <recent name="$PROJECT_DIR$/src/fmpeg4-over-ws-player/src" />
       <recent name="$PROJECT_DIR$/ts" />
-      <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
   <component name="RubyModuleManagerSettings">
@@ -106,7 +137,7 @@
     <configuration name="simple-reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="src/simple-reflector.ts" working-dir="$PROJECT_DIR$/src/simple-reflector">
       <method v="2" />
     </configuration>
-    <configuration name="Python tests in test" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests in /Users/snd/Development/Projects/j4zzcat/viewport/ts/test" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="viewport" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -125,12 +156,12 @@
     <list>
       <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
       <item itemvalue="Node.js.simple-reflector" />
-      <item itemvalue="Python tests.Python tests in test" />
+      <item itemvalue="Python tests.Python tests in /Users/snd/Development/Projects/j4zzcat/viewport/ts/test" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
-        <item itemvalue="Python tests.Python tests in test" />
+        <item itemvalue="Python tests.Python tests in /Users/snd/Development/Projects/j4zzcat/viewport/ts/test" />
       </list>
     </recent_temporary>
   </component>
@@ -163,7 +194,7 @@
       <workItem from="1720869159986" duration="34997000" />
       <workItem from="1720946358278" duration="11842000" />
       <workItem from="1720987392717" duration="9836000" />
-      <workItem from="1721028311572" duration="26446000" />
+      <workItem from="1721028311572" duration="27627000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
