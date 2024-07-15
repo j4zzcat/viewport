@@ -1,8 +1,6 @@
 {
   "name": "viewport",
   "dependencies": {
-    "express": "^4.19.2",
-    "redact-secrets": "^1.0.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.16.2",
     "unifi-protect": "^4.11.1",
