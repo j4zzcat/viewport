@@ -17,19 +17,21 @@
  */
 
 import {Queue} from "typescript-collections";
-import {isTooManyTries, retryAsync} from "ts-retry";
 
 export class SimplePlayer {
-    private _mediaSource: MediaSource;
-    private _sourceBuffer: SourceBuffer;
     private _videoElementId: string;
     private _url: string;
+    private _mimeCodecs: string;
+    private _ws: WebSocket;
+    private _mediaSource: MediaSource;
+    private _sourceBuffer: SourceBuffer;
+    private _queue: Queue<Uint8Array>;
 
     constructor(videoElementId, url) {
         this._videoElementId = videoElementId;
         this._url = url;
 
-        this.log("debug", "Starting SimplePlayer");
+        this.log("Starting SimplePlayer");
         this.initialize();
     }
 
@@ -50,73 +52,85 @@ export class SimplePlayer {
         this._mediaSource.addEventListener("sourceclose", this.onSourceClose);
     }
 
-    private onSourceOpen = async () => {
-        let queue = new Queue<Uint8Array>();
-        let ws = this.createWebSocket(this._url, queue);
+    private firstMessage = true;
+    private onSourceOpen = () => {
+        this._ws = new WebSocket(this._url);
+        this._ws.binaryType = "arraybuffer";
 
-        try {
-            await retryAsync(
-                async ()=> {
-                    return queue.isEmpty()
-                },
-                {
-                    delay: 1000,
-                    maxTry: 5,
-                    until: (lastResult) => lastResult == false,
+        this._ws.onopen = () => {
+            this.log("WebSocket connection opened.");
+        }
+
+        let messageCount = 0;
+        let cleanup = 0;
+        this._ws.onmessage = (event) => {
+            messageCount++;
+            if(messageCount % 100 == 0) {
+                if(cleanup == 0) {
+                    cleanup = 1;
                 }
-            );
-        } catch (err) {
-            if (isTooManyTries(err)) {
-                this.log("error", "Did not get codec in time!")
-            } else {
-                this.log("error", err);// something else goes wrong
+                this.log(`messageCount: ${messageCount}, sourceBufferList: ${this._mediaSource.sourceBuffers.length}`);
             }
-        }
 
-        let codec = queue.dequeue() as unknown as string;
-        let mimeCodec = `video/mp4; codecs="${codec}"`
-        this.log("debug", `mimeCodec: ${mimeCodec}`);
+            if (messageCount == 1) {
+                this._mimeCodecs = `video/mp4; codecs="${event.data}"`
 
-        if(!MediaSource.isTypeSupported(mimeCodec)) {
-            throw new Error(`Mime Codec not supported: ${mimeCodec}`);
-        }
+                this.log(`mimeCodec: ${this._mimeCodecs}`);
+                if (!MediaSource.isTypeSupported(this._mimeCodecs)) {
+                    throw new Error(`Mime Codec not supported: ${this._mimeCodecs}`);
+                }
 
-        this._sourceBuffer = this._mediaSource.addSourceBuffer(mimeCodec);
+                this._sourceBuffer = this._mediaSource.addSourceBuffer(this._mimeCodecs);
+                this._queue = new Queue<Uint8Array>();
 
-        this._sourceBuffer.addEventListener("updateend", (event) => {
-            if(queue.peek() == undefined) {
-                return;
+            } else if(messageCount == 2) {
+                const data = new Uint8Array(event.data);
+                this._sourceBuffer.appendBuffer(data);
+
             } else {
-                this._sourceBuffer.appendBuffer(queue.dequeue());
-            }
-        });
+                const data = new Uint8Array(event.data);
+                this._queue.enqueue(data);
+                if(this._sourceBuffer.updating == false) {
 
+                    if(cleanup != 0) {
+                        this.log(`cleanup: ${cleanup}`);
+
+                        if (cleanup == 1) {
+                            try {
+                                this._sourceBuffer.remove(0, 3);
+                                cleanup = 0;
+                                return;
+
+                            } catch (e) {
+                                this.log(`Failed to clean SourceBuffer: ${e}`);
+                                return;
+                            }
+                        }
+                    }
+
+                    this._sourceBuffer.appendBuffer(this._queue.dequeue())
+                }
+            }
+
+        // if(this._sourceBuffer != undefined) {
+        //     this._mediaSource.sourceBuffers.onremovesourcebuffer = (event) => {
+        //         this._sourceBuffer = this._mediaSource.addSourceBuffer(this._mimeCodecs);
+        //     };
+        //
+        //     this._mediaSource.removeSourceBuffer(this._sourceBuffer);
+        // } else {
+
+        }
     }
 
     private onSourceEnded = () => {
-        this.log("debug", "onSourceEnded");
+        this.log("onSourceEnded");
     }
 
     private onSourceClose = () => {
-        this.log("debug", "onSourceClose");
+        this.log("onSourceClose");
     }
 
-
-    private createWebSocket(url, queue) {
-        const ws = new WebSocket(url);
-        ws.binaryType = "arraybuffer";
-
-        ws.onopen = () => {
-            this.log("debug", "WebSocket connection opened.");
-        }
-
-        ws.onmessage = (event) => {
-            const data = new Uint8Array(event.data);
-            queue.enqueue(data);
-        }
-
-        return ws;
-    }
     //
     //     let messageCount = 0;
     //     let updateEndCount = 0;
@@ -171,8 +185,8 @@ export class SimplePlayer {
     //     };
     // }
 
-    private log(level: string, message: string) {
-        console.log(`[${Date.now()}] [${level}] [${this._videoElementId}] ${message}`);
+    private log(message: string) {
+        console.log(`[${Date.now()}] [${this._videoElementId}] ${message}`);
     }
 }
 
