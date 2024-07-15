@@ -27,6 +27,8 @@ export class SimplePlayer {
     private _sourceBuffer: SourceBuffer;
     private _queue: Queue<Uint8Array>;
 
+    private CLEANUP_INTERVAL_SECONDS = 20;
+
     constructor(videoElementId, url) {
         this._videoElementId = videoElementId;
         this._url = url;
@@ -63,13 +65,18 @@ export class SimplePlayer {
 
         let messageCount = 0;
         let cleanup = 0;
+        let lastCleanup = Date.now();
+
         this._ws.onmessage = (event) => {
             messageCount++;
             if(messageCount % 100 == 0) {
+                this.log(`messageCount: ${messageCount}`);
+
                 if(cleanup == 0) {
-                    cleanup = 1;
+                    if((Date.now() - lastCleanup) > this.CLEANUP_INTERVAL_SECONDS * 1000) {
+                        cleanup = 1;
+                    }
                 }
-                this.log(`messageCount: ${messageCount}, sourceBufferList: ${this._mediaSource.sourceBuffers.length}`);
             }
 
             if (messageCount == 1) {
@@ -90,36 +97,51 @@ export class SimplePlayer {
             } else {
                 const data = new Uint8Array(event.data);
                 this._queue.enqueue(data);
-                if(this._sourceBuffer.updating == false) {
 
-                    if(cleanup != 0) {
-                        this.log(`cleanup: ${cleanup}`);
+                if (this._sourceBuffer.updating == false) {
+                    if (cleanup == 1) {
+                        try {
+                            // Clean the source buffer, leaving only the last N seconds
 
-                        if (cleanup == 1) {
-                            try {
-                                this._sourceBuffer.remove(0, 3);
-                                cleanup = 0;
-                                return;
+                            let end = this._sourceBuffer.buffered.end(0);
+                            this.log(`Cleaning up SourceBuffer, end: ${end}`);
 
-                            } catch (e) {
-                                this.log(`Failed to clean SourceBuffer: ${e}`);
-                                return;
-                            }
+                            this._sourceBuffer.remove(0, end - 10);
+                            this.log("SourceBuffer cleaned");
+
+                            cleanup = 0;
+                            return;
+
+                        } catch (e) {
+                            this.log(`Failed to clean up SourceBuffer: ${e}`);
+                            return;
                         }
                     }
 
-                    this._sourceBuffer.appendBuffer(this._queue.dequeue())
+                    // Dehydrate the queue and create one single buffer with
+                    // all the received messages
+
+                    const arrays: Uint8Array[] = [];
+
+                    let totalLength = 0;
+                    while (!this._queue.isEmpty()) {
+                        const array = this._queue.dequeue();
+                        arrays.push(array);
+                        totalLength += array.length;
+                    }
+
+                    const allBuffers = new Uint8Array(totalLength);
+                    let offset = 0;
+
+                    for (const arr of arrays) {
+                        allBuffers.set(arr, offset);
+                        offset += arr.length;
+                    }
+
+                    // Append the single large buffer
+                    this._sourceBuffer.appendBuffer(allBuffers);
                 }
             }
-
-        // if(this._sourceBuffer != undefined) {
-        //     this._mediaSource.sourceBuffers.onremovesourcebuffer = (event) => {
-        //         this._sourceBuffer = this._mediaSource.addSourceBuffer(this._mimeCodecs);
-        //     };
-        //
-        //     this._mediaSource.removeSourceBuffer(this._sourceBuffer);
-        // } else {
-
         }
     }
 
@@ -130,60 +152,6 @@ export class SimplePlayer {
     private onSourceClose = () => {
         this.log("onSourceClose");
     }
-
-    //
-    //     let messageCount = 0;
-    //     let updateEndCount = 0;
-    //     let notReadyCount = 0;
-    //     let firstMessage = true;
-    //     socket.onmessage = (event) => {
-    //         const data = new Uint8Array(event.data);
-    //
-    //         if(firstMessage) {
-    //             let codec = event.data as string;
-    //             let mimeCodec = `video/mp4; codecs="${codec}"`
-    //             this.log(`mimeCodec: ${mimeCodec}`);
-    //
-    //             if(!MediaSource.isTypeSupported(mimeCodec)) {
-    //                 throw new Error(`Mime Codec not supported: ${mimeCodec}`);
-    //             }
-    //
-    //             this._sourceBuffer = this._mediaSource.addSourceBuffer(mimeCodec);
-    //
-    //             firstMessage = false;
-    //             return;
-    //         }
-    //
-    //         messageCount++;
-    //         if(messageCount % 100 == 0) {
-    //             this.log(`messageCount: ${messageCount}, updateEndCount: ${updateEndCount}, notReadyCount: ${notReadyCount}`);
-    //         }
-    //
-    //         // Spin around the status for several ticks
-    //         while(this._sourceBuffer.updating) {
-    //             notReadyCount++;
-    //             if(notReadyCount % 100 == 0) {
-    //                 this._sourceBuffer.abort();
-    //                 firstMessage = false;
-    //             }
-    //         }
-    //
-    //         try {
-    //             this._sourceBuffer.appendBuffer(data);
-    //         } catch (e) {
-    //             this.log(`Error occurred in socket.onmessage: ${e}`);
-    //         }
-    //     };
-    //
-    //     socket.onerror = (error) => {
-    //         this.log(`WebSocket error: ${error}`);
-    //     };
-    //
-    //     socket.onclose = (event) => {
-    //         this.log("WebSocket connection closed:");
-    //         this._mediaSource.endOfStream();
-    //     };
-    // }
 
     private log(message: string) {
         console.log(`[${Date.now()}] [${this._videoElementId}] ${message}`);
