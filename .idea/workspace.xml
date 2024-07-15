@@ -5,39 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
-      <change afterPath="$PROJECT_DIR$/src/controller/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/.rspec" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/.rubocop.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/.ruby-version" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/CHANGELOG.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/Gemfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/Rakefile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/bin/console" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/bin/setup" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/controller.gemspec" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/controller.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/lib/controller.rb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/lib/controller/version.rb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/sig/controller.rbs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/spec/controller_spec.rb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/controller/spec/spec_helper.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-player/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-player/examples/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/examples/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-player/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-player/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-player/simple-player.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/player.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-player/src/simple-player.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/src/simple-player.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-player/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/tsconfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-player/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/webpack.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-reflector/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-reflector/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-reflector/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-reflector/simple-reflector.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/reflector.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-reflector/src/simple-reflector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/src/simple-reflector.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-reflector/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/tsconfig.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,9 +40,11 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Node.js.reflector.executor": "Run",
     "Node.js.simple-reflector.executor": "Run",
     "Node.js.unifi-fmpeg4-server.executor": "Run",
     "Node.js.unifi-protect-livestream-reflector.executor": "Run",
+    "Ruby.controller.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
@@ -94,7 +64,7 @@
     "ruby.rails.projectView.checked": "true",
     "ruby.structure.view.model.defaults.configured": "true",
     "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
-    "ts.external.directory.path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/simple-reflector/node_modules/typescript/lib",
+    "ts.external.directory.path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/reflector/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -122,7 +92,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Ruby.controller">
+  <component name="RunManager" selected="Node.js.reflector">
     <configuration name="UnifiStreamProvider.canHandle" type="JavaScriptTestRunnerJest" temporary="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
@@ -214,7 +184,7 @@
       <workItem from="1720869159986" duration="34997000" />
       <workItem from="1720946358278" duration="11842000" />
       <workItem from="1720987392717" duration="9836000" />
-      <workItem from="1721028311572" duration="29781000" />
+      <workItem from="1721028311572" duration="31312000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -263,5 +233,8 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/viewport@controller.rcov" NAME="controller Coverage Results" MODIFIED="1721085140952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="controller" />
   </component>
 </project>
