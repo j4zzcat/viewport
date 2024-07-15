@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/simple-player/examples/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/examples/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/simple-player/src/simple-player.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/simple-player/src/simple-player.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -164,7 +163,7 @@
       <workItem from="1720869159986" duration="34997000" />
       <workItem from="1720946358278" duration="11842000" />
       <workItem from="1720987392717" duration="9836000" />
-      <workItem from="1721028311572" duration="23043000" />
+      <workItem from="1721028311572" duration="23969000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>

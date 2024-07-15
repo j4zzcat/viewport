@@ -16,7 +16,7 @@
  * This software. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
+/*
  * Simple Player - plays the video feed of a Unifi camera, with low latency.
  * The player receives the stream from the Simple Reflector, which handles
  * the mechanics of getting the stream from Unifi Protect, and then sends it
@@ -124,19 +124,15 @@ export class SimplePlayer {
 
                 /*
                  * All other messages are handled here. All of them are segments of the
-                 * H.264 fMP4 stream. Ideally, when a message arives it can be appended
-                 * to the SourceBuffer right away. However, there are times when the
-                 * SourceBuffer is not yet ready, and so the message is enqueued.
-                 * Whenever the SourceBuffer can be updated, all queued messages are
-                 * appended to the SourceBuffer, effectively cleaning the queue and
-                 * avoiding any lag accumulation.
+                 * H.264 fMP4 stream.
                  */
 
                 /*
                  * Do a housekeeping cycle every HOUSE_KEEPING_INTERVAL_MESSAGES messages.
                  */
                 if(messageCount % this.HOUSEKEEPING_INTERVAL_MESSAGES == 0) {
-                    this.log(`Starting housekeeping cycle, messageCount: ${messageCount}`);
+                    this.log("Starting housekeeping cycle");
+                    this.log(`messageCount: ${messageCount}, queue.size: ${this._queue.size()}`);
 
                     /*
                      * Request a cleaning cycle every CLEANUP_INTERVAL_SECONDS.
@@ -153,10 +149,10 @@ export class SimplePlayer {
                 /*
                  * Handle the H.264 fMP4 stream. Ideally, when a message arrives it can be
                  * appended to the SourceBuffer right away. However, there are times when the
-                 * SourceBuffer is not yet ready, and so the message is enqueued. Whenever the
-                 * SourceBuffer can be updated, all queued messages are appended to the
-                 * SourceBuffer, effectively cleaning up the queue and avoiding any lag
-                 * accumulation.
+                 * SourceBuffer is not yet ready, and so the message is enqueued to be later
+                 * appended to the SourceBuffer. Whenever the SourceBuffer can be updated,
+                 * all queued messages are appended at once, effectively cleaning up the queue
+                 * and avoiding any lag accumulation.
                  */
                 const data = new Uint8Array(event.data);
                 this._queue.enqueue(data);
