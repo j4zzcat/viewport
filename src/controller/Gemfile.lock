@@ -7,7 +7,10 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.2)
+    commander (5.0.0)
+      highline (~> 3.0.0)
     diff-lcs (1.5.1)
+    highline (3.0.1)
     json (2.7.2)
     language_server-protocol (3.17.0.3)
     parallel (1.25.1)
@@ -55,10 +58,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  commander (~> 5)
   controller!
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 1.21)
 
 BUNDLED WITH
-   2.5.11
+   2.5.15

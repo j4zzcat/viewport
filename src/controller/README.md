@@ -1,5 +1,16 @@
 # Controller
 
+```shell
+
+viewport \
+  --layout grid:3x3 \
+  --stream unifi://u:p@192.168.4.10/_all
+
+
+```
+
+
+
 TODO: Delete this and the text below, and describe your gem
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/controller`. To experiment with that code, run `bin/console` for an interactive prompt.
