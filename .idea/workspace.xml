@@ -5,7 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
+      <change afterPath="$PROJECT_DIR$/src/viewport/lib/viewport.rb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/cli.rb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/error.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/.rspec" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/.rspec" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/.rubocop.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/.rubocop.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/.ruby-version" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/.ruby-version" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/Gemfile" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/Gemfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/Gemfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/Gemfile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/Rakefile" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/Rakefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/bin/console" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/bin/console" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/bin/setup" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/bin/setup" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/controller.gemspec" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/viewport.gemspec" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/controller.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/viewport.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/lib/controller.rb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/lib/controller/version.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/version.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/sig/controller.rbs" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/sig/controller.rbs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/spec/controller_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/spec/controller_spec.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/spec/spec_helper.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/spec/spec_helper.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +73,7 @@
     "TF_FMT": "false",
     "WebServerToolWindowFactoryState": "false",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/simple-player/publish",
+    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/controller/lib/controller",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -70,11 +92,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/controller/lib/controller" />
       <recent name="$PROJECT_DIR$/src/simple-player/publish" />
       <recent name="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/src" />
       <recent name="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src" />
       <recent name="$PROJECT_DIR$/src/unifi-fmpeg4-server" />
-      <recent name="$PROJECT_DIR$/test" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/docker" />
@@ -88,7 +110,7 @@
     <option name="blackListedRootsPaths">
       <list>
         <option value="$PROJECT_DIR$" />
-        <option value="$PROJECT_DIR$/src/controller" />
+        <option value="$PROJECT_DIR$/src/viewport" />
       </list>
     </option>
   </component>
@@ -109,8 +131,8 @@
     <configuration name="reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="src/simple-reflector.ts" working-dir="$PROJECT_DIR$/src/reflector">
       <method v="2" />
     </configuration>
-    <configuration name="controller" type="RubyRunConfigurationType" factoryName="Ruby">
-      <module name="controller" />
+    <configuration name="viewport" type="RubyRunConfigurationType" factoryName="Ruby">
+      <module name="viewport" />
       <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="" />
       <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="" />
       <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
@@ -119,7 +141,7 @@
       <EXTENSION ID="BundlerRunConfigurationExtension" BUNDLE_MODE="AUTO" bundleExecEnabled="true" />
       <EXTENSION ID="RubyCoverageRunConfigurationExtension" runner="rcov" />
       <EXTENSION ID="org.jetbrains.plugins.ruby.rails.run.RailsRunConfigurationExtension" SCRATCH_USE_RAILS_RUNNER="false" />
-      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/src/controller/lib/controller.rb" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/src/viewport/lib/viewport.rb" />
       <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -145,7 +167,7 @@
       <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
       <item itemvalue="Node.js.reflector" />
       <item itemvalue="Python tests.Python tests in /Users/snd/Development/Projects/j4zzcat/viewport/ts/test" />
-      <item itemvalue="Ruby.controller" />
+      <item itemvalue="Ruby.viewport" />
     </list>
     <recent_temporary>
       <list>
@@ -185,6 +207,7 @@
       <workItem from="1720946358278" duration="11842000" />
       <workItem from="1720987392717" duration="9836000" />
       <workItem from="1721028311572" duration="31312000" />
+      <workItem from="1721110244080" duration="12365000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
