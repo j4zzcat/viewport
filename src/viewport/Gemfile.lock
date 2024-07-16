@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    controller (0.1.0)
+    viewport (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -59,10 +59,10 @@ PLATFORMS
 
 DEPENDENCIES
   commander (~> 5)
-  controller!
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 1.21)
+  viewport!
 
 BUNDLED WITH
    2.5.15

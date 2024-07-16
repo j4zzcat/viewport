@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require_relative "lib/controller/version"
+require_relative "lib/viewport/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "controller"
-  spec.version = Controller::VERSION
+  spec.name = "viewport"
+  spec.version = Viewport::VERSION
   spec.authors = ["Sharon Dagan"]
   spec.email = ["sharon.dagan@gmail.com"]
 
-  spec.summary = "Viewport Controller"
-  spec.description = "Controls the execution of the Viewport"
+  spec.summary = "Viewport"
+  spec.description = "Display Unifi and RTSP video streams in an simple, unattended webpage."
   spec.homepage = "https://github.com/j4zzcat"
   spec.required_ruby_version = ">= 3.0.0"
 
