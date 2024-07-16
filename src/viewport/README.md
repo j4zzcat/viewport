@@ -2,9 +2,12 @@
 
 ```shell
 
-viewport \
-  --layout grid:3x3 \
-  --stream unifi://u:p@192.168.4.10/_all
+bundle exec ruby lib/viewport.rb \
+  streams \
+    --layout 'lms:1,0,4' \
+    unifi://u:p@host/all \
+    rtsps://192.168.4.10/AAADDVCEEFF13 \
+    'rtsp://dyno.home/ADDDECEE2342D?night=false'
 
 
 ```

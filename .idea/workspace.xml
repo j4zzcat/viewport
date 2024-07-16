@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports" />
+    <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
+      <change afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/backend.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/Gemfile" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/Gemfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/lib/viewport.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport/cli.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/cli.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/sig/controller.rbs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/viewport.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/viewport.iml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -43,6 +52,7 @@
     "Node.js.unifi-fmpeg4-server.executor": "Run",
     "Node.js.unifi-protect-livestream-reflector.executor": "Run",
     "Ruby.controller.executor": "Run",
+    "Ruby.viewport.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
@@ -85,12 +95,14 @@
   <component name="RubyModuleManagerSettings">
     <option name="blackListedRootsPaths">
       <list>
+        <option value="$PROJECT_DIR$/src/player" />
         <option value="$PROJECT_DIR$" />
         <option value="$PROJECT_DIR$/src/viewport" />
+        <option value="$PROJECT_DIR$/src/reflector" />
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Node.js.reflector">
+  <component name="RunManager" selected="Ruby.viewport">
     <configuration name="UnifiStreamProvider.canHandle" type="JavaScriptTestRunnerJest" temporary="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
@@ -118,37 +130,19 @@
       <EXTENSION ID="RubyCoverageRunConfigurationExtension" runner="rcov" />
       <EXTENSION ID="org.jetbrains.plugins.ruby.rails.run.RailsRunConfigurationExtension" SCRATCH_USE_RAILS_RUNNER="false" />
       <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/src/viewport/lib/viewport.rb" />
-      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="-V streams --layout grid:4x4 unifi://u:p@c1/all rtsp://a.b.c.d/efg" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Python tests in /Users/snd/Development/Projects/j4zzcat/viewport/ts/test" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="viewport" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/ts/test" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/ts/test&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
       <item itemvalue="Node.js.reflector" />
-      <item itemvalue="Python tests.Python tests in /Users/snd/Development/Projects/j4zzcat/viewport/ts/test" />
       <item itemvalue="Ruby.viewport" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
-        <item itemvalue="Python tests.Python tests in /Users/snd/Development/Projects/j4zzcat/viewport/ts/test" />
       </list>
     </recent_temporary>
   </component>
@@ -183,7 +177,8 @@
       <workItem from="1720946358278" duration="11842000" />
       <workItem from="1720987392717" duration="9836000" />
       <workItem from="1721028311572" duration="31312000" />
-      <workItem from="1721110244080" duration="12678000" />
+      <workItem from="1721110244080" duration="13022000" />
+      <workItem from="1721128754518" duration="7223000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -235,5 +230,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/viewport@controller.rcov" NAME="controller Coverage Results" MODIFIED="1721085140952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="controller" />
+    <SUITE FILE_PATH="coverage/viewport@viewport.rcov" NAME="viewport Coverage Results" MODIFIED="1721139210656" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
   </component>
 </project>

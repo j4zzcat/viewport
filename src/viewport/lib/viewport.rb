@@ -4,6 +4,7 @@ require "rubygems"
 require_relative "viewport/version"
 require_relative "viewport/error"
 require_relative "viewport/cli"
+require_relative "viewport/backend"
 
 Viewport::CLI.new.run if $PROGRAM_NAME == __FILE__
 
