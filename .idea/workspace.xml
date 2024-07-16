@@ -4,31 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
-      <change afterPath="$PROJECT_DIR$/src/viewport/lib/viewport.rb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/cli.rb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/error.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/.rspec" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/.rspec" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/.rubocop.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/.rubocop.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/.ruby-version" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/.ruby-version" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/Gemfile" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/Gemfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/Gemfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/Gemfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/Rakefile" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/Rakefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/bin/console" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/bin/console" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/bin/setup" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/bin/setup" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/controller.gemspec" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/viewport.gemspec" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/controller.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/viewport.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/lib/controller.rb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/lib/controller/version.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/version.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/sig/controller.rbs" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/sig/controller.rbs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/spec/controller_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/spec/controller_spec.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/spec/spec_helper.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/spec/spec_helper.rb" afterDir="false" />
-    </list>
+    <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -207,7 +183,7 @@
       <workItem from="1720946358278" duration="11842000" />
       <workItem from="1720987392717" duration="9836000" />
       <workItem from="1721028311572" duration="31312000" />
-      <workItem from="1721110244080" duration="12365000" />
+      <workItem from="1721110244080" duration="12678000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
