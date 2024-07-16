@@ -2,6 +2,8 @@ PATH
   remote: .
   specs:
     viewport (0.1.0)
+      commander (~> 5.0)
+      logging (~> 2.4)
 
 GEM
   remote: https://rubygems.org/
@@ -13,6 +15,11 @@ GEM
     highline (3.0.1)
     json (2.7.2)
     language_server-protocol (3.17.0.3)
+    little-plugger (1.1.4)
+    logging (2.4.0)
+      little-plugger (~> 1.1)
+      multi_json (~> 1.14)
+    multi_json (1.15.0)
     parallel (1.25.1)
     parser (3.3.4.0)
       ast (~> 2.4.1)
@@ -58,7 +65,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  commander (~> 5)
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 1.21)

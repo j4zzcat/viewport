@@ -12,6 +12,9 @@
     <orderEntry type="library" scope="PROVIDED" name="highline (v3.0.1, rbenv: 3.3.3) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="json (v2.7.2, rbenv: 3.3.3) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="language_server-protocol (v3.17.0.3, rbenv: 3.3.3) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="little-plugger (v1.1.4, rbenv: 3.3.3) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="logging (v2.4.0, rbenv: 3.3.3) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="multi_json (v1.15.0, rbenv: 3.3.3) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="parallel (v1.25.1, rbenv: 3.3.3) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="parser (v3.3.4.0, rbenv: 3.3.3) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="racc (v1.8.0, rbenv: 3.3.3) [gem]" level="application" />

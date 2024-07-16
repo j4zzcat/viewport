@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["sharon.dagan@gmail.com"]
 
   spec.summary = "Viewport"
-  spec.description = "Display Unifi and RTSP video streams in an simple, unattended webpage."
+  spec.description = "Display Unifi Protect H.264 fMP4 and RTSP video streams in a simple, unattended webpage."
   spec.homepage = "https://github.com/j4zzcat"
   spec.required_ruby_version = ">= 3.0.0"
 
@@ -33,7 +33,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem
-  # spec.add_dependency "example-gem", "~> 1.0"
+  spec.add_dependency "commander", "~> 5.0"
+  spec.add_dependency "logging", "~> 2.4"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
