@@ -5,14 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
-      <change afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/backend.rb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/bin/bundle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/bin/commander" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/bin/htmldiff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/bin/ldiff" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/bin/racc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/bin/rake" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/bin/rspec" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/bin/rubocop" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/bin/ruby-parse" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/bin/ruby-rewrite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/logger.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/viewport/Gemfile" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/Gemfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/Gemfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/Gemfile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/lib/viewport.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport/cli.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/cli.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/sig/controller.rbs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/viewport.iml" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/viewport.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport/backend.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/backend.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/spec/controller_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/spec/viewport_spec.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/spec/spec_helper.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/spec/spec_helper.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +61,10 @@
     "Node.js.simple-reflector.executor": "Run",
     "Node.js.unifi-fmpeg4-server.executor": "Run",
     "Node.js.unifi-protect-livestream-reflector.executor": "Run",
+    "RSpec.RSpec.executor": "Run",
+    "RSpec.viewport_spec.executor": "Run",
     "Ruby.controller.executor": "Run",
+    "Ruby.viewport help.executor": "Debug",
     "Ruby.viewport.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -59,7 +72,7 @@
     "TF_FMT": "false",
     "WebServerToolWindowFactoryState": "false",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/controller/lib/controller",
+    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/viewport/lib/viewport",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -78,18 +91,18 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/viewport/lib/viewport" />
       <recent name="$PROJECT_DIR$/src/controller/lib/controller" />
       <recent name="$PROJECT_DIR$/src/simple-player/publish" />
       <recent name="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/src" />
       <recent name="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src" />
-      <recent name="$PROJECT_DIR$/src/unifi-fmpeg4-server" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/viewport/man" />
       <recent name="$PROJECT_DIR$/docker" />
       <recent name="$PROJECT_DIR$/src/simple-player" />
       <recent name="$PROJECT_DIR$/src/fmpeg4-over-ws-player/examples" />
       <recent name="$PROJECT_DIR$/src/fmpeg4-over-ws-player/src" />
-      <recent name="$PROJECT_DIR$/ts" />
     </key>
   </component>
   <component name="RubyModuleManagerSettings">
@@ -119,6 +132,57 @@
     <configuration name="reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="src/simple-reflector.ts" working-dir="$PROJECT_DIR$/src/reflector">
       <method v="2" />
     </configuration>
+    <configuration name="RSpec" type="RSpecRunConfigurationType" factoryName="RSpec" temporary="true">
+      <module name="viewport" />
+      <predefined_log_file enabled="true" id="RUBY_RSPEC" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="$PROJECT_DIR$/src/viewport" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <envs>
+        <env name="JRUBY_OPTS" value="-X+O" />
+        <env name="RUBYOPT" value="-W0" />
+      </envs>
+      <EXTENSION ID="BundlerRunConfigurationExtension" BUNDLE_MODE="AUTO" bundleExecEnabled="true" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" track_test_folders="true" runner="rcov" ENABLE_BRANCH_COVERAGE="true" ENABLE_FORKED_COVERAGE="true" />
+      <EXTENSION ID="org.jetbrains.plugins.ruby.rails.run.RailsRunConfigurationExtension" SCRATCH_USE_RAILS_RUNNER="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="$PROJECT_DIR$/src/viewport/spec/viewport_spec.rb" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATHS" VALUE="$PROJECT_DIR$/src/viewport/spec/viewport_spec.rb" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_RUNNER_PATH" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="**/*_spec.rb" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_EXAMPLE_NAME" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="USE_EXAMPLE_MATCHES" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="LINE_NUMBER_EXAMPLE_IDS" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_ARGS" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_VERSION" VALUE="" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="USE_CUSTOM_SPEC_RUNNER" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
+      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="viewport help" type="RubyRunConfigurationType" factoryName="Ruby">
+      <module name="viewport" />
+      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <EXTENSION ID="BundlerRunConfigurationExtension" BUNDLE_MODE="AUTO" bundleExecEnabled="true" />
+      <EXTENSION ID="RubyCoverageRunConfigurationExtension" runner="rcov" />
+      <EXTENSION ID="org.jetbrains.plugins.ruby.rails.run.RailsRunConfigurationExtension" SCRATCH_USE_RAILS_RUNNER="false" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/src/viewport/lib/viewport.rb" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="streams -h" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="viewport" type="RubyRunConfigurationType" factoryName="Ruby">
       <module name="viewport" />
       <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="" />
@@ -126,6 +190,9 @@
       <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
       <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
       <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <envs>
+        <env name="RUBYOPT" value="-W0" />
+      </envs>
       <EXTENSION ID="BundlerRunConfigurationExtension" BUNDLE_MODE="AUTO" bundleExecEnabled="true" />
       <EXTENSION ID="RubyCoverageRunConfigurationExtension" runner="rcov" />
       <EXTENSION ID="org.jetbrains.plugins.ruby.rails.run.RailsRunConfigurationExtension" SCRATCH_USE_RAILS_RUNNER="false" />
@@ -138,10 +205,13 @@
     <list>
       <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
       <item itemvalue="Node.js.reflector" />
+      <item itemvalue="RSpec.RSpec" />
       <item itemvalue="Ruby.viewport" />
+      <item itemvalue="Ruby.viewport help" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="RSpec.RSpec" />
         <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
       </list>
     </recent_temporary>
@@ -178,7 +248,8 @@
       <workItem from="1720987392717" duration="9836000" />
       <workItem from="1721028311572" duration="31312000" />
       <workItem from="1721110244080" duration="13022000" />
-      <workItem from="1721128754518" duration="7223000" />
+      <workItem from="1721128754518" duration="20574000" />
+      <workItem from="1721163638461" duration="6504000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -225,11 +296,21 @@
           <line>55</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="ruby-line">
+          <url>file://$PROJECT_DIR$/src/viewport/lib/viewport/backend.rb</url>
+          <line>23</line>
+          <properties myBlockOrdinal="-1">
+            <option name="block-ordinal" value="-1" />
+          </properties>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/viewport@viewport_spec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721171485574" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport@controller.rcov" NAME="controller Coverage Results" MODIFIED="1721085140952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="controller" />
-    <SUITE FILE_PATH="coverage/viewport@viewport.rcov" NAME="viewport Coverage Results" MODIFIED="1721139210656" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
+    <SUITE FILE_PATH="coverage/viewport@viewport.rcov" NAME="viewport Coverage Results" MODIFIED="1721171837816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
+    <SUITE FILE_PATH="coverage/viewport@viewport_help.rcov" NAME="viewport help Coverage Results" MODIFIED="1721158572697" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
   </component>
 </project>
