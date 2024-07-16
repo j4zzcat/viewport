@@ -3,28 +3,35 @@ require "uri"
 
 module Viewport
   class Backend
+    attr_reader :uris, :unique_schemes
 
-    def initialize(alleged_urls, alleged_layout, verbose)
+    def initialize(alleged_uris, alleged_layout, verbose)
       @log = Logging.logger[self]
-      @urls = parse_urls alleged_urls
+      @uris = validate_uris alleged_uris
+      p @uris
+      @unique_schemes = @uris.map { |uri| uri.scheme }.uniq
     end
 
     def run
-      @log.debug(@urls)
+      @log.debug(@uris)
     end
 
     private
-    def parse_urls(alleged_urls)
-      urls = []
-      alleged_urls.each do |alleged_url|
+    def validate_uris(alleged_uris)
+      parsed_uris = []
+      alleged_uris.each do |alleged_uri|
         begin
-          uri = URI(alleged_url)
-          urls << uri if uri.host && uri.path
-        rescue URI::InvalidURIError => e
-          @log.error "Invalid URL: #{alleged_url}"
+          uri = URI(alleged_uri)
+          parsed_uris << uri if uri.scheme && uri.host && uri.path
+
+        rescue StandardError => e
+          @log.error "Invalid URI: #{alleged_uri}"
           raise Viewport::Error, e
         end
+
+        parsed_uris
       end
     end
+
   end
 end

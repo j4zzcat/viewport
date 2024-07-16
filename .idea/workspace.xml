@@ -5,24 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Removed unused imports">
-      <change afterPath="$PROJECT_DIR$/src/viewport/bin/bundle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/bin/commander" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/bin/htmldiff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/bin/ldiff" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/bin/racc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/bin/rake" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/bin/rspec" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/bin/rubocop" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/bin/ruby-parse" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/bin/ruby-rewrite" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/logger.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/Gemfile" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/Gemfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/Gemfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/Gemfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/lib/viewport.rb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport/backend.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/backend.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/spec/controller_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/spec/viewport_spec.rb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/spec/spec_helper.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/spec/spec_helper.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/spec/viewport_spec.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/spec/viewport_spec.rb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +100,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Ruby.viewport">
+  <component name="RunManager" selected="RSpec.RSpec">
     <configuration name="UnifiStreamProvider.canHandle" type="JavaScriptTestRunnerJest" temporary="true">
       <node-interpreter value="project" />
       <jest-package value="$PROJECT_DIR$/node_modules/jest" />
@@ -249,7 +234,7 @@
       <workItem from="1721028311572" duration="31312000" />
       <workItem from="1721110244080" duration="13022000" />
       <workItem from="1721128754518" duration="20574000" />
-      <workItem from="1721163638461" duration="6504000" />
+      <workItem from="1721163638461" duration="8436000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -298,19 +283,27 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="ruby-line">
           <url>file://$PROJECT_DIR$/src/viewport/lib/viewport/backend.rb</url>
-          <line>23</line>
+          <line>11</line>
           <properties myBlockOrdinal="-1">
             <option name="block-ordinal" value="-1" />
           </properties>
-          <option name="timeStamp" value="27" />
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="ruby-line">
+          <url>file://$PROJECT_DIR$/src/viewport/lib/viewport/backend.rb</url>
+          <line>31</line>
+          <properties myBlockOrdinal="-1">
+            <option name="block-ordinal" value="-1" />
+          </properties>
+          <option name="timeStamp" value="29" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/viewport@viewport_spec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721171485574" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
+    <SUITE FILE_PATH="coverage/viewport@viewport_spec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721173858050" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport@controller.rcov" NAME="controller Coverage Results" MODIFIED="1721085140952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="controller" />
-    <SUITE FILE_PATH="coverage/viewport@viewport.rcov" NAME="viewport Coverage Results" MODIFIED="1721171837816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
+    <SUITE FILE_PATH="coverage/viewport@viewport.rcov" NAME="viewport Coverage Results" MODIFIED="1721172226999" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport@viewport_help.rcov" NAME="viewport help Coverage Results" MODIFIED="1721158572697" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
   </component>
 </project>

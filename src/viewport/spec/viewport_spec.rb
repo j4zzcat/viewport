@@ -11,4 +11,10 @@ RSpec.describe Viewport::Backend do
     expect { Viewport::Backend.new(["a b c"], nil, nil) }
       .to raise_error Viewport::Error
   end
+
+  it "collects unique protocols" do
+    expect (
+      Viewport::Backend.new(%w[h://g.com h://i.com unifi://u:p@host/c], nil, nil).unique_schemes)
+        .to equal %w[h unifi]
+  end
 end
