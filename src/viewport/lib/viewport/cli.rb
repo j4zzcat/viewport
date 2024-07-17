@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "commander"
 
 module Viewport
@@ -8,7 +10,7 @@ module Viewport
       spec = Gem::Specification.load("viewport.gemspec")
 
       program :name, "Viewport"
-      program :version, "1.1.0"
+      program :version, Viewport::VERSION
       program :description, spec.description
       never_trace!
 
@@ -23,7 +25,7 @@ module Viewport
         c.option "--layout=LAYOUT", "Layout to display on."
         c.action do |args, options|
           options.default layout: "grid:3x3"
-          
+
           backend = Viewport::Backend.new(args, options.layout, verbose)
           backend.run
         end

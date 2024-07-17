@@ -22,12 +22,17 @@ module Viewport
     def validate_uris(alleged_uris)
       parsed_uris = []
       alleged_uris.each do |alleged_uri|
+        Logging.mdc["context"] = "uri=#{alleged_uri}"
+
+        @log.debug "Parsing"
+
         uri = URI(alleged_uri)
         parsed_uris << uri if uri.scheme && uri.host && uri.path
-
       rescue StandardError => e
         @log.error "Invalid URI: #{alleged_uri}"
         raise Viewport::Error, e
+      ensure
+        Logging.mdc.clear
       end
       parsed_uris
     end
