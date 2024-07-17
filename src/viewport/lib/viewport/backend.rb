@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "uri"
 
 module Viewport
@@ -8,8 +9,10 @@ module Viewport
     def initialize(alleged_uris, alleged_layout, verbose)
       @log = Logging.logger[self]
       @uris = validate_uris alleged_uris
+      p alleged_uris
       p @uris
-      @unique_schemes = @uris.map { |uri| uri.scheme }.uniq
+      p @uris.map { |uri| uri.scheme }
+      @unique_schemes = (@uris.map { |uri| uri.scheme }).uniq
     end
 
     def run
@@ -29,7 +32,8 @@ module Viewport
           raise Viewport::Error, e
         end
 
-        parsed_uris
+        p parsed_uris
+        return parsed_uris
       end
     end
 

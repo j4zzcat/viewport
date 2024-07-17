@@ -13,8 +13,7 @@ RSpec.describe Viewport::Backend do
   end
 
   it "collects unique protocols" do
-    expect (
-      Viewport::Backend.new(%w[h://g.com h://i.com unifi://u:p@host/c], nil, nil).unique_schemes)
-        .to equal %w[h unifi]
+    expect(Viewport::Backend.new(%w[h://g.com h://i.com unifi://u:p@host/c], nil, nil).unique_schemes)
+        .to contain_exactly("h", "unifi")
   end
 end
