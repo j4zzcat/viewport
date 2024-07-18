@@ -6,6 +6,11 @@ module Viewport
   class CLI
     include Commander::Methods
 
+    def initialize
+      super
+      @log = Logging.logger[self]
+    end
+
     def run
       spec = Gem::Specification.load("viewport.gemspec")
 
@@ -26,6 +31,7 @@ module Viewport
         c.action do |args, options|
           options.default layout: "grid:3x3"
 
+          @log.debug "Starting..."
           backend = Viewport::Backend.new(args, options.layout, verbose)
           backend.run
         end
