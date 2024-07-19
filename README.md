@@ -13,6 +13,11 @@ and then makes these streams available on a simple, unattended web page (i.e., '
 The program is available both as standalone and as a Docker image.
 
 &nbsp;
+
+## Theory of Operation
+( unifi-nvr -> fMPEG -> websocket ) <- ( universal-livestream -> ffmpeg ) -> flv/rtmp -> ( srs ) <- ( mpegts.js ) 
+
+
 ## Unifi Protect Quickstart
 
 ```bash

@@ -1,0 +1,44 @@
+
+NAME
+    viewport streams
+
+SYNOPSIS
+    viewport streams [--layout LAYOUT] url...
+
+DESCRIPTION
+    This command displays video streams according to an (optional) layout. Video streams are
+    specified as a URL, with any of the supported protocols.  This command uses  `ffmpeg` in
+    the background to reflect the video streams to a Media Server, where they are transcoded
+    to a format suitable for live web presentation (H.264 fMP4 or FLV). The exact processing
+    pipeline depends on the protocol. Obviously, for the lowest possible latency, prefer  to
+    use the native protocol of the NVR.
+
+    (1) For the Unifi Protect low latency H.264 fMP4 video stream, use the 'unifi'
+        protocol as follows:
+
+        * To specify all cameras of a Unifi Protect Controller (i.e., UNVR):
+          unifi://username:password@controller-address/_all
+
+        * To specify specific cameras and/or layout order:
+          unifi://username:password@controller-address/camera name 1, ...
+
+    (2) For the Real Time Streaming Protocol,  use the 'rtsp' or 'rtsps' (secured)
+        protocols.
+
+    Note: When used in the terminal,  don't forget to  put a `'` (single quote)  around URLs
+        with special characters in them, such as spaces (' '), commas (',') or  ampersands
+        ('&') etc.
+
+OPTIONS
+    --layout=LAYOUT
+            The layout to use. Supported layouts are: GRID, LMS and AUTO.
+
+            (1) GRID layout generates a grid of evenly-sized cells, and is specified using
+                ROWS x COLUMNS, i.e., --layout grid:3x4.
+
+            (2) LMS layout is specified in terms of LARGE, MEDIUM and SMALL cells to house
+                the videos streams, i.e., lms:1,2,4 will generate a layout with one  large
+                -sized cell,  2 medium-sized cell  and 4 small-sized cells.  Note that not
+                all combinations are possible.
+
+            (3) AUTO layout tries to automatically generate a suitable layout.

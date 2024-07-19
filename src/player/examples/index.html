@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Kiosk</title>
+    <style>
+        body,
+        html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            display: grid;
+            grid-template-rows: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
+            width: 100%;
+            height: 100%;
+        }
+        .container > div {
+            border: 1px solid #000;
+            box-sizing: border-box;
+        }
+    </style>
+    <script src="../dist/bundle.js"></script>
+</head>
+<body>
+<div id="video-streams-placeholder" class="container">
+    <!-- Place holder for actual videos -->
+</div>
+</body>
+<script>
+    const cameraIds = [
+        "65d764350170b803",
+        "64c7643501b8d203",
+        "65776435038b7d03",
+        "66776435024e4603",
+        "64c7643501d9d203"
+    ];
+
+    const placeholderElement = document.getElementById("video-streams-placeholder");
+    cameraIds.forEach((cameraId, index) => {
+        let divElement = document.createElement("div");
+        let videoElement = document.createElement("video");
+
+        videoElement.setAttribute("id", `video-${index}`);
+        videoElement.setAttribute("width", "100%");
+        videoElement.defaultMuted = true;
+        videoElement.muted = true;
+        videoElement.autoplay = true;
+
+        divElement.appendChild(videoElement);
+        placeholderElement.appendChild(divElement);
+
+        const videoPlayer = new SimplePlayer(
+            `video-${index}`,
+            `ws://localhost:4001/user:password@192.168.4.10/${cameraId}`
+        );
+    })
+</script>
+</html>
