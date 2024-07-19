@@ -1,16 +1,9 @@
 # frozen_string_literal: true
 
-# require "logging"
-#
-# layout = Logging.layouts.pattern \
-#   pattern: "[%d] %-5l %c %m\n",
-#   date_pattern: "%Y-%m-%d %H:%M:%S.%6N"
-#
-# Logging.logger.root.appenders = Logging.appenders.stdout "stdout", layout => layout
-
 require "logger"
 
 module Viewport
+  # Simple logger
   class SimpleLogger
     @@loggers = {}
     @@redact = []

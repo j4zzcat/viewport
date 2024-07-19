@@ -205,7 +205,7 @@ export class SimplePlayer {
         const buffers: Uint8Array[] = [];
 
         let totalLength = 0;
-        while (!this._queue.isEmpty()) {
+        while (this._queue.size() > 4) {
             const array = this._queue.dequeue();
             buffers.push(array);
             totalLength += array.length;
