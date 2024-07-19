@@ -97,7 +97,7 @@ Essentially, it means that starting from the 4th stream, adding more streams wil
 For example, with 5 streams the CPU consumption is 100% and the delay for each stream can be as much as 15 seconds. 
 
 &nbsp;
-## Advance Topics
+## Advance Topics (WIP)
 
 ### Embedding individual streams in your own web page
 
