@@ -5,8 +5,8 @@ require "json"
 module Viewport
   class ReflectorController
     def initialize
-      @log = Logging.logger[self]
-      @reflector_log = Logging.logger["Node::Reflector"]
+      @log = SimpleLogger.logger(ReflectorController.name)
+      @reflector_log = SimpleLogger.logger("Node::Reflector")
     end
 
     def start

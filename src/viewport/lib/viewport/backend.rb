@@ -9,7 +9,7 @@ module Viewport
     attr_reader :uris, :unique_schemes
 
     def initialize(alleged_uris, alleged_layout, verbose)
-      @log = Logging.logger[self]
+      @log = SimpleLogger.logger(Backend.name)
 
       @uris = validate_uris alleged_uris
       @unique_schemes = @uris.map(&:scheme).uniq
@@ -34,6 +34,7 @@ module Viewport
         @log.debug "Parsing URI: #{alleged_uri}"
 
         uri = URI(alleged_uri)
+        SimpleLogger.redact uri.password
         parsed_uris << uri if uri.scheme && uri.host && uri.path
 
       rescue StandardError => e

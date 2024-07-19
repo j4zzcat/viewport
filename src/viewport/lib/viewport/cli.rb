@@ -8,7 +8,7 @@ module Viewport
 
     def initialize
       super
-      @log = Logging.logger[self]
+      @log = SimpleLogger.logger(CLI.name)
     end
 
     def run

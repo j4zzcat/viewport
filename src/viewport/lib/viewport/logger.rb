@@ -1,36 +1,43 @@
 # frozen_string_literal: true
 
-require "logging"
-require "stringio"
+# require "logging"
+#
+# layout = Logging.layouts.pattern \
+#   pattern: "[%d] %-5l %c %m\n",
+#   date_pattern: "%Y-%m-%d %H:%M:%S.%6N"
+#
+# Logging.logger.root.appenders = Logging.appenders.stdout "stdout", layout => layout
 
-layout = Logging.layouts.pattern \
-  pattern: "[%d] %-5l %c %m\n",
-  date_pattern: "%Y-%m-%d %H:%M:%S.%6N"
+require "logger"
 
-class RedactingAppender < ::Logging::Appenders::IO
-  class Writer
-    def write(message)
-      puts message.gsub("a", "X")
+module Viewport
+  class SimpleLogger
+    @@loggers = {}
+    @@redact = []
+
+    @@formatter = proc do |severity, datetime, progname, msg|
+      datetime = datetime.strftime("%Y-%m-%d %H:%M:%S.%6N")
+
+      @@redact.each do |redactor|
+        msg = msg.gsub(redactor, "[REDACTED]") unless redactor.nil?
+      end
+
+      "[#{datetime}] #{severity} #{progname} #{msg}\n"
+    end
+
+    def self.redact(redact)
+      @@redact << redact
+    end
+
+    def self.logger(name)
+      logger = Logger.new(
+        STDOUT,
+        progname: name,
+        formatter: @@formatter
+      )
+
+      @@loggers[name] = logger
+      logger
     end
   end
-
-  def initialize(layout)
-    super(name, Writer.new, { layout: layout} )
-  end
-
-  def method_missing(method_name, *args, &block)
-    if respond_to?(method_name)
-      send(method_name, *args, &block)
-    else
-      super
-    end
-  end
-
-  def respond_to_missing?(method_name, include_private = false)
-    super(method_name, include_private)
-  end
-
 end
-
-# Logging.logger.root.appenders =
-Logging.logger.root.appenders = RedactingAppender.new(layout)
