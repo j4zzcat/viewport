@@ -28,11 +28,10 @@ const Logger = winston.createLogger({
 });
 
 /*
- * SimpleReflector acts as a proxy/reflector server to retrieve video streams
- * from Unifi cameras and deliver them to a Simple Player over WebSocket. It
- * initializes a WebSocketServer on port 4001, listens for connections, and
- * establishes the stream from Unifi Protect to the client. The video stream
- * is sent in the correct format directly to the client without transcoding,
+ * SimpleReflector server acts as a proxy to get video streams from Unifi cameras
+ * and send them to a Simple Player over WebSocket. It sets up a WebSocketServer
+ * on port 4001, listens for connections, and forwards the stream from Unifi Protect
+ * to the client. The video stream is sent directly to the client without any changes,
  * ensuring low latency.
  */
 
@@ -60,12 +59,11 @@ class SimpleReflector {
              */
 
             try {
-
                 let url = new URL(`unifi:/${req.url}`);
 
                 /*
                  * This initial request is expected to arrive over WebSocket and formatted as follows:
-                 * ws://server:port/<unifi-controller-ip>/<camera-id>
+                 * ws://server:port/unifi://<username>:<password>@<controller>/<camera-id>
                  */
 
                 // @ts-ignore
@@ -89,7 +87,7 @@ class SimpleReflector {
                 /*
                  * Create a new instance of the livestream controller of this particular
                  * Unifi Protect controller. This anchor object is used to start and stop
-                 * the actual H.264 fMP4 stream of a specific camera id.
+                 * the actual H.264 fMP4 stream of a specific camera.
                  */
                 let livestream = protectApi.createLivestream();
 
@@ -99,8 +97,8 @@ class SimpleReflector {
                 });
 
                 /*
-                 * Listen for the Codec event, so that it can be transmitted
-                 * as the first messagr to the client.
+                 * Listen for the Codec event. Once established, it is sent
+                 * as the first message to the client.
                  */
                 livestream.on("codec", (codec) => {
 
@@ -118,6 +116,7 @@ class SimpleReflector {
                         try {
                             ws.send(buffer);
                         } catch (e) {
+                            // Todo better error handling
                             logger.error(e);
                         }
                     });
@@ -145,10 +144,15 @@ class SimpleReflector {
     }
 
     /*
-     * Login and bootstrap Unifi Protect controller, i.e., NVR and the likes.
-     * Once created and properly initialized, the instance is kept in a cache.
+     * Login and bootstrap the Unifi Protect controller.
+     * Once created and properly initialized, the instance is kept in a cache
+     * to avoid unnecessary re-initialization calls.
      */
-    private async getOrCreateProtectApi(controller, username, password): Promise<ProtectApi> {
+    private async getOrCreateProtectApi(
+        controller: string,
+        username: string,
+        password: string): Promise<ProtectApi> {
+
         let key = `${username}:${controller}`;
         let protectApi = this._protectApis.get(key);
         if(protectApi == undefined) {
@@ -165,8 +169,9 @@ class SimpleReflector {
             this._protectApis.set(key, protectApi);
 
         } else {
-            // Todo If needed, refresh the cached ProtectApi instance, as it might get stale
-            // Todo Maybe by bootstrapping again?
+            // Todo
+            // If needed, refresh the cached ProtectApi instance, as it might get stale
+            // Maybe by bootstrapping again?
         }
 
         return protectApi;
