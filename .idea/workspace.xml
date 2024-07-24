@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Fixed stupid bug">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/player/src/simple-player.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/src/simple-player.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -237,7 +236,7 @@
       <workItem from="1721602862788" duration="48000" />
       <workItem from="1721602915550" duration="3847000" />
       <workItem from="1721648393463" duration="5017000" />
-      <workItem from="1721716836538" duration="26185000" />
+      <workItem from="1721716836538" duration="27393000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
