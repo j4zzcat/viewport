@@ -17,6 +17,7 @@
  */
 
 import {Queue} from "typescript-collections";
+import log from "loglevel";
 
 /*
  * SimplePlayer - plays the video feed of a Unifi camera, with low latency.
@@ -33,6 +34,7 @@ import {Queue} from "typescript-collections";
  */
 
 export class SimplePlayer {
+    private readonly _debug: boolean = false;
     private readonly _videoElementId: string;
     private readonly _url: string;
     private _videoElement: HTMLVideoElement;
@@ -46,50 +48,50 @@ export class SimplePlayer {
     private CLEANUP_INTERVAL_SECONDS = 20;
     private KEEP_VIDEO_SECONDS = 10
 
+    private _logger = {
+        info: (msg: string) => {log.info(`[${Date.now()}] [${this._videoElementId}] ${msg}`)},
+        warn: (msg: string) => {log.warn(`[${Date.now()}] [${this._videoElementId}] ${msg}`)},
+        error: (msg: string) => {log.error(`[${Date.now()}] [${this._videoElementId}] ${msg}`)},
+        debug: (msg: string) => {log.debug(`[${Date.now()}] [${this._videoElementId}] ${msg}`)}
+    }
+
     constructor(videoElementId: string, url: string) {
         this._videoElementId = videoElementId;
         this._url = url;
 
-        this.log("Starting SimplePlayer");
+        log.setLevel("ERROR");
+        this._logger.info("Starting SimplePlayer");
         this.initialize();
     }
 
     private initialize() {
         this._videoElement = document.getElementById(this._videoElementId) as HTMLVideoElement;
         if(this._videoElement == undefined) {
-            throw Error(`Video element '${this._videoElementId}' not found`);
+            this._logger.error(`Video element '${this._videoElementId}' not found`);
+            throw new Error("Video element not found");
         }
 
-        // this._videoElement.pause();
-        this._videoElement.addEventListener("error", (event) => {
-            this.log(`Error, onerror: ${event}`);
-        });
-
-        this._videoElement.addEventListener("stalled", (event) => {
-            this.log(`Error, onstalled: ${event}`);
-        });
-
-
         if (!("MediaSource" in window)) {
-            throw new Error("MediaSource API is not available in your browser.");
+            this._logger.error("MediaSource API is not available in your browser.");
+            throw new Error("MSE not available");
         }
         this._mediaSource = new MediaSource();
 
         this._videoElement.src = URL.createObjectURL(this._mediaSource);
         this._mediaSource.addEventListener("sourceopen", this.onSourceOpen);
-        this._mediaSource.addEventListener("sourceended", this.onSourceEnded);
-        this._mediaSource.addEventListener("sourceclose", this.onSourceClose);
+        this._mediaSource.addEventListener("sourceended", () => {this._logger.debug("onSourceEnded"); });
+        this._mediaSource.addEventListener("sourceclose", () => {this._logger.debug("onSourceClose"); });
 
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
-                this.log("Visibility changed: Hidden")
-                // this._videoElement.pause();
-                // this._ws.close();
+                this._logger.debug("Visibility changed: Hidden");
             } else {
+                this._logger.debug("Visibility changed: Focus")
 
-                this.log("Visibility changed: Focus")
+                /*
+                 * Jump to the end of the stream.
+                 */
                 this._videoElement.currentTime = this._sourceBuffer.buffered.end(0);
-                // this.restartPlayback();
             }
         });
     }
@@ -99,7 +101,7 @@ export class SimplePlayer {
         this._ws.binaryType = "arraybuffer";
 
         this._ws.onopen = () => {
-            this.log("WebSocket connection opened.");
+            this._logger.debug("WebSocket connection opened.");
         }
 
         let messageCount = 0;
@@ -110,31 +112,28 @@ export class SimplePlayer {
             messageCount++;
 
             if (messageCount == 1) {
-                this.log("Processing message: 1");
+                this._logger.debug("Processing message: 1");
 
                 /*
                  * The first message from the server contains the codecs of this stream, which
-                 * are usually avc1.4d4032 for video and mp4a.40.2 for audio. All other messages
-                 * are fragments of the H.264 fMP4 stream of the camera. Essentially, this is
-                 * the initialization section of the engine where the SourceBuffer and Queue
-                 * are allocated.
+                 * are usually avc1.4d4032 for video and mp4a.40.2 for audio.
                  */
-
                 this._mimeCodecs = `video/mp4; codecs="${event.data}"`
 
-                this.log(`Got mimeCodec: ${this._mimeCodecs}`);
+                this._logger.debug(`Got mimeCodec: ${this._mimeCodecs}`);
                 if (!MediaSource.isTypeSupported(this._mimeCodecs)) {
-                    throw new Error(`Mime Codec not supported: ${this._mimeCodecs}`);
+                    this._logger.error(`Mime Codec not supported: ${this._mimeCodecs}`);
+                    throw new Error("Mime Codec not supported");
                 }
 
-                this.log("Allocating SourceBuffer and Queue");
+                this._logger.debug("Allocating SourceBuffer and Queue");
                 this._sourceBuffer = this._mediaSource.addSourceBuffer(this._mimeCodecs);
                 this._queue = new Queue<Uint8Array>();
-                return
-
+                return;
             }
 
             /*
+             * messageCount > 1
              * All other messages are handled here. All of them are segments of the
              * H.264 fMP4 stream.
              */
@@ -143,8 +142,8 @@ export class SimplePlayer {
              * Do a housekeeping cycle every HOUSE_KEEPING_INTERVAL_MESSAGES messages.
              */
             if(messageCount % this.HOUSEKEEPING_INTERVAL_MESSAGES == 0) {
-                this.log("Starting housekeeping cycle");
-                this.log(`messageCount: ${messageCount}, queue.size: ${this._queue.size()}`);
+                this._logger.debug("Starting housekeeping cycle");
+                this._logger.debug(`messageCount: ${messageCount}, queue.size: ${this._queue.size()}`);
 
                 /*
                  * Request a cleaning cycle every CLEANUP_INTERVAL_SECONDS.
@@ -170,7 +169,6 @@ export class SimplePlayer {
             this._queue.enqueue(data);
 
             if (this._sourceBuffer.updating == false) {
-
                 if (cleanup > 0) {
 
                     /*
@@ -181,49 +179,46 @@ export class SimplePlayer {
                      */
 
                     if(cleanup == 1) {
-                        this.log("Starting cleanup cycle");
+                        this._logger.debug("Starting cleanup cycle");
                     } else {
-                        this.log(`Retrying cleanup cycle, this is attempt: ${cleanup}`)
+                        this._logger.error(`Retrying cleanup cycle, this is attempt: ${cleanup}`)
                     }
 
                     try {
-                        for(let i = 0; i < this._sourceBuffer.buffered.length; i++) {
-                            this.log(`SourceBuffer.buffered[${i}] start: ${this._sourceBuffer.buffered.start(i)}, end: ${this._sourceBuffer.buffered.end(i)}`);
+                        let bufferSize = this._sourceBuffer.buffered.end(0) - this._sourceBuffer.buffered.start(0);
+                        this._logger.debug(`Buffer size: ${bufferSize}`);
 
-                            const currentTime = this._videoElement.currentTime;
-                            const removeBefore = currentTime - this.KEEP_VIDEO_SECONDS;
-                            if (removeBefore > 0) {
-                                try {
-                                    this._sourceBuffer.remove(0, removeBefore);
-                                } catch (e) {
-                                    this.log(`Error during buffer cleanup: ${e}`);
-                                }
-                            }
-
-                            this.log("SourceBuffer cleaned");
+                        if (bufferSize > this.KEEP_VIDEO_SECONDS) {
+                            this._sourceBuffer.remove(0, this._sourceBuffer.buffered.end(0) - this.KEEP_VIDEO_SECONDS);
+                            this._logger.debug("Cleaning buffer");
                         }
+
+                        this._logger.debug("SourceBuffer cleaned");
                         cleanup = 0;
                         return;
 
                     } catch (e) {
-                        this.log(`Failed to clean up SourceBuffer: ${e}`);
+                        this._logger.debug(`Failed to clean up SourceBuffer: ${e}`);
                         cleanup++;
                     }
                 }
 
-                if(messageCount >= 1) {
-                    const data = new Uint8Array(event.data);
-                    // this._sourceBuffer.appendBuffer(this._queue.dequeue());
-                    this._sourceBuffer.appendBuffer(this.dehydrateQueue(this._queue));
-                }
-
-                //let allWaitingMessages = this.dehydrateQueue(this._queue);
-                //this._sourceBuffer.appendBuffer(allWaitingMessages);
+                const data = new Uint8Array(event.data);
+                this._sourceBuffer.appendBuffer(this.dehydrateQueue(this._queue));
 
             } else {
+                /*
+                 * Update the source buffer as soon as the previous update ends,
+                 * and then go back to the normal driving loop.
+                 */
                 this._sourceBuffer.onupdateend = () => {
-                    this._sourceBuffer.appendBuffer(this.dehydrateQueue(this._queue));
-                    this._sourceBuffer.onupdateend = undefined;
+                    try {
+                        if (this._sourceBuffer.updating == false) {
+                            this._sourceBuffer.appendBuffer(this.dehydrateQueue(this._queue));
+                        }
+                    } finally {
+                        this._sourceBuffer.onupdateend = undefined;
+                    }
                 }
             }
         }
@@ -252,18 +247,6 @@ export class SimplePlayer {
         }
 
         return combinedBuffers;
-    }
-
-    private onSourceEnded = () => {
-        this.log("onSourceEnded");
-    }
-
-    private onSourceClose = () => {
-        this.log("onSourceClose");
-    }
-
-    private log(message: string) {
-        console.log(`[${Date.now()}] [${this._videoElementId}] ${message}`);
     }
 }
 

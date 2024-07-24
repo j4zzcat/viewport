@@ -73,7 +73,7 @@ class SimpleReflector {
                 let password = url.password;
                 let cameraId = url.pathname.slice(1);
 
-                let logger = this._logger.child({mdc: { clientId: clientId, controller: controller, cameraId: cameraId}});
+                let logger = this._logger.child({context: { clientId: clientId, controller: controller, cameraId: cameraId}});
                 logger.info(`Client '${clientId}' asks for '${url}'`);
 
                 /*

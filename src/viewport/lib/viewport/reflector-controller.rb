@@ -33,7 +33,7 @@ module Viewport
       parsed = JSON.parse(line)
       message =
         if parsed["mdc"]
-          "#{parsed["message"]}, mdc: #{parsed["mdc"]}"
+          "#{parsed["message"]}, context: #{parsed["context"]}"
         else
           parsed["message"]
         end
