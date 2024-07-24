@@ -83,9 +83,7 @@ export class SimplePlayer {
         this._mediaSource.addEventListener("sourceclose", () => {this._logger.debug("onSourceClose"); });
 
         document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                this._logger.debug("Visibility changed: Hidden");
-            } else {
+            if (document.hidden == false) {
                 this._logger.debug("Visibility changed: Focus")
 
                 /*
@@ -204,7 +202,11 @@ export class SimplePlayer {
                 }
 
                 const data = new Uint8Array(event.data);
-                this._sourceBuffer.appendBuffer(this.dehydrateQueue(this._queue));
+                try {
+                    this._sourceBuffer.appendBuffer(this.dehydrateQueue(this._queue));
+                } catch (e) {
+                    this._logger.error(`Error, appendBuffer failed: ${e}`);
+                }
 
             } else {
                 /*
@@ -216,6 +218,8 @@ export class SimplePlayer {
                         if (this._sourceBuffer.updating == false) {
                             this._sourceBuffer.appendBuffer(this.dehydrateQueue(this._queue));
                         }
+                    } catch(e) {
+                       this._logger.error(`Error, appendBuffer failed inside onUpdateEnd: ${e}`);
                     } finally {
                         this._sourceBuffer.onupdateend = undefined;
                     }
