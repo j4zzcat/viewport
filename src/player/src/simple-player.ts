@@ -59,7 +59,7 @@ export class SimplePlayer {
         this._videoElementId = videoElementId;
         this._url = url;
 
-        log.setLevel("DEBUG");
+        log.setLevel("INFO");
         this._logger.info("Starting SimplePlayer");
         this.initialize();
     }
@@ -103,6 +103,7 @@ export class SimplePlayer {
         }
 
         let messageCount = 0;
+        let byteCount = 0;
         let cleanup = 0;
         let lastCleanup = Date.now();
 
@@ -145,7 +146,8 @@ export class SimplePlayer {
                 this._logger.debug(`queue.size: ${this._queue.size()}, ` +
                                    `buffer start: ${this._sourceBuffer.buffered.start(0)}, ` +
                                    `buffer end: ${this._sourceBuffer.buffered.end(0)}, ` +
-                                   `buffer size: ${this._sourceBuffer.buffered.end(0) - this._sourceBuffer.buffered.start(0)}`);
+                                   `buffer size: ${this._sourceBuffer.buffered.end(0) - this._sourceBuffer.buffered.start(0)}, ` +
+                                   `byte received: ${byteCount}`);
 
                 /*
                  * Request a cleaning cycle every CLEANUP_INTERVAL_SECONDS.
@@ -169,6 +171,7 @@ export class SimplePlayer {
              */
             const data = new Uint8Array(event.data);
             this._queue.enqueue(data);
+            byteCount += data.length
 
             if (this._sourceBuffer.updating == false) {
                 if (cleanup > 0) {
