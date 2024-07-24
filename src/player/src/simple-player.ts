@@ -22,13 +22,14 @@ import log from "loglevel";
 /*
  * SimplePlayer - plays the video feed of a Unifi camera, with low latency.
  * The player receives the stream from the Simple Reflector, which handles
- * the mechanics of getting the stream from Unifi Protect, and then sends it
- * over WebSocket to this player. The video is then presented using MSE.
+ * the mechanics of getting the actual video stream from Unifi Protect, and
+ * then sends it over a WebSocket to this player. The video is then presented
+ * using MSE.
  *
  * Usually, the video is formatted as an H.264 fMP4 stream, with avc1.4d4032
  * codec for video and mp4a.40.2 codec for audio. This format is natively
  * supported by MSE, so no further transcoding is necessary, just careful
- * management of the SourceBuffer object.
+ * management of the SourceBuffer.
  *
  * Under normal circumstances, the player achieves latency of 0.5 - 1 second.
  */
@@ -59,7 +60,7 @@ export class SimplePlayer {
         this._videoElementId = videoElementId;
         this._url = url;
 
-        log.setLevel("ERROR");
+        log.setLevel("INFO");
         this._logger.info("Starting SimplePlayer");
         this.initialize();
     }
@@ -99,7 +100,7 @@ export class SimplePlayer {
         this._ws.binaryType = "arraybuffer";
 
         this._ws.onopen = () => {
-            this._logger.debug("WebSocket connection opened.");
+            this._logger.info("Connected to the Simple Reflector");
         }
 
         let messageCount = 0;
@@ -118,7 +119,7 @@ export class SimplePlayer {
                  */
                 this._mimeCodecs = `video/mp4; codecs="${event.data}"`
 
-                this._logger.debug(`Got mimeCodec: ${this._mimeCodecs}`);
+                this._logger.info(`Got mimeCodec: ${this._mimeCodecs}`);
                 if (!MediaSource.isTypeSupported(this._mimeCodecs)) {
                     this._logger.error(`Mime Codec not supported: ${this._mimeCodecs}`);
                     throw new Error("Mime Codec not supported");
@@ -127,6 +128,8 @@ export class SimplePlayer {
                 this._logger.debug("Allocating SourceBuffer and Queue");
                 this._sourceBuffer = this._mediaSource.addSourceBuffer(this._mimeCodecs);
                 this._queue = new Queue<Uint8Array>();
+
+                this._logger.info("Starting video");
                 return;
             }
 
