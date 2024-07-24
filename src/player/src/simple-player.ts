@@ -35,7 +35,6 @@ import log from "loglevel";
  */
 
 export class SimplePlayer {
-    private readonly _debug: boolean = false;
     private readonly _videoElementId: string;
     private readonly _url: string;
     private _videoElement: HTMLVideoElement;
@@ -60,7 +59,7 @@ export class SimplePlayer {
         this._videoElementId = videoElementId;
         this._url = url;
 
-        log.setLevel("INFO");
+        log.setLevel("DEBUG");
         this._logger.info("Starting SimplePlayer");
         this.initialize();
     }
@@ -119,13 +118,12 @@ export class SimplePlayer {
                  */
                 this._mimeCodecs = `video/mp4; codecs="${event.data}"`
 
-                this._logger.info(`Got mimeCodec: ${this._mimeCodecs}`);
+                this._logger.info(`mimeCodecs: ${this._mimeCodecs}`);
                 if (!MediaSource.isTypeSupported(this._mimeCodecs)) {
                     this._logger.error(`Mime Codec not supported: ${this._mimeCodecs}`);
                     throw new Error("Mime Codec not supported");
                 }
 
-                this._logger.debug("Allocating SourceBuffer and Queue");
                 this._sourceBuffer = this._mediaSource.addSourceBuffer(this._mimeCodecs);
                 this._queue = new Queue<Uint8Array>();
 
@@ -143,8 +141,11 @@ export class SimplePlayer {
              * Do a housekeeping cycle every HOUSE_KEEPING_INTERVAL_MESSAGES messages.
              */
             if(messageCount % this.HOUSEKEEPING_INTERVAL_MESSAGES == 0) {
-                this._logger.debug("Starting housekeeping cycle");
-                this._logger.debug(`messageCount: ${messageCount}, queue.size: ${this._queue.size()}`);
+                this._logger.debug(`Processing message: ${messageCount}, starting housekeeping cycle`);
+                this._logger.debug(`queue.size: ${this._queue.size()}, ` +
+                                   `buffer start: ${this._sourceBuffer.buffered.start(0)}, ` +
+                                   `buffer end: ${this._sourceBuffer.buffered.end(0)}, ` +
+                                   `buffer size: ${this._sourceBuffer.buffered.end(0) - this._sourceBuffer.buffered.start(0)}`);
 
                 /*
                  * Request a cleaning cycle every CLEANUP_INTERVAL_SECONDS.
