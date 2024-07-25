@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/src/controller/controller/controller.iml" filepath="$PROJECT_DIR$/src/controller/controller/controller.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/player/player.iml" filepath="$PROJECT_DIR$/src/player/player.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/reflector/reflector.iml" filepath="$PROJECT_DIR$/src/reflector/reflector.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/viewport/viewport.iml" filepath="$PROJECT_DIR$/src/viewport/viewport.iml" />
