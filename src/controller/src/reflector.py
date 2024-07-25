@@ -14,13 +14,6 @@ class ReflectorController:
         self._logger.info("Initializing")
 
     def start(self):
-        t = Thread(target=self.run)
-        t.name = "T02"
-        t.daemon = True
-        t.start()
-        t.join()
-
-    def run(self):
         self._logger.info("Spawning the Reflector process")
         process = subprocess.Popen(
             args=["node", "--no-warnings", "--import", "tsx", "src/simple-reflector"],
@@ -31,9 +24,29 @@ class ReflectorController:
 
         self._reflector_process = process
         self._logger.info("Reflector started, pid: " + str(self._reflector_process.pid))
-        reflector_logger = Logger.getChild("Reflector")
 
-        for line in process.stdout:
+        self._reflector_logger = Logger.getChild("Reflector")
+        self._reflector_stdout_reader_thread = Thread(target=self.stdoutReader)
+        self._reflector_stdout_reader_thread.name = "T02"
+        self._reflector_stdout_reader_thread.daemon = True
+        self._reflector_stdout_reader_thread.start()
+        self._reflector_stdout_reader_thread.join()
+
+        # Todo register signal handler to cleanup spwaned processed after stop/failure
+        # def cleanup(signum, frame):
+        #   print("Caught signal", signum)
+        #   # Kill all processes in the process group
+        #   os.killpg(os.getpgid(os.getpid()), signal.SIGTERM)
+        #   sys.exit(1)
+
+        # for sig in (signal.SIGINT, signal.SIGTERM, signal.SIGQUIT):
+        #   signal.signal(sig, cleanup)
+
+        # Starts the process in a new process group
+        # subprocess.Popen(command, preexec_fn=os.setsid)
+
+    def stdoutReader(self):
+        for line in self._reflector_process.stdout:
             try:
                 parsed_line = json.loads(line)
             except json.decoder.JSONDecodeError as e:
@@ -47,4 +60,5 @@ class ReflectorController:
                 else parsed_line["message"]
             )
 
-            eval("reflector_logger.{level}(msg)".format(level=parsed_line["level"]))
+            eval("self._reflector_logger.{level}(msg)".format(level=parsed_line["level"]))
+
