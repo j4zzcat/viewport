@@ -1,9 +1,39 @@
 import logging
 import sys
 
-logging.basicConfig(
-    stream=sys.stdout,
-    level=logging.INFO,
-    format="[%(asctime)s] %(levelname)-5s %(name)-15s %(message)s")
+class Logger:
+    class RedactingHandler(logging.Handler):
+        def __init__(self):
+            super().__init__()
+            self._redactions = []
 
-Logger = logging.getLogger("root")
+        def addRedaction(self, redaction):
+            self._redactions.append(redaction)
+
+        def emit(self, record):
+            for redaction in self._redactions:
+                record.msg = record.getMessage().replace(redaction, "[REDACTED]")
+
+            print(self.format(record))
+
+    def __init__(self):
+        self._redactor = Logger.RedactingHandler()
+        self._redactor.setLevel(logging.INFO)
+        self._redactor.setFormatter(logging.Formatter(
+            fmt="[%(asctime)s.%(msecs)d] %(levelname)-5s %(name)-15s %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S"))
+
+        self._root = logging.getLogger("root")
+        self._root.addHandler(self._redactor)
+        setattr(logging.getLoggerClass(), "addRedaction", self._redactor.addRedaction)
+
+    def getChild(self, suffix):
+        return self._root.getChild(suffix)
+
+    def setLevel(self, level):
+        return self._root.setLevel(level)
+
+    def addRedaction(self, str):
+        self._redactor.addRedaction(str)
+
+Logger = Logger()

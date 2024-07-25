@@ -7,14 +7,20 @@ from error import ApplicationException
 class StreamsCommand(object):
     def __init__(self, layout, urls):
         self._logger = Logger.getChild(StreamsCommand.__name__)
-        self._logger.debug("Starting...")
 
+        self._logger.info("Initializing StreamsCommand")
         self._layout = self.parse_layout(layout)
         self._urls = self.parse_urls(urls)
-        self._protocols = {url.scheme for url in self._urls}
+        self._unique_protocols = {url.scheme for url in self._urls}
+        self._unique_unifi_controllers = {url.netloc for url in self._urls if url.scheme == 'unifi'}
 
-        self._logger.debug("Unique protocols: {protocols}".format(
-            protocols=self._protocols))
+        self._logger.debug("Parsed URLs: {urls}".format(urls=self._urls))
+        self._logger.debug("Parsed layout: {layout}".format(layout=self._layout))
+        self._logger.debug("Unique protocols: {protocols}".format(protocols=self._unique_protocols))
+        self._logger.debug("Unique Unifi Controllers: {controllers}".format(controllers=self._unique_unifi_controllers))
+
+    def run(self):
+        self._logger.info("Running StreamsCommand")
 
     def parse_layout(self, layout):
         return ["grid", 3, 3]
@@ -24,6 +30,8 @@ class StreamsCommand(object):
         for url in urls:
             try:
                 parsed_url = urlparse(url)
+                self._logger.addRedaction(parsed_url.password)
+
                 scheme = parsed_url.scheme
                 if scheme not in ["unifi", "rtsp", "rtsps"]:
                     raise ApplicationException(

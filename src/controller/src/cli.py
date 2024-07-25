@@ -33,6 +33,6 @@ if __name__ == '__main__':
             streams_command = StreamsCommand(arguments["--layout"], arguments["<url>"])
             # streams_command.run()
         except ApplicationException as e:
-            print(e)
+            print("Fatal error, stopping. Exit code: 127")
             exit(127)
 
