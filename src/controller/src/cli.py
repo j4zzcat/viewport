@@ -22,7 +22,8 @@ from version import VERSION
 from streams import StreamsCommand
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version="Viewport {version}".format(version=VERSION))
+    arguments = docopt(__doc__,
+        version="Viewport {version}".format(version=VERSION))
 
     if arguments['--verbose']:
         Logger.setLevel(logging.DEBUG)

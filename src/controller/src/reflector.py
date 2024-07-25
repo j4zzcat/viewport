@@ -1,5 +1,5 @@
 from logger import Logger
-from error import ApplicationException, ApplicationFatal
+from error import ApplicationException
 
 
 class ReflectorController:
