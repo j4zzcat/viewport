@@ -6,7 +6,7 @@ from error import ApplicationException, ApplicationFatal
 
 class StreamsCommand(object):
     def __init__(self, layout, urls):
-        self._logger = Logger.getChild(__name__)
+        self._logger = Logger.getChild(StreamsCommand.__name__)
         self._logger.debug("Starting...")
 
         self._layout = self.parse_layout(layout)

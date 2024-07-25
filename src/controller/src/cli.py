@@ -7,11 +7,12 @@ Usage:
 Options:
   -v, --verbose      Be verbose.
   --layout=<layout>  The layout to use. Supported layouts are: grid and lms. [Default: grid:3x3]
-  <url>              The URL of a live video stream. Supported protocols are: unifi:// and rtsp(s)://.
+  <url>              The URL of a live video stream, or controller. Supported protocols are: unifi:// and rtsp(s)://.
 
 Example:
-    To view all the cameras of an Unifi Protect Controller in a 3x3 equally-spaced grid:
-    viewport streams --layout grid:3x3 unifi://username:password@host/_all
+    To view all the cameras of an Unifi Protect Controller at 192.168.4.10:
+    viewport streams --layout grid:3x3 unifi://username:password@192.168.4.10/_all
+
 """
 from docopt import docopt
 import logging
