@@ -9,7 +9,7 @@ class StreamsCommand(object):
     def __init__(self, layout, urls):
         self._logger = Logger.getChild(StreamsCommand.__name__)
 
-        self._logger.info("Initializing...")
+        self._logger.info("Initializing")
         self._layout = self.parse_layout(layout)
         self._urls = self.parse_urls(urls)
         self._unique_protocols = {url.scheme for url in self._urls}
