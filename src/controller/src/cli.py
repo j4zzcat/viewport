@@ -14,6 +14,8 @@ Example:
     viewport streams --layout grid:3x3 unifi://username:password@192.168.4.10/_all
 
 """
+import threading
+
 from docopt import docopt
 import logging
 from logger import Logger
@@ -27,6 +29,8 @@ if __name__ == '__main__':
 
     if arguments['--verbose']:
         Logger.setLevel(logging.DEBUG)
+
+    threading.current_thread().name = "T01"
 
     if arguments["streams"]:
         try:

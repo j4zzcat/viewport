@@ -20,7 +20,7 @@ class Logger:
         self._redactor = Logger.RedactingHandler()
         self._redactor.setLevel(logging.INFO)
         self._redactor.setFormatter(logging.Formatter(
-            fmt="[%(asctime)s.%(msecs)d] %(levelname)-5s %(name)-20s %(message)s",
+            fmt="[%(asctime)s.%(msecs)-3d] (%(threadName)-3s) %(levelname)-5s %(name)-20s %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S"))
 
         self._root = logging.getLogger("root")
@@ -36,5 +36,6 @@ class Logger:
 
     def addRedaction(self, str):
         self._redactor.addRedaction(str)
+
 
 Logger = Logger()
