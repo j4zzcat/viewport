@@ -2,13 +2,14 @@ from urllib.parse import urlparse
 
 from logger import Logger
 from error import ApplicationException
+from reflector import ReflectorController
 
 
 class StreamsCommand(object):
     def __init__(self, layout, urls):
         self._logger = Logger.getChild(StreamsCommand.__name__)
 
-        self._logger.info("Initializing StreamsCommand")
+        self._logger.info("Initializing...")
         self._layout = self.parse_layout(layout)
         self._urls = self.parse_urls(urls)
         self._unique_protocols = {url.scheme for url in self._urls}
@@ -19,8 +20,10 @@ class StreamsCommand(object):
         self._logger.debug("Unique protocols: {protocols}".format(protocols=self._unique_protocols))
         self._logger.debug("Unique Unifi Controllers: {controllers}".format(controllers=self._unique_unifi_controllers))
 
-    def run(self):
-        self._logger.info("Running StreamsCommand")
+    def start(self):
+        self._logger.info("Running")
+        self.reflector_controller = ReflectorController()
+        self.reflector_controller.start()
 
     def parse_layout(self, layout):
         return ["grid", 3, 3]
@@ -30,7 +33,8 @@ class StreamsCommand(object):
         for url in urls:
             try:
                 parsed_url = urlparse(url)
-                self._logger.addRedaction(parsed_url.password)
+                if parsed_url.password:
+                    self._logger.addRedaction(parsed_url.password)
 
                 scheme = parsed_url.scheme
                 if scheme not in ["unifi", "rtsp", "rtsps"]:
