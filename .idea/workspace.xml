@@ -5,11 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Fixed stupid bug">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/src/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/src/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/src/error.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/src/error.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/src/reflector.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/src/reflector.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/src/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/src/streams.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +39,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Node.js.reflector.executor": "Run",
     "Node.js.simple-reflector.executor": "Run",
@@ -182,7 +179,7 @@
       <workItem from="1721857835717" duration="7928000" />
       <workItem from="1721865937283" duration="75000" />
       <workItem from="1721866019009" duration="1558000" />
-      <workItem from="1721909467753" duration="3809000" />
+      <workItem from="1721909467753" duration="3906000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
