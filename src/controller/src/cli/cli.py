@@ -14,29 +14,28 @@ Example:
     viewport streams --layout grid:3x3 unifi://username:password@192.168.4.10/_all
 
 """
-import threading
-
 from docopt import docopt
 import logging
-from logger import Logger
-from error import ApplicationException
-from version import VERSION
-from streams import StreamsCommand
+
+from src.app.context import Context
+from src.app.error import ApplicationException
+from src.version import Version
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__,
-        version="Viewport {version}".format(version=VERSION))
+    arguments = docopt(
+        __doc__,
+        version="Viewport {version}".format(version=Version))
 
     if arguments['--verbose']:
-        Logger.setLevel(logging.DEBUG)
-
-    threading.current_thread().name = "T01"
+        Context.get_logger().set_level(logging.DEBUG)
 
     if arguments["streams"]:
         try:
-            streams = StreamsCommand(arguments["--layout"], arguments["<url>"])
-            streams.start()
+            e = Context.get_executer()
+
+            # .submit(Context.createStreamsCommand(
+            #     layout=arguments['--layout'], urls=arguments['<url>']))
+
         except ApplicationException as e:
             print("Fatal error, stopping. Exit code: 127")
             exit(127)
-
