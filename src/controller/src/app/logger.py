@@ -25,7 +25,7 @@ class SimpleLogger:
 
         self._root = logging.getLogger("root")
         self._root.addHandler(self._redactor)
-        setattr(logging.getLoggerClass(), "addRedaction", self._redactor.add_redaction)
+        setattr(logging.getLoggerClass(), "add_redaction", self._redactor.add_redaction)
 
     def get_child(self, suffix):
         return self._root.getChild(suffix)

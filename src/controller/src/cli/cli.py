@@ -19,6 +19,7 @@ import logging
 
 from src.app.context import Context
 from src.app.error import ApplicationException
+from src.app.executer import SimpleExecuter
 from src.version import Version
 
 if __name__ == '__main__':
@@ -26,15 +27,19 @@ if __name__ == '__main__':
         __doc__,
         version="Viewport {version}".format(version=Version))
 
+    logger = Context.get_logger().get_child("Cli")
+
     if arguments['--verbose']:
         Context.get_logger().set_level(logging.DEBUG)
 
     if arguments["streams"]:
-        try:
-            e = Context.get_executer()
+        logger.debug("Processing 'streams' command")
 
-            # .submit(Context.createStreamsCommand(
-            #     layout=arguments['--layout'], urls=arguments['<url>']))
+        try:
+            Context.get_executer().submit(
+                Context.create_streams_command(
+                    layout=arguments['--layout'],
+                    urls=arguments['<url>']))
 
         except ApplicationException as e:
             print("Fatal error, stopping. Exit code: 127")
