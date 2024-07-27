@@ -5,54 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Fixed stupid bug">
-      <change afterPath="$PROJECT_DIR$/man/screenshot1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/man/viewport.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/src/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/src/app/unifi/api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/viewport/test/streams_command.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/viewport" beforeDir="false" afterPath="$PROJECT_DIR$/bin/viewport" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/screenshot1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/player/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reflector/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/.rspec" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/.rubocop.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/.ruby-version" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/CHANGELOG.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/Gemfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/Gemfile.lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/Rakefile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/bundle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/commander" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/console" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/htmldiff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/ldiff" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/racc" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/rake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/rspec" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/rubocop" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/ruby-parse" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/ruby-rewrite" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/bin/setup" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport.rb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport/backend.rb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport/cli.rb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport/error.rb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport/logger.rb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport/reflector-controller.rb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport/version.rb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/man/viewport.1.gz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/man/viewport.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/spec/spec_helper.rb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/spec/viewport_spec.rb" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/context.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/context.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/error.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/error.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/executer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/executer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/reflector/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/reflector/controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/cli/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/cli/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/viewport.gemspec" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/unifi/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/unifi/api.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,43 +39,45 @@
     <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Node.js.reflector.executor&quot;: &quot;Run&quot;,
-    &quot;Node.js.simple-reflector.executor&quot;: &quot;Run&quot;,
-    &quot;Node.js.unifi-fmpeg4-server.executor&quot;: &quot;Run&quot;,
-    &quot;Node.js.unifi-protect-livestream-reflector.executor&quot;: &quot;Run&quot;,
-    &quot;Python.controller.executor&quot;: &quot;Run&quot;,
-    &quot;RSpec.RSpec.executor&quot;: &quot;Run&quot;,
-    &quot;RSpec.viewport_spec.executor&quot;: &quot;Run&quot;,
-    &quot;Ruby.controller.executor&quot;: &quot;Run&quot;,
-    &quot;Ruby.viewport help.executor&quot;: &quot;Debug&quot;,
-    &quot;Ruby.viewport.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/src/controller/src/backend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs.jest.jest_package&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/jest&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.14921875&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2589928&quot;,
-    &quot;ruby.rails.projectView.checked&quot;: &quot;true&quot;,
-    &quot;ruby.structure.view.model.defaults.configured&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/snd/Development/Projects/j4zzcat/viewport/src/player/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Node.js.reflector.executor": "Run",
+    "Node.js.simple-reflector.executor": "Run",
+    "Node.js.unifi-fmpeg4-server.executor": "Run",
+    "Node.js.unifi-protect-livestream-reflector.executor": "Run",
+    "Python tests.Python tests in livestream_urls_construction.py.executor": "Run",
+    "Python tests.Python tests in streams_command.py.executor": "Run",
+    "Python.controller.executor": "Run",
+    "RSpec.RSpec.executor": "Run",
+    "RSpec.viewport_spec.executor": "Run",
+    "Ruby.controller.executor": "Run",
+    "Ruby.viewport help.executor": "Debug",
+    "Ruby.viewport.executor": "Debug",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/controller/src/backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.jest.jest_package": "/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/jest",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.14921875",
+    "project.structure.side.proportion": "0.2589928",
+    "ruby.rails.projectView.checked": "true",
+    "ruby.structure.view.model.defaults.configured": "true",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/player/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/controller/src/backend" />
@@ -148,7 +106,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.controller">
+  <component name="RunManager" selected="Python tests.Python tests in streams_command.py">
     <configuration name="reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="src/simple-reflector.ts" working-dir="$PROJECT_DIR$/src/reflector">
       <method v="2" />
     </configuration>
@@ -176,10 +134,32 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests in streams_command.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="viewport" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/viewport/test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/src/viewport/test/streams_command.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
     <list>
       <item itemvalue="Node.js.reflector" />
       <item itemvalue="Python.controller" />
+      <item itemvalue="Python tests.Python tests in streams_command.py" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python tests.Python tests in streams_command.py" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SpringUtil" SPRING_PRE_LOADER_OPTION="true" RAKE_SPRING_PRE_LOADER_OPTION="true" RAILS_SPRING_PRE_LOADER_OPTION="true" />
@@ -233,7 +213,7 @@
       <workItem from="1721991531821" duration="23085000" />
       <workItem from="1722042461534" duration="88000" />
       <workItem from="1722042551162" duration="2551000" />
-      <workItem from="1722074270687" duration="5145000" />
+      <workItem from="1722074270687" duration="21007000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -307,13 +287,24 @@
           <line>32</line>
           <option name="timeStamp" value="27" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/viewport/src/app/command/streams.py</url>
+          <line>146</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/viewport/src/app/command/streams.py</url>
+          <line>128</line>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/viewport@viewport_spec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721173891026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport@RSpec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721223919455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
-    <SUITE FILE_PATH="coverage/viewport$controller.coverage" NAME="controller Coverage Results" MODIFIED="1722080429273" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/viewport$.coverage" NAME=" Coverage Results" MODIFIED="1722121621022" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport/test" />
+    <SUITE FILE_PATH="coverage/viewport$controller.coverage" NAME="controller Coverage Results" MODIFIED="1722115732711" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/viewport@controller.rcov" NAME="controller Coverage Results" MODIFIED="1721085140952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="controller" />
     <SUITE FILE_PATH="coverage/viewport@viewport.rcov" NAME="viewport Coverage Results" MODIFIED="1721850641653" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport@viewport_help.rcov" NAME="viewport help Coverage Results" MODIFIED="1721158572697" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
