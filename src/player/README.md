@@ -1,7 +1,7 @@
 # Simple Player 
 
 Plays the video feed of a Unifi camera, with low latency.
-The player receives the stream from the [Simple Reflector](../simple-reflector), which handles
+The player receives the stream from the [Simple Reflector](../simple-app.reflector), which handles
 the mechanics of getting the stream from Unifi Protect, and then sends it
 over WebSocket to this player. The video is then presented using MSE.
 

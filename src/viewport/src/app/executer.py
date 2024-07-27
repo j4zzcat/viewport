@@ -2,11 +2,21 @@ import os
 import signal
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
-from src.app.context import Context
-from src.app.error import ApplicationException
+from app.context import Context
+from app.error import ApplicationException
 
 
 class SimpleExecuter:
+    class Thingy:
+        def initialize(self):
+            pass
+
+        def run(self):
+            pass
+
+        def dispose(self):
+            pass
+
     def __init__(self):
         self._logger = Context.get_logger().get_child(self.__class__.__name__)
 
@@ -24,13 +34,17 @@ class SimpleExecuter:
     def submit(self, thingy, mode="sync"):
         self._logger.debug("Thingy '{thingy}' submitted, mode: {mode}".format(thingy=thingy.__class__.__name__, mode=mode))
         if mode == "sync":
-            self._execute(thingy)
+            return self._execute(thingy)
 
         elif mode == "async_thread":
-            self._tpe_futures.append(self._tpe.submit(self._execute, thingy))
+            future = self._tpe.submit(self._execute, thingy)
+            self._tpe_futures.append(future)
+            return future
 
         elif mode == "async_process":
-            self._ppe_futures.append(self._ppe.submit(self._execute, thingy))
+            future = self._ppe.submit(self._execute, thingy)
+            self._ppe_futures.append(future)
+            return future
 
     def _execute(self, thingy):
         try:

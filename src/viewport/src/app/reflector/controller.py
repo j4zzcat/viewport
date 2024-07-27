@@ -2,8 +2,8 @@ import os
 import subprocess
 import json
 
-from src.app.context import Context
-from src.app.error import ApplicationException
+from app.context import Context
+from app.error import ApplicationException
 
 
 class SimpleReflectorController:

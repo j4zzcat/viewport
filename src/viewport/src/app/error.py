@@ -1,7 +1,7 @@
 import sys
 import traceback
 
-from src.app.context import Context
+from app.context import Context
 
 class ApplicationException(Exception):
     def __init__(self, message):

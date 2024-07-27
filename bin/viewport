@@ -1,2 +1,3 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-python "$SCRIPT_DIR"/../src/controller/src/cli.py $@
+source "$SCRIPT_DIR"/../src/viewport/.venv/bin/activate
+python "$SCRIPT_DIR"/../src/viewport/src/cli/cli.py $@

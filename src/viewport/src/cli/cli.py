@@ -17,9 +17,9 @@ Example:
 from docopt import docopt
 import logging
 
-from src.app.context import Context
-from src.app.error import ApplicationException
-from src.version import Version
+from app.context import Context
+from app.error import ApplicationException
+from version import Version
 
 if __name__ == '__main__':
     arguments = docopt(

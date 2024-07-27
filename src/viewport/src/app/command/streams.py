@@ -1,7 +1,9 @@
+import concurrent
 from urllib.parse import urlparse
 
-from src.app.context import Context
-from src.app.error import ApplicationException
+from app.context import Context
+from app.error import ApplicationException
+from app.executer import SimpleExecuter
 
 
 class StreamsCommand:
@@ -11,6 +13,7 @@ class StreamsCommand:
         self._urls = urls
         self._unique_protocols = None
         self._unique_unifi_controllers = None
+        self._protect_apis = []
 
     def initialize(self):
         self._logger.debug("Initializing")
@@ -29,12 +32,46 @@ class StreamsCommand:
 
     def run(self):
         self._logger.debug("Running")
-        Context.get_executer().submit(
-            Context.create_reflector_controller(),
-            mode="async_thread"
-        )
 
-        self._logger.debug("Generating Web Page")
+        if "unifi" in self._unique_protocols:
+            self._logger.debug("Processing Unifi streams")
+
+            class UnifiApiThingy(SimpleExecuter.Thingy):
+                def __init__(self, unifi_api):
+                    self._unifi_api = unifi_api
+
+                def run(self):
+                    return self._unifi_api.login()
+
+            futures = []
+            for netloc in self._unique_unifi_controllers:
+                futures.append(Context.get_executer().submit(
+                    UnifiApiThingy(Context.create_unifi_api(netloc)),
+                    mode="async_thread"
+                ))
+
+            concurrent.futures.wait(futures)
+
+            # for url in self._urls:
+            #     self._logger.debug("Processing {url}".format(url=url))
+            #
+            #     if url.netloc not in self._protect_apis:
+            #         protect_api = Context.create_protect_api(url.netloc)
+            #         protect_api.login()
+            #         self._protect_apis[url.netloc] = protect_api
+            #
+            #     # self._unifi_controllers_bootstrap[url.netloc]
+            #
+            #
+            #
+            #
+            # Context.get_executer().submit(
+            #     Context.create_reflector_controller(),
+            #     mode="async_thread"
+            # )
+
+        if "rtsp" or "rtsps" in self._unique_protocols:
+            self._logger.debug("Processing RTSP(S) streams")
 
     def dispose(self):
         self._logger.debug("Disposed")
@@ -69,4 +106,3 @@ class StreamsCommand:
                     error=e))
 
         return parsed_urls
-
