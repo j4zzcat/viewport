@@ -19,7 +19,6 @@ import logging
 
 from src.app.context import Context
 from src.app.error import ApplicationException
-from src.app.executer import SimpleExecuter
 from src.version import Version
 
 if __name__ == '__main__':

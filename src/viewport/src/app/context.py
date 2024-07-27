@@ -31,7 +31,7 @@ class Context:
 
     def create_reflector_controller(self):
         self._logger.debug("Creating SimpleReflectorController instance")
-        from src.reflector.controller import SimpleReflectorController
+        from src.app.reflector.controller import SimpleReflectorController
         return SimpleReflectorController()
 
 

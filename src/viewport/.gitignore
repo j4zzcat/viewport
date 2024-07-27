@@ -1,11 +1,3 @@
-/.bundle/
-/.yardoc
-/_yardoc/
-/coverage/
-/doc/
-/pkg/
-/spec/reports/
-/tmp/
+.venv/
+**/__pycache__/
 
-# rspec failure tracking
-.rspec_status

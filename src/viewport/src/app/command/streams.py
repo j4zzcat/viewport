@@ -6,7 +6,7 @@ from src.app.error import ApplicationException
 
 class StreamsCommand:
     def __init__(self, layout, urls):
-        self._logger = Context.get_logger().get_child(StreamsCommand.__name__)
+        self._logger = Context.get_logger().get_child(self.__class__.__name__)
         self._layout = layout
         self._urls = urls
         self._unique_protocols = None
@@ -37,7 +37,7 @@ class StreamsCommand:
         self._logger.debug("Generating Web Page")
 
     def dispose(self):
-        self._logger.info("Disposed")
+        self._logger.debug("Disposed")
 
     def _parse_layout(self, layout):
         self._logger.debug("Parsing layout: {layout}".format(layout=layout))

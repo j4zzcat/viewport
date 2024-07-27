@@ -1,8 +1,6 @@
 import os
-import signal
 import subprocess
 import json
-from threading import Thread
 
 from src.app.context import Context
 from src.app.error import ApplicationException
@@ -20,8 +18,8 @@ class SimpleReflectorController:
     def run(self):
         self._logger.debug("Spawning the SimpleReflector Node process")
         process = subprocess.Popen(
-            args=["node", "--no-warnings", "--import", "tsx", "src/simple-reflector"],
-            cwd=os.path.dirname(os.path.realpath(__file__)) + "/../../../reflector",
+            args=["node", "--no-warnings", "--import", "tsx", "src/simple-reflector.ts"],
+            cwd=os.path.dirname(os.path.realpath(__file__)) + "/../../../../reflector",
             stdout=subprocess.PIPE,
             preexec_fn=os.setsid,
             text=True)
