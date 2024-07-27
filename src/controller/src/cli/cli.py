@@ -44,3 +44,4 @@ if __name__ == '__main__':
         except ApplicationException as e:
             print("Fatal error, stopping. Exit code: 127")
             exit(127)
+

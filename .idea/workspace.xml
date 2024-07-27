@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Fixed stupid bug">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/controller/src/app/command/streams/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/src/app/command/streams/streams.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/src/app/command/streams/reflector.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/src/reflector/controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller/src/app/command/streams/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/src/app/command/streams.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controller/src/app/context.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/src/app/context.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controller/src/app/error.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/src/app/error.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controller/src/app/executer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller/src/app/executer.py" afterDir="false" />
@@ -88,11 +89,11 @@
       <recent name="$PROJECT_DIR$/src/controller/lib/controller" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/controller/src/app/command" />
+      <recent name="$PROJECT_DIR$/src/controller/src/reflector" />
       <recent name="$PROJECT_DIR$/src/controller/src/cli" />
       <recent name="$PROJECT_DIR$/src/controller/src/backend/command/streams" />
       <recent name="$PROJECT_DIR$/src/controller/src/backend" />
-      <recent name="$PROJECT_DIR$/src/viewport/man" />
-      <recent name="$PROJECT_DIR$/docker" />
     </key>
   </component>
   <component name="RubyModuleManagerSettings">
@@ -125,7 +126,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/controller/src/cli/cli.py" />
-      <option name="PARAMETERS" value="streams --verbose unxifi://u:password@192.168.4.10/_all rtsp://abc:123/def" />
+      <option name="PARAMETERS" value="streams --verbose unifi://u:password@192.168.4.10/_all rtsp://abc:123/def" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -187,7 +188,7 @@
       <workItem from="1721866019009" duration="1558000" />
       <workItem from="1721909467753" duration="9207000" />
       <workItem from="1721935620496" duration="5330000" />
-      <workItem from="1721991531821" duration="18538000" />
+      <workItem from="1721991531821" duration="22889000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -261,18 +262,13 @@
           <line>32</line>
           <option name="timeStamp" value="27" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/controller/src/app/error.py</url>
-          <line>6</line>
-          <option name="timeStamp" value="29" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/viewport@viewport_spec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721173891026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport@RSpec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721223919455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
-    <SUITE FILE_PATH="coverage/viewport$controller.coverage" NAME="controller Coverage Results" MODIFIED="1722037853278" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/viewport$controller.coverage" NAME="controller Coverage Results" MODIFIED="1722042209806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/viewport@controller.rcov" NAME="controller Coverage Results" MODIFIED="1721085140952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="controller" />
     <SUITE FILE_PATH="coverage/viewport@viewport.rcov" NAME="viewport Coverage Results" MODIFIED="1721850641653" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport@viewport_help.rcov" NAME="viewport help Coverage Results" MODIFIED="1721158572697" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />

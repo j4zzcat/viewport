@@ -26,8 +26,13 @@ class Context:
 
     def create_streams_command(self, layout, urls):
         self._logger.debug("Creating StreamsCommand instance")
-        from src.app.command.streams.streams import StreamsCommand
+        from src.app.command.streams import StreamsCommand
         return StreamsCommand(layout, urls)
+
+    def create_reflector_controller(self):
+        self._logger.debug("Creating SimpleReflectorController instance")
+        from src.reflector.controller import SimpleReflectorController
+        return SimpleReflectorController()
 
 
 Context = Context()

@@ -28,7 +28,13 @@ class StreamsCommand:
         self._logger.debug("Unique Unifi Controllers: {controllers}".format(controllers=self._unique_unifi_controllers))
 
     def run(self):
-        self._logger.info("Running")
+        self._logger.debug("Running")
+        Context.get_executer().submit(
+            Context.create_reflector_controller(),
+            mode="async_thread"
+        )
+
+        self._logger.debug("Generating Web Page")
 
     def dispose(self):
         self._logger.info("Disposed")
