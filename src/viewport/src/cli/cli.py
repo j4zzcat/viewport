@@ -21,7 +21,8 @@ from app.context import Context
 from app.error import ApplicationException
 from version import Version
 
-if __name__ == '__main__':
+
+def main():
     arguments = docopt(
         __doc__,
         version="Viewport {version}".format(version=Version))
@@ -43,4 +44,8 @@ if __name__ == '__main__':
         except ApplicationException as e:
             print("Fatal error, stopping. Exit code: 127")
             exit(127)
+
+
+if __name__ == '__main__':
+    main()
 
