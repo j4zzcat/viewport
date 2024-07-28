@@ -23,7 +23,7 @@ class SimpleLogger:
             fmt="[%(asctime)s.%(msecs)-3d] (%(threadName)-10s) %(levelname)-5s %(name)-30s %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S"))
 
-        self._root = logging.getLogger("root")
+        self._root = logging.getLogger("viewport")
         self._root.addHandler(self._redactor)
         setattr(logging.getLoggerClass(), "add_redaction", self._redactor.add_redaction)
 
