@@ -13,7 +13,7 @@ class SimpleUnifiApi:
 
         def run(self):
             self._unifi_api.login()
-            self._unifi_api.get_bootstrap()
+            self._unifi_api.bootstrap()
             return self._unifi_api
 
     def __init__(self, netloc):
@@ -23,21 +23,21 @@ class SimpleUnifiApi:
         self.host = netloc.split('@')[1]
         self.username = netloc.split("@")[0].split(":")[0]
         self.password = netloc.split("@")[0].split(":")[1]
-        self.headers = {}
-        self.bootstrap = None
+        self._headers = {}
+        self._bootstrap = None
 
     def login(self):
         self._logger.debug("Logging in")
         self.logout()
 
-        if "Cookie" in self.headers and "X-CSRF-Token" in self.headers:
+        if "Cookie" in self._headers and "X-CSRF-Token" in self._headers:
             return True
 
         url_prefix = "https://{host}".format(host=self.host)
-        if "X-CSRF-Token" not in self.headers:
+        if "X-CSRF-Token" not in self._headers:
             r = requests.get(url_prefix, verify=False)
             if r.status_code == 200 and "X-CSRF-Token" in r.headers:
-                self.headers["X-CSRF-Token"] = r.headers["X-CSRF-Token"]
+                self._headers["X-CSRF-Token"] = r.headers["X-CSRF-Token"]
                 self._logger.debug("Got X-CSRF-Token")
 
         self._logger.debug("Attempting login")
@@ -58,17 +58,22 @@ class SimpleUnifiApi:
             cookie = r.headers["Set-Cookie"]
 
             if csrf_token and cookie:
-                self.headers["Cookie"] = cookie.split(";")[0]
-                self.headers["X-CSRF-Token"] = csrf_token
+                self._headers["Cookie"] = cookie.split(";")[0]
+                self._headers["X-CSRF-Token"] = csrf_token
                 return True
 
         self.logout()
         return False
 
     def logout(self):
-        self.headers.clear()
+        self._headers.clear()
 
-    def get_bootstrap(self):
+    def bootstrap(self):
         self._logger.debug("Getting bootstrap")
+        url = "https://{host}/proxy/protect/api/bootstrap".format(host=self.host)
+        r = requests.get(url, headers=self._headers, verify=False)
+        if r.status_code == 200:
+            self._bootstrap = r.json()
+
 
 

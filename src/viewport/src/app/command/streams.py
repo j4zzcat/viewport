@@ -125,7 +125,7 @@ class StreamsCommand:
         cameras_by_netloc = {}
         for netloc, protect_api in self._protect_apis.items():
             cameras_name_to_id = {}
-            for camera in protect_api.bootstrap["cameras"]:
+            for camera in protect_api._bootstrap["cameras"]:
                 cameras_name_to_id[camera["name"]] = camera["id"]
             cameras_by_netloc[netloc] = cameras_name_to_id
 

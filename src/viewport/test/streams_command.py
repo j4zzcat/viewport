@@ -12,8 +12,8 @@ class StreamsCommandTestCase(unittest.TestCase):
         with patch.object(Context, "create_reflector_controller", MagicMock(return_value=SimpleExecuter.Thingy())):
             sua1 = SimpleUnifiApi("u1:p1@host1")
             sua1.login = MagicMock(return_value=True)
-            sua1.get_bootstrap = MagicMock(return_value=True)
-            sua1.bootstrap = {"cameras": [
+            sua1.bootstrap = MagicMock(return_value=True)
+            sua1._bootstrap = {"cameras": [
                 {"name": "c 1", "id": "id1"},
                 {"name": "c 2", "id": "id2"},
                 {"name": "c 3", "id": "id3"},
@@ -21,8 +21,8 @@ class StreamsCommandTestCase(unittest.TestCase):
 
             sua2 = SimpleUnifiApi("u2:p2@host2")
             sua2.login = MagicMock(return_value=True)
-            sua2.get_bootstrap = MagicMock(return_value=True)
-            sua2.bootstrap = {"cameras": [
+            sua2.bootstrap = MagicMock(return_value=True)
+            sua2._bootstrap = {"cameras": [
                 {"name": "c 4", "id": "id4"},
                 {"name": "c5", "id": "id5"},
             ]}
