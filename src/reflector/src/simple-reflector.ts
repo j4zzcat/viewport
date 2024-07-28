@@ -163,12 +163,13 @@ class SimpleReflector {
             }
 
             if (await protectApi.getBootstrap() == false) {
-                throw new Error("Unable to bootstrap the Protect controller");
+                throw new Error("Unable to bootstrap ProtectApi");
             }
 
             this._protectApis.set(key, protectApi);
 
         } else {
+            this._logger.debug(`Reusing ProtectApi instance`)
             // Todo
             // If needed, refresh the cached ProtectApi instance, as it might get stale
             // Maybe by bootstrapping again?

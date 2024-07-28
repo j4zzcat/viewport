@@ -20,10 +20,10 @@ class SimpleLogger:
         self._redactor = SimpleLogger.RedactingHandler()
         self._redactor.setLevel(logging.INFO)
         self._redactor.setFormatter(logging.Formatter(
-            fmt="[%(asctime)s.%(msecs)-3d] (%(threadName)-10s) %(levelname)-5s %(name)-30s %(message)s",
+            fmt="[%(asctime)s.%(msecs)-3d] (%(threadName)-10s) %(levelname)-5s %(name)-40s %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S"))
 
-        self._root = logging.getLogger("viewport")
+        self._root = logging.getLogger("app")
         self._root.addHandler(self._redactor)
         setattr(logging.getLoggerClass(), "add_redaction", self._redactor.add_redaction)
 

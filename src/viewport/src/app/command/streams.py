@@ -130,5 +130,4 @@ class StreamsCommand:
                         netloc=url.netloc,
                         camera_id=camera_id))
         
-        self._logger.debug(f"Livestream urls: {livestream_urls}")
         return livestream_urls

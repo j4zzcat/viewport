@@ -2,6 +2,7 @@ import requests
 import json
 
 from app.context import Context
+from app.error import ApplicationException
 from app.executer import SimpleExecuter
 
 
@@ -11,7 +12,9 @@ class SimpleUnifiApi:
             self._unifi_api = unifi_api
 
         def run(self):
-            self._unifi_api.login()
+            if not self._unifi_api.login():
+                raise ApplicationException("Login failed")
+
             self._unifi_api.bootstrap()
             return self._unifi_api
 
