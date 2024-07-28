@@ -3,7 +3,6 @@ from urllib.parse import urlparse
 
 from app.context import Context
 from app.error import ApplicationException
-from app.executer import SimpleExecuter
 from app.unifi.api import SimpleUnifiApi
 
 
@@ -43,33 +42,15 @@ class StreamsCommand:
             )
 
             self._logger.debug("Preparing livestream urls")
+
             self._protect_apis = self._create_unifi_apis(list(self._unique_unifi_controllers))
             self._livestream_urls = self._get_livestream_urls(self._unifi_urls, self._protect_apis)
 
+            self._logger.debug("Livestream urls: {urls}".format(urls=self._livestream_urls))
 
 
-            # for k, v in self._protect_apis.items():
-            #     print(k)
-            #     print(v)
 
 
-            # for url in self._urls:
-            #     self._logger.debug("Processing {url}".format(url=url))
-            #
-            #     if url.netloc not in self._protect_apis:
-            #         protect_api = Context.create_protect_api(url.netloc)
-            #         protect_api.login()
-            #         self._protect_apis[url.netloc] = protect_api
-            #
-            #     # self._unifi_controllers_bootstrap[url.netloc]
-            #
-            #
-            #
-            #
-            # Context.get_executer().submit(
-            #     Context.create_reflector_controller(),
-            #     mode="async_thread"
-            # )
 
         if "rtsp" or "rtsps" in self._unique_protocols:
             self._logger.debug("Processing RTSP(S) streams")

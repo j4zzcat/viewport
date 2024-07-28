@@ -1,6 +1,5 @@
-import json
-
 import requests
+import json
 
 from app.context import Context
 from app.executer import SimpleExecuter
@@ -66,10 +65,11 @@ class SimpleUnifiApi:
         return False
 
     def logout(self):
+        self._logger.debug("Logging out")
         self._headers.clear()
 
     def bootstrap(self):
-        self._logger.debug("Getting bootstrap")
+        self._logger.debug("Bootstrapping")
         url = "https://{host}/proxy/protect/api/bootstrap".format(host=self.host)
         r = requests.get(url, headers=self._headers, verify=False)
         if r.status_code == 200:
