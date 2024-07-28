@@ -3,4 +3,11 @@ source "$SCRIPT_DIR"/../src/viewport/.venv/bin/activate
 
 PYTHONUNBUFFERED=1 \
 PYTHONWARNINGS="ignore:Unverified HTTPS request" \
-python "$SCRIPT_DIR"/../src/viewport/src/cli/cli.py $@
+python -c '
+import sys
+import pprint
+sys.path.pop(0)
+sys.path.append('\""$SCRIPT_DIR"/../src/viewport/src\"')
+pprint.pprint(sys.path)
+from cli.cli import main
+main()' $@
