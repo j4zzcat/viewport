@@ -8,6 +8,5 @@ import sys
 import pprint
 sys.path.pop(0)
 sys.path.append('\""$SCRIPT_DIR"/../src/viewport/src\"')
-pprint.pprint(sys.path)
 from cli.cli import main
 main()' $@

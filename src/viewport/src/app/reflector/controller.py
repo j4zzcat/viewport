@@ -27,7 +27,8 @@ class SimpleReflectorController:
         self._reflector_process = process
         self._logger.debug("Reflector started, pid: " + str(self._reflector_process.pid))
 
-        self._reflector_logger = Context.get_logger().get_child("SimpleReflector")
+        self._reflector_logger = Context.get_logger().get_child("SimpleReflector:{pid}".format(
+            pid=self._reflector_process.pid))
 
         for line in self._reflector_process.stdout:
             try:

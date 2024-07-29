@@ -1,19 +1,24 @@
-"""Viewport.
+"""Viewport - Display livestream videos in a simple, unattended web page.
 
 Usage:
-  viewport streams [--verbose] [--layout=<layout>] <url>...
+  viewport streams [--verbose] [--layout=<layout>] [--output-dir=<dir>] <url>...
   viewport [--version] [--help]
 
 Options:
-  -v, --verbose      Be verbose.
-  --layout=<layout>  The layout to use. Supported layouts are: grid and lms. [Default: grid:3x3]
-  <url>              The URL of a live video stream, or controller. Supported protocols are: unifi:// and rtsp(s)://.
+  -v, --verbose       Be verbose.
+  --layout=<layout>   The layout to use. Supported layouts are: grid and lms. [Default: grid:3x3]
+  --output-dir=<dir>  The output directory where web-related files will be written to. [Default: .]
+  <url>               The URL of a live video stream, or controller. Supported protocols are: unifi:// and rtsp(s)://.
 
 Example:
-    To view all the cameras of an Unifi Protect Controller at 192.168.4.10:
-    viewport streams --layout grid:3x3 unifi://username:password@192.168.4.10/_all
+  To display all the cameras of an Unifi Protect Controller at 192.168.4.10:
 
+    $ viewport streams unifi://username:password@192.168.4.10/_all
+
+  Then open the file './index.html' in Google Chrome web browser.
 """
+import sys
+
 from docopt import docopt
 import logging
 
@@ -23,23 +28,30 @@ from version import Version
 
 
 def main():
-    arguments = docopt(
+    args = docopt(
         __doc__,
         version="Viewport {version}".format(version=Version))
 
+    if len(sys.argv) == 1:
+        print("Viewport - Display livestream videos in a simple, unattended web page.")
+        print("Try 'viewport --help' for more information.")
+        exit(0)
+
+
     logger = Context.get_logger().get_child("Cli")
 
-    if arguments['--verbose']:
+    if args['--verbose']:
         Context.get_logger().set_level(logging.DEBUG)
 
-    if arguments["streams"]:
+    if args["streams"]:
         logger.debug("Processing 'streams' command")
 
         try:
             Context.get_executer().submit(
                 Context.create_streams_command(
-                    layout=arguments['--layout'],
-                    urls=arguments['<url>']))
+                    layout=args['--layout'],
+                    urls=args['<url>'],
+                    output_dir=args["--output-dir"]))
 
         except ApplicationException as e:
             print("Fatal error, stopping. Exit code: 127")

@@ -19,6 +19,7 @@ class SimpleExecuter:
 
     def __init__(self):
         self._logger = Context.get_logger().get_child(self.__class__.__name__)
+        self._logger.debug("Initializing")
 
         self._tpe = ThreadPoolExecutor(max_workers=10, thread_name_prefix='TPE')
         self._tpe_futures = []
@@ -26,10 +27,10 @@ class SimpleExecuter:
         self._ppe = ProcessPoolExecutor(max_workers=10)
         self._ppe_futures = []
 
-        self.initialize()
+        # signal.signal(signal.SIGINT, self._cleanup)
 
-    def initialize(self):
-        self._logger.debug("Initializing")
+    def _cleanup(self, signum, frame):
+        self._logger.debug("Cleaning up")
 
     def submit(self, thingy, mode="sync"):
         self._logger.debug("Thingy '{thingy}' submitted, mode: {mode}".format(thingy=thingy.__class__.__name__, mode=mode))

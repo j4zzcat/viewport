@@ -1,16 +1,19 @@
-import concurrent
+import os
+import subprocess
+import tempfile
 from urllib.parse import urlparse
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 from app.context import Context
 from app.error import ApplicationException
-from app.unifi.api import SimpleUnifiApi
 
 
 class StreamsCommand:
-    def __init__(self, layout, urls):
+    def __init__(self, layout, urls, output_dir):
         self._logger = Context.get_logger().get_child(self.__class__.__name__)
         self._layout = layout
         self._urls = urls
+        self._output_dir = output_dir
 
     def initialize(self):
         self._logger.debug("Initializing")
@@ -24,16 +27,15 @@ class StreamsCommand:
         self._unique_protocols = {url.scheme for url in self._urls}
         self._logger.debug("Unique protocols: {protocols}".format(protocols=self._unique_protocols))
 
-        self._unifi_urls = [url for url in self._urls if url.scheme == "unifi"]
-        self._rtsp_urls = [url for url in self._urls if url.scheme == "rtsp"]
-        self._rtsps_urls = [url for url in self._urls if url.scheme == "rtsps"]
-
-        self._unique_unifi_controllers = {url.netloc for url in self._urls if url.scheme == 'unifi'}
-        self._logger.debug("Unique Unifi Controllers: {controllers}".format(controllers=self._unique_unifi_controllers))
+        self._unifi_protect_api_by_netloc = {}  # key = u:p@host
 
     def run(self):
         self._logger.debug("Running")
 
+        self._logger.debug("Creating Player URLs")
+        player_urls = self._get_player_urls(self._urls)
+
+        # Start the Reflector if at least one 'unifi' protocol is specified
         if "unifi" in self._unique_protocols:
             self._reflector_controller = Context.create_reflector_controller()
             Context.get_executer().submit(
@@ -41,20 +43,7 @@ class StreamsCommand:
                 mode="async_thread"
             )
 
-            self._logger.debug("Preparing livestream urls")
-
-            self._protect_apis = self._create_unifi_apis(list(self._unique_unifi_controllers))
-            self._livestream_urls = self._get_livestream_urls(self._unifi_urls, self._protect_apis)
-
-            self._logger.debug("Livestream urls: {urls}".format(urls=self._livestream_urls))
-
-
-
-
-
-        if "rtsp" or "rtsps" in self._unique_protocols:
-            self._logger.debug("Processing RTSP(S) streams")
-            pass
+        self._prepare_viewport_portal(self._layout, player_urls, self._output_dir)
 
     def dispose(self):
         self._logger.debug("Disposed")
@@ -90,44 +79,72 @@ class StreamsCommand:
 
         return parsed_urls
 
-    def _create_unifi_apis(self, netlocs):
-        futures = {}
-        for netloc in netlocs:
-            futures[netloc] = Context.get_executer().submit(
-                SimpleUnifiApi.Thingy(Context.create_unifi_api(netloc)),
-                mode="async_thread"
-            )
+    def _get_player_url_for_unifi_protocol(self, url, unifi_protect_api):
+        player_urls = []
+        path = url.path[1:]  # remove leading '/'
 
-        concurrent.futures.wait(list(futures.values()))
-        return {k: v.result() for k, v in futures.items()}
+        if path == "_all":
+            for camera in unifi_protect_api.bootstrap["cameras"]:
+                player_urls.append("{netloc}/{camera_id}".format(
+                    netloc=url.netloc,
+                    camera_id=camera["id"]))
+        else:
+            for camera_name in path.split(","):
+                camera = unifi_protect_api.get_camera_by_name(camera_name)
+                if camera is None:
+                    raise ApplicationException("Camera '{camera_name}' not found in Unifi Protect Controller: {host}".format(
+                        camera_name=camera_name, host=unifi_protect_api.host))
 
-    def _get_livestream_urls(self, urls, protect_apis):
-        # Create a list of cameras name=id for every unifi controller
-        cameras_by_netloc = {}
-        for netloc, protect_api in self._protect_apis.items():
-            cameras_name_to_id = {}
-            for camera in protect_api._bootstrap["cameras"]:
-                cameras_name_to_id[camera["name"]] = camera["id"]
-            cameras_by_netloc[netloc] = cameras_name_to_id
+                camera_id = unifi_protect_api.get_camera_by_name(camera_name)["id"]
+                player_urls.append("{netloc}/{camera_id}".format(
+                    netloc=url.netloc,
+                    camera_id=camera_id))
 
-        self._logger.debug("Cameras by netloc: {cameras_by_netloc}".format(cameras_by_netloc=cameras_by_netloc))
+        return player_urls
 
-        # Create a list of urls of the cameras
-        livestream_urls = []
+    def _get_player_urls(self, urls):
+        player_urls = []
         for url in urls:
-            self._logger.debug("Processing url.path: {path}".format(path=url.path))
-            path = url.path[1:]  # remove leading '/'
+            self._logger.debug("Processing url: {url}".format(url=url))
 
-            if path == "_all":
-                for camera_id in cameras_by_netloc[url.netloc].values():
-                    livestream_urls.append("{netloc}/{camera_id}".format(
-                        netloc=url.netloc,
-                        camera_id=camera_id))
-            else:
-                for camera_name in path.split(","):
-                    camera_id = cameras_by_netloc[url.netloc][camera_name]
-                    livestream_urls.append("{netloc}/{camera_id}".format(
-                        netloc=url.netloc,
-                        camera_id=camera_id))
-        
-        return livestream_urls
+            if url.scheme == 'unifi':
+                if url.netloc not in self._unifi_protect_api_by_netloc:
+                    upapi = Context.create_unifi_protect_api(url.netloc)
+                    upapi.login()
+
+                    self._unifi_protect_api_by_netloc[url.netloc] = upapi
+
+                player_url = self._get_player_url_for_unifi_protocol(url, self._unifi_protect_api_by_netloc[url.netloc])
+                self._logger.debug("Player URLs: {urls}".format(urls=player_url))
+
+                player_urls += player_url
+
+            elif "rtsp" or "rtsps" in self._unique_protocols:
+                self._logger.debug("Player URL: {url}".format(url=url.netloc))
+                pass
+
+        player_urls = ["ws://localhost:4001/{url}".format(url=url) for url in player_urls]
+        return player_urls
+
+    def _prepare_viewport_portal(self, layout, player_urls, output_dir):
+        self._logger.debug("Preparing viewport portal")
+
+        self._logger.debug("Output directory is '{output_dir}'".format(output_dir=output_dir))
+
+        env = Environment(
+            loader=PackageLoader("app"),
+            autoescape=select_autoescape()
+        )
+
+        self._logger.debug("Generating index.html to: '{output_dir}'".format(output_dir=output_dir))
+        template = env.get_template("index.html")
+        with open("{output_dir}/index.html".format(output_dir=output_dir), "w") as f:
+            f.write(template.render(layout=layout, player_urls=player_urls))
+
+        self._logger.debug("Building and packaging Player to: '{output_dir}'".format(output_dir=output_dir))
+        os.environ["DIST_DIR"] = output_dir
+        subprocess.run(["npx", "webpack"],
+            cwd=os.path.dirname(os.path.realpath(__file__)) + "/../../../../player",
+            capture_output=True
+        )
+

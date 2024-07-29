@@ -11,8 +11,6 @@ class Context:
 
             self._logger = self._root_logger.get_child("Context")
             self._root_logger.set_level("INFO")
-            self._logger.info("Hello")
-            self._logger.info("Created Logger Singleton")
 
         return self._root_logger
 
@@ -24,20 +22,20 @@ class Context:
 
         return self._executer
 
-    def create_streams_command(self, layout, urls):
+    def create_streams_command(self, layout, urls, output_dir):
         self._logger.debug("Creating StreamsCommand instance")
         from app.command.streams import StreamsCommand
-        return StreamsCommand(layout, urls)
+        return StreamsCommand(layout, urls, output_dir)
 
     def create_reflector_controller(self):
         self._logger.debug("Creating SimpleReflectorController instance")
         from app.reflector.controller import SimpleReflectorController
         return SimpleReflectorController()
 
-    def create_unifi_api(self, netloc):
-        self._logger.debug("Creating UnifiApi instance")
-        from app.unifi.api import SimpleUnifiApi
-        return SimpleUnifiApi(netloc)
+    def create_unifi_protect_api(self, netloc):
+        self._logger.debug("Creating UnifiProtectApi instance")
+        from app.unifi.protect import SimpleUnifiProtectApi
+        return SimpleUnifiProtectApi(netloc)
 
 
 Context = Context()

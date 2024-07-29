@@ -6,17 +6,17 @@ from app.error import ApplicationException
 from app.executer import SimpleExecuter
 
 
-class SimpleUnifiApi:
+class SimpleUnifiProtectApi:
     class Thingy(SimpleExecuter.Thingy):
-        def __init__(self, unifi_api):
-            self._unifi_api = unifi_api
+        def __init__(self, unifi_protect_api):
+            self._unifi_protect_api = unifi_protect_api
 
         def run(self):
-            if not self._unifi_api.login():
+            if not self._unifi_protect_api.do_login():
                 raise ApplicationException("Login failed")
 
-            self._unifi_api.bootstrap()
-            return self._unifi_api
+            self._unifi_protect_api.do_bootstrap()
+            return self._unifi_protect_api
 
     def __init__(self, netloc):
         self._logger = Context.get_logger().get_child("{clazz}:{host}".format(
@@ -26,7 +26,7 @@ class SimpleUnifiApi:
         self.username = netloc.split("@")[0].split(":")[0]
         self.password = netloc.split("@")[0].split(":")[1]
         self._headers = {}
-        self._bootstrap = None
+        self.bootstrap = None
 
     def login(self):
         self._logger.debug("Logging in")
@@ -62,7 +62,16 @@ class SimpleUnifiApi:
             if csrf_token and cookie:
                 self._headers["Cookie"] = cookie.split(";")[0]
                 self._headers["X-CSRF-Token"] = csrf_token
-                return True
+
+                self._logger.debug("Attempting to bootstrap")
+                url = "https://{host}/proxy/protect/api/bootstrap".format(host=self.host)
+                r = requests.get(url, headers=self._headers, verify=False)
+                self._logger.debug("Bootstrap result: {status}".format(status=r.status_code))
+
+                if r.status_code == 200:
+                    self.bootstrap = r.json()
+                    self._logger.debug("Ready")
+                    return True
 
         self.logout()
         return False
@@ -71,12 +80,13 @@ class SimpleUnifiApi:
         self._logger.debug("Logging out")
         self._headers.clear()
 
-    def bootstrap(self):
-        self._logger.debug("Bootstrapping")
-        url = "https://{host}/proxy/protect/api/bootstrap".format(host=self.host)
-        r = requests.get(url, headers=self._headers, verify=False)
-        if r.status_code == 200:
-            self._bootstrap = r.json()
+    def get_camera_by_name(self, name):
+        for camera in self.bootstrap["cameras"]:
+            if camera["name"] == name:
+                return camera
+
+        return None
+
 
 
 
