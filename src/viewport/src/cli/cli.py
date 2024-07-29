@@ -44,6 +44,7 @@ def main():
         Context.get_logger().set_level(logging.DEBUG)
 
     if args["streams"]:
+        logger.info("Starting...")
         logger.debug("Processing 'streams' command")
 
         try:

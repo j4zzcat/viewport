@@ -5,19 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Fixed stupid bug">
-      <change afterPath="$PROJECT_DIR$/src/viewport/src/app/templates/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/test/streams.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/test/template.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/player/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/webpack.config.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/context.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/context.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/executer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/executer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/reflector/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/reflector/controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/unifi/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/unifi/protect.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/logger.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/viewport/src/cli/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/cli/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/test/streams_command.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/test/unifi_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/test/protect.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -301,7 +293,7 @@
       <workItem from="1722121857320" duration="7705000" />
       <workItem from="1722149456592" duration="11506000" />
       <workItem from="1722199040088" duration="200000" />
-      <workItem from="1722253091059" duration="16998000" />
+      <workItem from="1722253091059" duration="17806000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -372,12 +364,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/viewport/src/app/logger.py</url>
-          <line>32</line>
+          <line>45</line>
           <option name="timeStamp" value="27" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/viewport/src/cli/cli.py</url>
-          <line>46</line>
+          <line>47</line>
           <option name="timeStamp" value="38" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

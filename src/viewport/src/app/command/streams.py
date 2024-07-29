@@ -142,7 +142,7 @@ class StreamsCommand:
             f.write(template.render(layout=layout, player_urls=player_urls))
 
         self._logger.debug("Building and packaging Player to: '{output_dir}'".format(output_dir=output_dir))
-        os.environ["DIST_DIR"] = output_dir
+        os.environ["DIST_DIR"] = os.getcwd() if output_dir == "." else output_dir
         subprocess.run(["npx", "webpack"],
             cwd=os.path.dirname(os.path.realpath(__file__)) + "/../../../../player",
             capture_output=True
