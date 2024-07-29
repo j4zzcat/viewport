@@ -1,6 +1,9 @@
+import http
 import os
+import socketserver
 import subprocess
 import tempfile
+from http.server import HTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse
 from jinja2 import Environment, PackageLoader, select_autoescape
 
@@ -37,6 +40,7 @@ class StreamsCommand:
 
         # Start the Reflector if at least one 'unifi' protocol is specified
         if "unifi" in self._unique_protocols:
+            self._logger.info("Starting the Reflector Server...")
             self._reflector_controller = Context.create_reflector_controller()
             Context.get_executer().submit(
                 self._reflector_controller,
@@ -44,6 +48,13 @@ class StreamsCommand:
             )
 
         self._prepare_viewport_portal(self._layout, player_urls, self._output_dir)
+
+        self._logger.info("Starting the Web Server...")
+        os.chdir(self._output_dir)
+        with socketserver.TCPServer(("localhost", 8001), http.server.SimpleHTTPRequestHandler) as httpd:
+            self._logger.info("Web Server is ready on localhost:8001")
+            self._logger.info("Open Google Chrome on http://localhost:8001/index.html to get started")
+            httpd.serve_forever()
 
     def dispose(self):
         self._logger.debug("Disposed")
@@ -136,7 +147,7 @@ class StreamsCommand:
             autoescape=select_autoescape()
         )
 
-        self._logger.debug("Generating index.html to: '{output_dir}'".format(output_dir=output_dir))
+        self._logger.info("Generating index.html to: '{output_dir}'".format(output_dir=output_dir))
         template = env.get_template("index.html")
         with open("{output_dir}/index.html".format(output_dir=output_dir), "w") as f:
             f.write(template.render(layout=layout, player_urls=player_urls))

@@ -5,10 +5,10 @@ Usage:
   viewport [--version] [--help]
 
 Options:
-  -v, --verbose       Be verbose.
-  --layout=<layout>   The layout to use. Supported layouts are: grid and lms. [Default: grid:3x3]
-  --output-dir=<dir>  The output directory where web-related files will be written to. [Default: .]
-  <url>               The URL of a live video stream, or controller. Supported protocols are: unifi:// and rtsp(s)://.
+  -v, --verbose           Be verbose.
+  -l, --layout=<layout>   The layout to use. Supported layouts are: grid and lms. [Default: grid:3x3]
+  -o, --output-dir=<dir>  The output directory where web-related files will be written to. [Default: .]
+  <url>                   The URL of a live video stream, or controller. Supported protocols are: unifi:// and rtsp(s)://.
 
 Example:
   To display all the cameras of an Unifi Protect Controller at 192.168.4.10:

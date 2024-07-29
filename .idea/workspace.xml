@@ -5,10 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Fixed stupid bug">
-      <change afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reflector/src/simple-reflector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/src/simple-reflector.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/logger.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/viewport/src/cli/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/cli/cli.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,7 +56,7 @@
     "Python tests.Test unifi_api.executor": "Run",
     "Python tests.Viewport Tests.executor": "ConcurrencyExecutor",
     "Python.Viewport (1).executor": "Run",
-    "Python.Viewport.executor": "Debug",
+    "Python.Viewport.executor": "Run",
     "Python.controller.executor": "Run",
     "RSpec.RSpec.executor": "Run",
     "RSpec.viewport_spec.executor": "Run",
@@ -114,33 +113,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Viewport (1)">
+  <component name="RunManager" selected="Python.Viewport">
     <configuration name="reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="src/simple-reflector.ts" working-dir="$PROJECT_DIR$/src/reflector">
-      <method v="2" />
-    </configuration>
-    <configuration name="Viewport (1)" type="PythonConfigurationType" factoryName="Python">
-      <module name="viewport" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-        <env name="PYTHONWARNINGS" value="ignore:Unverified HTTPS request" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="SDK_NAME" value="Python 3.12 (viewport)" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/viewport/src/cli/cli.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
     <configuration name="Viewport" type="PythonConfigurationType" factoryName="Python">
@@ -160,7 +134,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/viewport/src/cli/cli.py" />
-      <option name="PARAMETERS" value="streams --verbose unifi://dev-user:dev10203040$Dx@192.168.4.10/_all" />
+      <option name="PARAMETERS" value="streams -o $USER_HOME$/.viewport unifi://dev-user:dev10203040$Dx@192.168.4.10/_all" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -225,7 +199,6 @@
     <list>
       <item itemvalue="Node.js.reflector" />
       <item itemvalue="Python.Viewport" />
-      <item itemvalue="Python.Viewport (1)" />
       <item itemvalue="Python tests.Test template" />
       <item itemvalue="Python tests.Test protect" />
       <item itemvalue="Python tests.Test streams" />
@@ -293,7 +266,7 @@
       <workItem from="1722121857320" duration="7705000" />
       <workItem from="1722149456592" duration="11506000" />
       <workItem from="1722199040088" duration="200000" />
-      <workItem from="1722253091059" duration="17806000" />
+      <workItem from="1722253091059" duration="21092000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -367,23 +340,13 @@
           <line>45</line>
           <option name="timeStamp" value="27" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/viewport/src/cli/cli.py</url>
-          <line>47</line>
-          <option name="timeStamp" value="38" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/viewport/src/cli/cli.py</url>
-          <line>34</line>
-          <option name="timeStamp" value="39" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/viewport@viewport_spec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721173891026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport@RSpec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721223919455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
-    <SUITE FILE_PATH="coverage/viewport$Viewport.coverage" NAME="Viewport Coverage Results" MODIFIED="1722287320913" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/viewport$Viewport.coverage" NAME="Viewport Coverage Results" MODIFIED="1722291591990" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/viewport$Viewport__1_.coverage" NAME="Viewport (1) Coverage Results" MODIFIED="1722288139650" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/viewport$.coverage" NAME=" Coverage Results" MODIFIED="1722282575781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport/test" />
     <SUITE FILE_PATH="coverage/viewport$controller.coverage" NAME="controller Coverage Results" MODIFIED="1722115732711" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />

@@ -49,7 +49,7 @@ class SimpleReflector {
 
         this._wss.once("listening", () => {
             // @ts-ignore
-            this._logger.info(`WebSocketServer listening on port ${this._wss.address().port}`);
+            this._logger.info(`Reflector Server is ready on localhost:${this._wss.address().port}`);
         });
 
         this._wss.on("connection", async (ws: WebSocket, req) => {
@@ -73,8 +73,9 @@ class SimpleReflector {
                 let password = url.password;
                 let cameraId = url.pathname.slice(1);
 
-                let logger = this._logger.child({context: { clientId: clientId, controller: controller, cameraId: cameraId}});
-                logger.info(`Client '${clientId}' asks for '${url}'`);
+                // let logger = this._logger.child({context: { clientId: clientId, cameraId: cameraId}});
+                let logger = this._logger.child({});
+                logger.debug(`Client '${clientId}' asks for '${url}'`);
 
                 /*
                  * Get or create an instance of ProtectApi, fully initialized.
@@ -92,7 +93,7 @@ class SimpleReflector {
                 let livestream = protectApi.createLivestream();
 
                 livestream.on("close", () => {
-                    logger.info("Livestream closed");
+                    logger.debug("Livestream closed");
                     ws.close();
                 });
 
@@ -123,18 +124,19 @@ class SimpleReflector {
                 });
 
                 ws.on("close", (ws, code, reason) => {
-                    logger.info(`Socket closed, code: ${code}, reason: ${reason}`);
+                    logger.debug(`Socket closed, code: ${code}, reason: ${reason}`);
 
                     livestream.stop();
-                    logger.info("Livestream stopped");
+                    logger.info(`Stopping livestream for client: '${clientId}'`);
                 });
 
                 ws.on("error", (ws, error) => {
                     logger.error(error);
                     livestream.stop();
+                    logger.info(`Stopping livestream for client: '${clientId}'`);
                 });
 
-                logger.info(`Starting the livestream`);
+                logger.info(`Starting livestream for client: '${clientId}'`);
                 await livestream.start(cameraId, 0);
 
             } catch (e) {
