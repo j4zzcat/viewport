@@ -12,6 +12,15 @@ from app.error import ApplicationException
 
 
 class StreamsCommand:
+    class SimpleHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, format, *args):
+            pass
+            # # Redirect log messages to the logging module instead of stderr
+            # logging.info("%s - - [%s] %s\n" %
+            #              (self.client_address[0],
+            #               self.log_date_time_string(),
+            #               format % args))
+
     def __init__(self, layout, urls, output_dir):
         self._logger = Context.get_logger().get_child(self.__class__.__name__)
         self._layout = layout
@@ -51,7 +60,7 @@ class StreamsCommand:
 
         self._logger.info("Starting the Web Server...")
         os.chdir(self._output_dir)
-        with socketserver.TCPServer(("localhost", 8001), http.server.SimpleHTTPRequestHandler) as httpd:
+        with socketserver.TCPServer(("localhost", 8001), StreamsCommand.SimpleHTTPRequestHandler) as httpd:
             self._logger.info("Web Server is ready on localhost:8001")
             self._logger.info("Open Google Chrome on http://localhost:8001 to get started")
             httpd.serve_forever()
