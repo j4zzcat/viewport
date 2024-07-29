@@ -53,7 +53,7 @@ class StreamsCommand:
         os.chdir(self._output_dir)
         with socketserver.TCPServer(("localhost", 8001), http.server.SimpleHTTPRequestHandler) as httpd:
             self._logger.info("Web Server is ready on localhost:8001")
-            self._logger.info("Open Google Chrome on http://localhost:8001/index.html to get started")
+            self._logger.info("Open Google Chrome on http://localhost:8001 to get started")
             httpd.serve_forever()
 
     def dispose(self):

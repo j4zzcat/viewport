@@ -55,10 +55,15 @@
         divElement.appendChild(videoElement);
         placeholderElement.appendChild(divElement);
 
-        const videoPlayer = new viewport.SimplePlayer(
-            `video-${index}`,
-            videoStreamUrl
-        );
+        const jitter = Math.floor(Math.random() * 3000)
+        setTimeout(() =>
+            {
+                const videoPlayer = new viewport.SimplePlayer(
+                    `video-${index}`,
+                    videoStreamUrl
+                );
+            },
+            jitter);
     })
 </script>
 </html>
