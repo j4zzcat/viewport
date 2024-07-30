@@ -28,6 +28,7 @@ class SimpleExecuter:
         self._processes = {}
 
         signal.signal(signal.SIGINT, self._cleanup)
+        signal.signal(signal.SIGTERM, self._cleanup)
 
     def _cleanup(self, signum, frame):
         self._logger.info("Cleaning up")

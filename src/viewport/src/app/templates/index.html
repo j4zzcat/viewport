@@ -55,7 +55,7 @@
         divElement.appendChild(videoElement);
         placeholderElement.appendChild(divElement);
 
-        const jitter = Math.floor(Math.random() * 3000)
+        const jitter = Math.floor(Math.random() * videoStreamUrls.length * .75 * 1000)
         setTimeout(() =>
             {
                 const videoPlayer = new viewport.SimplePlayer(
