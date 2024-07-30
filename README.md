@@ -2,7 +2,7 @@
 
 <img src="man/screenshot1.png" align="right" width="40%"/>
 
-*Viewport* is a simple program to display multiple, side-by-side Unifi Protect and RTSP 
+*Viewport* is a simple program to display multiple, side-by-side Unifi Protect 
 video streams in an unattended web page, making it ideal for passive, security 
 cameras view-only scenarios (i.e., 'Kiosk'). Viewport is easy to use, uses little 
 resources and has low latency.
@@ -33,8 +33,6 @@ On the client side:
 * [Viewport Player](src/player) which is a simple livestream video player written in TypeScript. This player
 uses Media Source Extension API to play the H.264 fMP4 livestream video from the Unifi Protect Controller through 
 the Viewport Reflector Server.
-* [MpegTS Player](https://github.com/xqq/mpegts.js) which is a video player that supports livestream FLV. It is used
-to play the specified RTPS/S streams through the SRS Media Server.
 * [index.html](src/viewport/src/app/templates) which is a simple web page that is rendered once by the server and 
 binds all the views together. 
 
@@ -43,8 +41,6 @@ On the server side:
 * [Viewport Reflector](src/reflector) which is a simple livestream reflector server. This server uses the excellent
 node-based [Unifi Protect Library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
 Unifi Protect Controller and onto the Viewport Player, over Web Sockets.
-* [SRS Media Server](https://github.com/ossrs/srs) which is used to quickly transcode RTPS/S livestreams into
-HTTP-FLV for the MpegTS Player.
 * [Viewport](src/viewport) which provides CLI and orchestrates the execution of all the parts. 
 
 

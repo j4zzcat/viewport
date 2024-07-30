@@ -5,7 +5,7 @@ cd "$SCRIPT_DIR"/..
 
 MAJOR='1'
 MINOR='1'
-PATCH='2'
+PATCH='5'
 IMAGE_NAME='j4zzcat/viewport'
 
 docker buildx create --name container --driver=docker-container 2>/dev/null
