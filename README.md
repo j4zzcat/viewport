@@ -8,27 +8,32 @@ cameras view-only scenarios (i.e., 'Kiosk'). Viewport is easy to use, uses littl
 resources and has low latency.
 
 ## Quickstart
-To display the video streams of a Unify Protect Controller, first define a local Admin on that
+To display the video streams of a _Unify Protect Controller_, first define a local Admin on that
 controller, with minimum privileges. This user is used by Viewport to access the livestream feeds.
-1. Open up Unifi Protect, select _OS Settings_ from the top-level navigation bar. 
+Follow the following procedure:
+1. Open up Unifi Protect web application, select _OS Settings_ from the top-level navigation bar. 
 1. Click _Admins and Users_, then click the _+_ (plus) button in the top right corner to _Add Admin_.
-1. In the _Add Admin_ panel, check _Restrict to local access only_, then fill the *username* and
+1. In the _Add Admin_ panel, check _Restrict to local access only_, then fill in the *username* and
 *password*.
 1. Uncheck the _Use a pre-defined role_, and set _Live only_ for _Protect_, and _None_ for _OS Settings_.
 1. Click _Add_ and you're done.
-
+1. Run the following in the terminal:
 ```bash
 docker run -it --rm --network host viewport:1.1 \ 
   streams 'unifi://username:password@host/_all'
 ```
-* The above will display a 3x3 viewport with 5 Unifi Protect Cameras.
-* Obviously, you have to replace the `IDs` and `URLs` given in this example with *your very own*.
-  Note that `IDs` are arbitrary strings, but they must be unique.
-* To get the RTSPS stream URL for a camera, open the Unifi Protect app, go to 'Unifi Devices',
-  select the desired camera, and then select 'Settings'. Scroll down and expand the 'Advanced' section.
-  Enable the stream for the desired resolution, and take a note of its URL.
-  Pass this URL to the `-s` option as in `-s ID=URL`.
-* To get to the viewport, open a web browser and navigate to: http://localhost:8777/viewport.html.
+Replace _username_ and _password_ with those used above, replace _host_ with the hostname or ip address
+of the Unifi Protect Controller.
+
+
+
+
+
+
+
+
+
+
 
 
 Under normal circumctences, the
