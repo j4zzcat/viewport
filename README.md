@@ -26,14 +26,28 @@ Replace _username_ and _password_ with those used above, replace _host_ with the
 of the Unifi Protect Controller. Once _Viewport_ starts, use Google Chrome to navigate to [http://localhost:8001](http://localhost:8001).
 
 ## Theory of operation
-_Viewport_ is made of several parts:
-Client Side
+_Viewport_ is based on the client-server architecture, and is made of several parts:
+
+
+On the client side:
 * [Viewport Player](src/player) which is a simple livestream video player written in TypeScript. This player
-uses Media Source Extension API to efficiently play the H.264 fMP4 livestream video from the Unifi Protect Controller.
-* [MpegTS Player](https://github.com/xqq/mpegts.js) which is a livestream video player that supports FLV. It is used
-to play the (transcoded) RTPS/S streams. 
+uses Media Source Extension API to play the H.264 fMP4 livestream video from the Unifi Protect Controller through 
+the Viewport Reflector Server.
+* [MpegTS Player](https://github.com/xqq/mpegts.js) which is a video player that supports livestream FLV. It is used
+to play the specified RTPS/S streams through the SRS Media Server.
 * [index.html](src/viewport/src/app/templates) which is a simple web page that is rendered once by the server and 
 binds all views together. 
+
+
+On the server side:
+* [Viewport Reflector](src/reflector) which is a simple livestream reflector server. This server uses the excellent
+node-based [Unifi Protect Library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
+Unifi Protect Controller and onto the Viewport Player, over Web Socket.
+* [SRS Media Server](https://github.com/ossrs/srs) which is used to quickly transcode RTPS/S livestreams into
+HTTP-FLV for the MpegTS Player.
+* [Viewport](src/viewport) which provides CLI and orchestrates the execution of all the parts. 
+
+
 
 ## Build
 To build the software locally, run the following command.
