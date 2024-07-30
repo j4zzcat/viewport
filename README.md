@@ -2,18 +2,20 @@
 
 <img src="man/screenshot1.png" align="right" width="40%"/>
 
-*Viewport* is designed to display multiple, side-by-side Unifi Protect and RTSP 
+*Viewport* is a simple program to display multiple, side-by-side Unifi Protect and RTSP 
 video streams in an unattended web page, making it ideal for passive, security 
-cameras view-only scenarios (i.e., 'Kiosk'). Under normal circumctences, the 
-latecy is quite small, 0.5s to 1.0s for Unifi Protect livestreams, and 2s to 3s
-for RTPS livestreams.
+cameras view-only scenarios (i.e., 'Kiosk'). Viewport is easy to use, uses little 
+resources and has low latency.
 
 ## Quickstart
-To display the video streams of a Unify Protect Controller, first
-define a 'local' user on that controller. This user is used by Viewport to access
-the livestream feeds.
-1. Open up Unifi Protect, select 'OS Settings' from the top-level navigation bar. 
-1. Click 'Admins and Users', then click the '+' button in the top right corner.
+To display the video streams of a Unify Protect Controller, first define a local Admin on that
+controller, with minimum privileges. This user is used by Viewport to access the livestream feeds.
+1. Open up Unifi Protect, select _OS Settings_ from the top-level navigation bar. 
+1. Click _Admins and Users_, then click the _+_ (plus) button in the top right corner to _Add Admin_.
+1. In the _Add Admin_ panel, check _Restrict to local access only_, then fill the *username* and
+*password*.
+1. Uncheck the _Use a pre-defined role_, and set _Live only_ for _Protect_, and _None_ for _OS Settings_.
+1. Click _Add_ and you're done.
 
 ```bash
 docker run -it --rm --network host viewport:1.1 \ 
@@ -29,7 +31,9 @@ docker run -it --rm --network host viewport:1.1 \
 * To get to the viewport, open a web browser and navigate to: http://localhost:8777/viewport.html.
 
 
-
+Under normal circumctences, the
+latecy is quite small, 0.5s to 1.0s for Unifi Protect livestreams, and 2s to 3s
+for RTPS livestreams.
 
 
 For Unifi Protect support, the program uses the excellent open source [Library](https://github.com/hjdhjd/unifi-protect)
