@@ -25,6 +25,22 @@ docker run -it --rm --network host viewport:1.1 \
 Replace _username_ and _password_ with those used above, replace _host_ with the hostname or ip address
 of the Unifi Protect Controller. Once _Viewport_ starts, use Google Chrome to navigate to [http://localhost:8001](http://localhost:8001).
 
+## Theory of operation
+_Viewport_ is made of several parts:
+Client Side
+* [Viewport Player](src/player) which is a simple livestream video player written in TypeScript. This player
+uses Media Source Extension API to efficiently play the H.264 fMP4 livestream video from the Unifi Protect Controller.
+* [MpegTS Player](https://github.com/xqq/mpegts.js) which is a livestream video player that supports FLV. It is used
+to play the (transcoded) RTPS/S streams. 
+* [index.html](src/viewport/src/app/templates) which is a simple web page that is rendered once by the server and 
+binds all views together. 
+
+## Build
+To build the software locally, run the following command.
+You should have `docker` and `buildkit` installed.
+```shell
+docker buildx build -t viewport:latest -f build/Dockerfile .
+```
 
 
 
@@ -51,12 +67,6 @@ The program is available both as standalone and as a Docker image.
 
 &nbsp;
 
-## Build
-To build the software locally, run the following command.
-You should have `docker` and `buildkit` installed.
-```shell
-docker buildx build -t viewport:latest -f build/Dockerfile .
-```
 
 ## Theory of Operation
 ( unifi-nvr -> fMPEG -> websocket ) <- ( universal-livestream -> ffmpeg ) -> flv/rtmp -> ( srs ) <- ( mpegts.js ) 
