@@ -130,7 +130,8 @@ class StreamsCommand:
             if url.scheme == 'unifi':
                 if url.netloc not in self._unifi_protect_api_by_netloc:
                     upapi = Context.create_unifi_protect_api(url.netloc)
-                    upapi.login()
+                    if not upapi.login():
+                        raise ApplicationException("Could not login to Unifi Protect Controller at '{url}'".format(url=url))
 
                     self._unifi_protect_api_by_netloc[url.netloc] = upapi
 

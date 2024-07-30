@@ -2,22 +2,9 @@ import requests
 import json
 
 from app.context import Context
-from app.error import ApplicationException
-from app.executer import SimpleExecuter
 
 
 class SimpleUnifiProtectApi:
-    class Thingy(SimpleExecuter.Thingy):
-        def __init__(self, unifi_protect_api):
-            self._unifi_protect_api = unifi_protect_api
-
-        def run(self):
-            if not self._unifi_protect_api.do_login():
-                raise ApplicationException("Login failed")
-
-            self._unifi_protect_api.do_bootstrap()
-            return self._unifi_protect_api
-
     def __init__(self, netloc):
         self._logger = Context.get_logger().get_child("{clazz}:{host}".format(
             clazz=self.__class__.__name__,
