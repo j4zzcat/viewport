@@ -36,13 +36,13 @@ the Viewport Reflector Server.
 * [MpegTS Player](https://github.com/xqq/mpegts.js) which is a video player that supports livestream FLV. It is used
 to play the specified RTPS/S streams through the SRS Media Server.
 * [index.html](src/viewport/src/app/templates) which is a simple web page that is rendered once by the server and 
-binds all views together. 
+binds all the views together. 
 
 
 On the server side:
 * [Viewport Reflector](src/reflector) which is a simple livestream reflector server. This server uses the excellent
 node-based [Unifi Protect Library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
-Unifi Protect Controller and onto the Viewport Player, over Web Socket.
+Unifi Protect Controller and onto the Viewport Player, over Web Sockets.
 * [SRS Media Server](https://github.com/ossrs/srs) which is used to quickly transcode RTPS/S livestreams into
 HTTP-FLV for the MpegTS Player.
 * [Viewport](src/viewport) which provides CLI and orchestrates the execution of all the parts. 
