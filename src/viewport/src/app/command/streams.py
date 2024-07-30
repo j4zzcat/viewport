@@ -9,17 +9,13 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 from app.context import Context
 from app.error import ApplicationException
+from app.layout.grid import GridLayout
 
 
 class StreamsCommand:
     class SimpleHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
-        def log_message(self, format, *args):
+        def log_message(self, fmt, *args):
             pass
-            # # Redirect log messages to the logging module instead of stderr
-            # logging.info("%s - - [%s] %s\n" %
-            #              (self.client_address[0],
-            #               self.log_date_time_string(),
-            #               format % args))
 
     def __init__(self, layout, urls, output_dir):
         self._logger = Context.get_logger().get_child(self.__class__.__name__)
@@ -56,7 +52,7 @@ class StreamsCommand:
                 mode="async_thread"
             )
 
-        self._prepare_viewport_portal(self._layout, player_urls, self._output_dir)
+        self._render_viewport(self._layout, player_urls, self._output_dir)
 
         self._logger.info("Starting the Web Server...")
         os.chdir(self._output_dir)
@@ -70,8 +66,15 @@ class StreamsCommand:
 
     def _parse_layout(self, layout):
         self._logger.debug("Parsing layout: {layout}".format(layout=layout))
+        name = layout.split(":")[0]
+        params = layout.split(":")[1]
+        if name == "grid":
+            rows = int(params.split("x")[0])
+            columns = int(params.split("x")[1])
+            return GridLayout(rows, columns)
 
-        return ["grid", 3, 3]
+        else:
+            raise ApplicationException("Unknown layout: {layout}".format(layout=layout))
 
     def _parse_urls(self, urls):
         self._logger.debug("Parsing {len} URLs".format(len=len(urls)))
@@ -147,8 +150,8 @@ class StreamsCommand:
         player_urls = ["ws://localhost:4001/{url}".format(url=url) for url in player_urls]
         return player_urls
 
-    def _prepare_viewport_portal(self, layout, player_urls, output_dir):
-        self._logger.debug("Preparing viewport portal")
+    def _render_viewport(self, layout, player_urls, output_dir):
+        self._logger.debug("Rendering viewport portal")
 
         self._logger.debug("Output directory is '{output_dir}'".format(output_dir=output_dir))
 
