@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Fixed stupid bug">
-      <change afterPath="$PROJECT_DIR$/src/viewport/src/app/layout/grid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/test/template.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/test/template.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build/build.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -275,7 +272,7 @@
       <workItem from="1722149456592" duration="11506000" />
       <workItem from="1722199040088" duration="200000" />
       <workItem from="1722253091059" duration="22597000" />
-      <workItem from="1722326088341" duration="9769000" />
+      <workItem from="1722326088341" duration="11378000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -344,28 +341,13 @@
           <line>23</line>
           <option name="timeStamp" value="23" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/viewport/src/app/logger.py</url>
-          <line>45</line>
-          <option name="timeStamp" value="27" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/viewport/src/app/command/streams.py</url>
-          <line>28</line>
-          <option name="timeStamp" value="28" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/viewport/src/app/command/streams.py</url>
-          <line>153</line>
-          <option name="timeStamp" value="29" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/viewport@viewport_spec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721173891026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport@RSpec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721223919455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
-    <SUITE FILE_PATH="coverage/viewport$Viewport.coverage" NAME="Viewport Coverage Results" MODIFIED="1722342475994" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/viewport$Viewport.coverage" NAME="Viewport Coverage Results" MODIFIED="1722342682806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/viewport$Viewport__1_.coverage" NAME="Viewport (1) Coverage Results" MODIFIED="1722288139650" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/viewport$.coverage" NAME=" Coverage Results" MODIFIED="1722282575781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport/test" />
     <SUITE FILE_PATH="coverage/viewport$controller.coverage" NAME="controller Coverage Results" MODIFIED="1722115732711" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
