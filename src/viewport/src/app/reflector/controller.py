@@ -1,3 +1,4 @@
+import atexit
 import os
 import subprocess
 import json
@@ -17,7 +18,14 @@ class SimpleReflectorController:
 
     def run(self):
         self._logger.debug("Spawning the SimpleReflector Node process")
-        process = subprocess.Popen(
+        # process = subprocess.Popen(
+        #     args=["node", "--no-warnings", "--import", "tsx", "src/simple-reflector.ts"],
+        #     cwd=os.path.dirname(os.path.realpath(__file__)) + "/../../../../reflector",
+        #     stdout=subprocess.PIPE,
+        #     preexec_fn=os.setsid,
+        #     text=True)
+
+        process = Context.get_executer().spwan(
             args=["node", "--no-warnings", "--import", "tsx", "src/simple-reflector.ts"],
             cwd=os.path.dirname(os.path.realpath(__file__)) + "/../../../../reflector",
             stdout=subprocess.PIPE,

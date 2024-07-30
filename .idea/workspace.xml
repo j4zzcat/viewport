@@ -5,20 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Fixed stupid bug">
-      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/benchmark.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build/build.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/viewport" beforeDir="false" afterPath="$PROJECT_DIR$/bin/viewport" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/build.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/player/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/unifi/protect.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/unifi/protect.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils/benchmark.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/executer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/executer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/reflector/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/reflector/controller.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -277,7 +266,7 @@
       <workItem from="1722149456592" duration="11506000" />
       <workItem from="1722199040088" duration="200000" />
       <workItem from="1722253091059" duration="22597000" />
-      <workItem from="1722326088341" duration="5232000" />
+      <workItem from="1722326088341" duration="7498000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
