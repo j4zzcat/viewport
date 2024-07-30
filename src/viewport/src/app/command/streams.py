@@ -1,9 +1,10 @@
 import http
 import os
+import signal
 import socketserver
 import subprocess
-import tempfile
 from http.server import HTTPServer, SimpleHTTPRequestHandler
+import socket
 from urllib.parse import urlparse
 from jinja2 import Environment, PackageLoader, select_autoescape
 

@@ -40,6 +40,7 @@ class SimpleExecuter:
 
     def shutdown(self):
         self._tpe.shutdown(wait=False)
+        [future.cancel() for future in self._tpe_futures]
 
     def submit(self, thingy, mode="sync"):
         self._logger.debug("Thingy '{thingy}' submitted, mode: {mode}".format(thingy=thingy.__class__.__name__, mode=mode))

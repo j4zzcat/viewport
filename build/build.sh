@@ -3,7 +3,7 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "$SCRIPT_DIR"/..
 
-IMAGE_TAG='1.1.0'
+IMAGE_TAG='1.1.2'
 IMAGE_NAME='j4zzcat/viewport'
 
 docker buildx create --name container --driver=docker-container 2>/dev/null

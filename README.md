@@ -1,11 +1,39 @@
-# Live Stream Viewport
+# Viewport
 
-<img src="docs/screenshot1.png" align="right" width="40%"/>
+<img src="man/screenshot1.png" align="right" width="40%"/>
 
-This program offers a simple method to display multiple, side-by-side Real
-Time Streaming Protocol (RTSP)  streams in a  web browser, making  it ideal
-for passive, security cameras view-only scenarios (i.e., 'Kiosk').
+*Viewport* is designed to display multiple, side-by-side Unifi Protect and RTSP 
+video streams in an unattended web page, making it ideal for passive, security 
+cameras view-only scenarios (i.e., 'Kiosk'). Under normal circumctences, the 
+latecy is quite small, 0.5s to 1.0s for Unifi Protect livestreams, and 2s to 3s
+for RTPS livestreams.
 
+## Quickstart
+To display the video streams of a Unify Protect Controller, first
+define a 'local' user on that controller. This user is used by Viewport to access
+the livestream feeds.
+1. Open up Unifi Protect, select 'OS Settings' from the top-level navigation bar. 
+1. Click 'Admins and Users', then click the '+' button in the top right corner.
+
+```bash
+docker run -it --rm --network host viewport:1.1 \ 
+  streams 'unifi://username:password@host/_all'
+```
+* The above will display a 3x3 viewport with 5 Unifi Protect Cameras.
+* Obviously, you have to replace the `IDs` and `URLs` given in this example with *your very own*.
+  Note that `IDs` are arbitrary strings, but they must be unique.
+* To get the RTSPS stream URL for a camera, open the Unifi Protect app, go to 'Unifi Devices',
+  select the desired camera, and then select 'Settings'. Scroll down and expand the 'Advanced' section.
+  Enable the stream for the desired resolution, and take a note of its URL.
+  Pass this URL to the `-s` option as in `-s ID=URL`.
+* To get to the viewport, open a web browser and navigate to: http://localhost:8777/viewport.html.
+
+
+
+
+
+For Unifi Protect support, the program uses the excellent open source [Library](https://github.com/hjdhjd/unifi-protect)
+to reflect the low-level H.264 fMP4 video stream over web sockets to the player.  
 The program uses `ffmpeg` to continuously transcode RTSP/RTSPS streams from 
 the given endpoints (usually security cameras) into HTTP Live Streaming (HLS) streams, 
 and then makes these streams available on a simple, unattended web page (i.e., 'viewport').
@@ -14,6 +42,13 @@ The program is available both as standalone and as a Docker image.
 
 &nbsp;
 
+## Build
+To build the software locally, run the following command.
+You should have `docker` and `buildkit` installed.
+```shell
+docker buildx build -t viewport:latest -f build/Dockerfile .
+```
+
 ## Theory of Operation
 ( unifi-nvr -> fMPEG -> websocket ) <- ( universal-livestream -> ffmpeg ) -> flv/rtmp -> ( srs ) <- ( mpegts.js ) 
 
@@ -21,17 +56,8 @@ The program is available both as standalone and as a Docker image.
 ## Unifi Protect Quickstart
 
 ```bash
-docker run \
-  -it --rm \
-  -p 8777:80 \
-  --mount type=tmpfs,destination=/var/www/localhost/htdocs,tmpfs-mode=1777 \
-  j4zzcat/streamline-viewport:latest \
-    -v -o /var/www/localhost/htdocs -l 3x3 \
-    -s 'my-gate-camera=rtsps://192.168.1.246:7441/D3xxDDe0xA9JN?enableSrtp' \
-    -s 'my-tree-camera=rtsps://192.168.1.246:7441/DEVC0FFEE1Sd3?enableSrtp' \
-    -s 'my-pool-camera=rtsps://192.168.1.246:7441/AoSixcDJKP0xj?enableSrtp' \
-    -s 'my-back-camera=rtsps://192.168.1.246:7441/EFDHIpxfo3zYC?enableSrtp' \
-    -s 'my-roof-camera=rtsps://192.168.1.246:7441/LOxx1FREFD11C?enableSrtp'
+docker run -it --rm --network host viewport:1.1 \ 
+  streams 'unifi://username:password@host/_all'
 ```
 * The above will display a 3x3 viewport with 5 Unifi Protect Cameras. 
 * Obviously, you have to replace the `IDs` and `URLs` given in this example with *your very own*. 

@@ -10,7 +10,7 @@ class SimpleLogger:
                 datefmt="%Y-%m-%d %H:%M:%S")
 
             self._info_formatter = logging.Formatter(
-                fmt="[%(asctime)s] %(message)s",
+                fmt="[%(asctime)s] %(levelname)-5s %(message)s",
                 datefmt="%Y-%m-%d %H:%M:%S")
 
             self._redactions = []

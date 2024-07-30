@@ -6,16 +6,18 @@ Usage:
 
 Options:
   -v, --verbose           Be verbose.
-  -l, --layout=<layout>   The layout to use. Supported layouts are: grid and lms. [Default: grid:3x3]
-  -o, --output-dir=<dir>  The output directory where web-related files will be written to. [Default: .]
-  <url>                   The URL of a live video stream, or controller. Supported protocols are: unifi:// and rtsp(s)://.
+  -l, --layout=<layout>   The layout to use. Supported layouts: grid. [Default: grid:3x3]
+  -o, --output-dir=<dir>  The output directory where web-related files will be
+                          written to. [Default: .]
+  <url>                   The URL of a live video stream, or controller.
+                          Supported protocols: unifi://.
 
 Example:
   To display all the cameras of an Unifi Protect Controller at 192.168.4.10:
 
     $ viewport streams unifi://username:password@192.168.4.10/_all
 
-  Then open the file './index.html' in Google Chrome web browser.
+  Then open the url 'http://localhost:8001' in Google Chrome web browser.
 """
 import sys
 

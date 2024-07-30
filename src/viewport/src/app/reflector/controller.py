@@ -18,12 +18,6 @@ class SimpleReflectorController:
 
     def run(self):
         self._logger.debug("Spawning the SimpleReflector Node process")
-        # process = subprocess.Popen(
-        #     args=["node", "--no-warnings", "--import", "tsx", "src/simple-reflector.ts"],
-        #     cwd=os.path.dirname(os.path.realpath(__file__)) + "/../../../../reflector",
-        #     stdout=subprocess.PIPE,
-        #     preexec_fn=os.setsid,
-        #     text=True)
 
         process = Context.get_executer().spwan(
             args=["node", "--no-warnings", "--import", "tsx", "src/simple-reflector.ts"],
@@ -42,7 +36,10 @@ class SimpleReflectorController:
             try:
                 parsed_line = json.loads(line)
             except json.decoder.JSONDecodeError as e:
-                raise ApplicationException("Error parsing JSON output, {e}".format(e=e))
+                if line.startswith("UNVR"):
+                    parsed_line = {"level": "debug", "message": line.strip()}
+                else:
+                    raise ApplicationException("Failed to parse JSON, offending line: {line}".format(line=line))
 
             msg = (
                 "{message}, context: {context}".format(

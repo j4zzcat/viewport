@@ -6,7 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Fixed stupid bug">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build/build.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/man/viewport.txt" beforeDir="false" afterPath="$PROJECT_DIR$/man/viewport.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/executer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/executer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/logger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/reflector/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/reflector/controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/cli/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/cli/cli.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -272,7 +279,7 @@
       <workItem from="1722149456592" duration="11506000" />
       <workItem from="1722199040088" duration="200000" />
       <workItem from="1722253091059" duration="22597000" />
-      <workItem from="1722326088341" duration="11378000" />
+      <workItem from="1722326088341" duration="18067000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
