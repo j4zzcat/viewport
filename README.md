@@ -16,14 +16,14 @@ Follow the following procedure:
 1. In the _Add Admin_ panel, check _Restrict to local access only_, then fill in the *username* and
 *password*.
 1. Uncheck the _Use a pre-defined role_, and set _Live only_ for _Protect_, and _None_ for _OS Settings_.
-1. Click _Add_ and you're done.
+1. Click _Add_ and close the app.
 1. Run the following in the terminal:
 ```bash
 docker run -it --rm --network host viewport:1.1 \ 
   streams 'unifi://username:password@host/_all'
 ```
 Replace _username_ and _password_ with those used above, replace _host_ with the hostname or ip address
-of the Unifi Protect Controller.
+of the Unifi Protect Controller. Once _Viewport_ starts, use Google Chrome to navigate to [http://localhost:8001].
 
 
 
