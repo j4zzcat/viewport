@@ -5,14 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Fixed stupid bug">
+      <change afterPath="$PROJECT_DIR$/src/viewport/src/app/layout/grid.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/player/src/simple-player.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/src/simple-player.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/lib/viewport/logger.rb" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/lib/viewport/logger.rb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/app/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/test/template.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/test/template.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -41,175 +50,180 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Node.js.reflector.executor": "Run",
     "Node.js.simple-reflector.executor": "Run",
     "Node.js.unifi-fmpeg4-server.executor": "Run",
     "Node.js.unifi-protect-livestream-reflector.executor": "Run",
+    "Python tests.Python tests in livestream_urls_construction.py.executor": "Run",
+    "Python tests.Python tests in streams_command.py.executor": "Run",
+    "Python tests.Python tests in unifi_api.py.executor": "Run",
+    "Python tests.Test streams_command.executor": "Run",
+    "Python tests.Test template.executor": "Run",
+    "Python tests.Test unifi_api.executor": "Run",
+    "Python tests.Viewport Tests.executor": "ConcurrencyExecutor",
+    "Python.Viewport (1).executor": "Run",
+    "Python.Viewport.executor": "Run",
+    "Python.controller.executor": "Run",
     "RSpec.RSpec.executor": "Run",
     "RSpec.viewport_spec.executor": "Run",
     "Ruby.controller.executor": "Run",
     "Ruby.viewport help.executor": "Debug",
-    "Ruby.viewport.executor": "Run",
+    "Ruby.viewport.executor": "Debug",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/viewport/lib/viewport",
+    "last_opened_file_path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/viewport/test",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs.jest.jest_package": "/Users/snd/Development/Projects/j4zzcat/viewport/node_modules/jest",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.14921875",
     "project.structure.side.proportion": "0.2589928",
     "ruby.rails.projectView.checked": "true",
     "ruby.structure.view.model.defaults.configured": "true",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "settings.editor.selected.configurable": "Errors",
     "ts.external.directory.path": "/Users/snd/Development/Projects/j4zzcat/viewport/src/player/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/viewport/test" />
+      <recent name="$PROJECT_DIR$/src/controller/src/backend" />
+      <recent name="$PROJECT_DIR$/src/controller/src/command" />
+      <recent name="$PROJECT_DIR$/src/controller/controller/man" />
       <recent name="$PROJECT_DIR$/src/viewport/lib/viewport" />
-      <recent name="$PROJECT_DIR$/src/controller/lib/controller" />
-      <recent name="$PROJECT_DIR$/src/simple-player/publish" />
-      <recent name="$PROJECT_DIR$/src/fmpeg4-over-websocket-player/src" />
-      <recent name="$PROJECT_DIR$/src/unifi-protect-livestream-reflector/src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src/viewport/man" />
-      <recent name="$PROJECT_DIR$/docker" />
-      <recent name="$PROJECT_DIR$/src/simple-player" />
-      <recent name="$PROJECT_DIR$/src/fmpeg4-over-ws-player/examples" />
-      <recent name="$PROJECT_DIR$/src/fmpeg4-over-ws-player/src" />
+      <recent name="$PROJECT_DIR$/src/controller/src/app/command" />
+      <recent name="$PROJECT_DIR$/src/controller/src/reflector" />
+      <recent name="$PROJECT_DIR$/src/controller/src/cli" />
+      <recent name="$PROJECT_DIR$/src/controller/src/backend/command/streams" />
+      <recent name="$PROJECT_DIR$/src/controller/src/backend" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="app" />
     </key>
   </component>
   <component name="RubyModuleManagerSettings">
     <option name="blackListedRootsPaths">
       <list>
-        <option value="$PROJECT_DIR$/src/player" />
         <option value="$PROJECT_DIR$" />
-        <option value="$PROJECT_DIR$/src/viewport" />
+        <option value="$PROJECT_DIR$/src/player" />
         <option value="$PROJECT_DIR$/src/reflector" />
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Ruby.viewport">
-    <configuration name="UnifiStreamProvider.canHandle" type="JavaScriptTestRunnerJest" temporary="true">
-      <node-interpreter value="project" />
-      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
-      <working-dir value="$PROJECT_DIR$" />
-      <envs />
-      <scope-kind value="SUITE" />
-      <test-file value="$PROJECT_DIR$/test/unifi.test.ts" />
-      <test-names>
-        <test-name value="UnifiStreamProvider.canHandle" />
-        <test-name value="" />
-      </test-names>
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.Viewport">
     <configuration name="reflector" type="NodeJSConfigurationType" node-parameters="--no-warnings --import tsx" path-to-js-file="src/simple-reflector.ts" working-dir="$PROJECT_DIR$/src/reflector">
       <method v="2" />
     </configuration>
-    <configuration name="RSpec" type="RSpecRunConfigurationType" factoryName="RSpec" temporary="true">
+    <configuration name="Viewport" type="PythonConfigurationType" factoryName="Python">
       <module name="viewport" />
-      <predefined_log_file enabled="true" id="RUBY_RSPEC" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUBY_ARGS" VALUE="" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="WORK DIR" VALUE="$PROJECT_DIR$/src/viewport" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SHOULD_USE_SDK" VALUE="false" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ALTERN_SDK_NAME" VALUE="" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="myPassParentEnvs" VALUE="true" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
       <envs>
-        <env name="JRUBY_OPTS" value="-X+O" />
-        <env name="RUBYOPT" value="-W0" />
+        <env name="PYTHONUNBUFFERED" value="1" />
+        <env name="PYTHONWARNINGS" value="ignore:Unverified HTTPS request" />
       </envs>
-      <EXTENSION ID="BundlerRunConfigurationExtension" BUNDLE_MODE="AUTO" bundleExecEnabled="true" />
-      <EXTENSION ID="RubyCoverageRunConfigurationExtension" track_test_folders="true" runner="rcov" ENABLE_BRANCH_COVERAGE="true" ENABLE_FORKED_COVERAGE="true" />
-      <EXTENSION ID="org.jetbrains.plugins.ruby.rails.run.RailsRunConfigurationExtension" SCRATCH_USE_RAILS_RUNNER="false" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TESTS_FOLDER_PATH" VALUE="" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATH" VALUE="$PROJECT_DIR$/src/viewport/spec/viewport_spec.rb" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_SCRIPT_PATHS" VALUE="$PROJECT_DIR$/src/viewport/spec/viewport_spec.rb" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_RUNNER_PATH" VALUE="" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_FILE_MASK" VALUE="**/*_spec.rb" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_EXAMPLE_NAME" VALUE="" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="USE_EXAMPLE_MATCHES" VALUE="false" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="LINE_NUMBER_EXAMPLE_IDS" VALUE="" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPEC_ARGS" VALUE="" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="RUNNER_VERSION" VALUE="" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="USE_CUSTOM_SPEC_RUNNER" VALUE="false" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="ZEUS" VALUE="false" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="SPRING" VALUE="false" />
-      <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.12 (viewport)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/viewport/src/cli/cli.py" />
+      <option name="PARAMETERS" value="streams -o $USER_HOME$/.viewport unifi://dev-user:dev10203040$Dx@192.168.4.10/_all" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
     </configuration>
-    <configuration name="viewport help" type="RubyRunConfigurationType" factoryName="Ruby">
+    <configuration name="Test protect" type="tests" factoryName="Autodetect" temporary="true">
       <module name="viewport" />
-      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="" />
-      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="" />
-      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
-      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
-      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
-      <EXTENSION ID="BundlerRunConfigurationExtension" BUNDLE_MODE="AUTO" bundleExecEnabled="true" />
-      <EXTENSION ID="RubyCoverageRunConfigurationExtension" runner="rcov" />
-      <EXTENSION ID="org.jetbrains.plugins.ruby.rails.run.RailsRunConfigurationExtension" SCRATCH_USE_RAILS_RUNNER="false" />
-      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/src/viewport/lib/viewport.rb" />
-      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="streams -h" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="viewport" type="RubyRunConfigurationType" factoryName="Ruby">
-      <module name="viewport" />
-      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="" />
-      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="" />
-      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
-      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
-      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
       <envs>
-        <env name="RUBYOPT" value="-W0" />
+        <env name="PYTHONWARNINGS" value="ignore:Unverified HTTPS request" />
       </envs>
-      <EXTENSION ID="BundlerRunConfigurationExtension" BUNDLE_MODE="AUTO" bundleExecEnabled="true" />
-      <EXTENSION ID="RubyCoverageRunConfigurationExtension" runner="rcov" />
-      <EXTENSION ID="org.jetbrains.plugins.ruby.rails.run.RailsRunConfigurationExtension" SCRATCH_USE_RAILS_RUNNER="false" />
-      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/src/viewport/lib/viewport.rb" />
-      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="-V streams --layout grid:4x4 unifi://u:password@c1/all rtsp://a.b.c.d/efg" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/viewport/test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/src/viewport/test/protect.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Test streams" type="tests" factoryName="Autodetect" temporary="true">
+      <module name="viewport" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/viewport/test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/src/viewport/test/streams.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Test template" type="tests" factoryName="Autodetect">
+      <module name="viewport" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONWARNINGS" value="ignore:Unverified HTTPS request" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/viewport/test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/src/viewport/test/template.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
       <item itemvalue="Node.js.reflector" />
-      <item itemvalue="RSpec.RSpec" />
-      <item itemvalue="Ruby.viewport" />
-      <item itemvalue="Ruby.viewport help" />
+      <item itemvalue="Python.Viewport" />
+      <item itemvalue="Python tests.Test template" />
+      <item itemvalue="Python tests.Test protect" />
+      <item itemvalue="Python tests.Test streams" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="RSpec.RSpec" />
-        <item itemvalue="Jest.UnifiStreamProvider.canHandle" />
+        <item itemvalue="Python tests.Test streams" />
+        <item itemvalue="Python tests.Test protect" />
       </list>
     </recent_temporary>
   </component>
-  <component name="SharedIndexes">
-    <attachedChunks>
-      <set>
-        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.18034.62" />
-        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.18034.62" />
-      </set>
-    </attachedChunks>
-  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="SpringUtil" SPRING_PRE_LOADER_OPTION="true" RAKE_SPRING_PRE_LOADER_OPTION="true" RAILS_SPRING_PRE_LOADER_OPTION="true" />
+  <component name="SwiftWorkspaceSettings">
+    <option name="detectedToolchain" value="true" />
+    <option name="toolchainPathValue" value="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain" />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="" />
@@ -237,6 +251,31 @@
       <workItem from="1721174348509" duration="961000" />
       <workItem from="1721207481673" duration="35758000" />
       <workItem from="1721372920017" duration="9203000" />
+      <workItem from="1721504802577" duration="7900000" />
+      <workItem from="1721513470494" duration="32000" />
+      <workItem from="1721513605391" duration="5418000" />
+      <workItem from="1721584946049" duration="11312000" />
+      <workItem from="1721602721912" duration="41000" />
+      <workItem from="1721602820310" duration="42000" />
+      <workItem from="1721602862788" duration="48000" />
+      <workItem from="1721602915550" duration="3847000" />
+      <workItem from="1721648393463" duration="5017000" />
+      <workItem from="1721716836538" duration="30851000" />
+      <workItem from="1721850458245" duration="4310000" />
+      <workItem from="1721857835717" duration="7928000" />
+      <workItem from="1721865937283" duration="75000" />
+      <workItem from="1721866019009" duration="1558000" />
+      <workItem from="1721909467753" duration="9207000" />
+      <workItem from="1721935620496" duration="5330000" />
+      <workItem from="1721991531821" duration="23085000" />
+      <workItem from="1722042461534" duration="88000" />
+      <workItem from="1722042551162" duration="2551000" />
+      <workItem from="1722074270687" duration="21007000" />
+      <workItem from="1722121857320" duration="7705000" />
+      <workItem from="1722149456592" duration="11506000" />
+      <workItem from="1722199040088" duration="200000" />
+      <workItem from="1722253091059" duration="22597000" />
+      <workItem from="1722326088341" duration="9769000" />
     </task>
     <task id="LOCAL-00001" summary="Removed unused imports">
       <created>1720479635587</created>
@@ -300,14 +339,38 @@
           </properties>
           <option name="timeStamp" value="21" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/viewport/controller/src/streams.py</url>
+          <line>23</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/viewport/src/app/logger.py</url>
+          <line>45</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/viewport/src/app/command/streams.py</url>
+          <line>28</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/viewport/src/app/command/streams.py</url>
+          <line>153</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/viewport@viewport_spec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721173891026" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport@RSpec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721223919455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
+    <SUITE FILE_PATH="coverage/viewport$Viewport.coverage" NAME="Viewport Coverage Results" MODIFIED="1722342475994" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/viewport$Viewport__1_.coverage" NAME="Viewport (1) Coverage Results" MODIFIED="1722288139650" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/viewport$.coverage" NAME=" Coverage Results" MODIFIED="1722282575781" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport/test" />
+    <SUITE FILE_PATH="coverage/viewport$controller.coverage" NAME="controller Coverage Results" MODIFIED="1722115732711" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/viewport@controller.rcov" NAME="controller Coverage Results" MODIFIED="1721085140952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="controller" />
-    <SUITE FILE_PATH="coverage/viewport@viewport.rcov" NAME="viewport Coverage Results" MODIFIED="1721378098497" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
+    <SUITE FILE_PATH="coverage/viewport@viewport.rcov" NAME="viewport Coverage Results" MODIFIED="1721850641653" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport@viewport_help.rcov" NAME="viewport help Coverage Results" MODIFIED="1721158572697" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
   </component>
 </project>

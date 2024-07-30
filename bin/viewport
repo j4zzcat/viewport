@@ -1,0 +1,14 @@
+#! /bin/bash
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source "$SCRIPT_DIR"/../src/viewport/.venv/bin/activate
+
+PYTHONUNBUFFERED=1 \
+PYTHONWARNINGS="ignore:Unverified HTTPS request" \
+python -c '
+import sys
+import pprint
+sys.path.pop(0)
+sys.path.append('\""$SCRIPT_DIR"/../src/viewport/src\"')
+from cli.cli import main
+main()' $@

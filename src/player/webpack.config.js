@@ -16,7 +16,8 @@ module.exports = {
     },
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist'),
+        // path: path.resolve(__dirname, 'dist'),
+        path: "DIST_DIR" in process.env ? process.env.DIST_DIR : path.resolve(__dirname, 'dist'),
         libraryTarget: 'var',
         library: 'viewport'
     },
