@@ -52,3 +52,8 @@ You should have `docker` and `buildkit` installed.
 docker buildx build -t viewport:latest -f build/Dockerfile .
 ```
 
+
+## Known issues
+* Sometimes a Viewport Player will freeze due to a MSE Buffer Full error. Refresh the web page.
+* The viewport only works on Google Chrome.
+
