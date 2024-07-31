@@ -25,8 +25,20 @@ docker run -it --rm --network host viewport:1.1 \
 Replace _username_ and _password_ with those used above, replace _host_ with the hostname or ip address
 of the Unifi Protect Controller. Once _Viewport_ starts, use Google Chrome to navigate to [http://localhost:8001](http://localhost:8001).
 
+### Another example
+Display cameras from several controllers on a 4x4 grid:
+```bash
+docker run -it --rm --network host viewport:1.1 \ 
+  streams \
+    --layout grid:4x4 \
+    'unifi://username1:password1@host1/_all' \
+    'unifi://username2:password2@host2/camera name 5,camera name 3' \
+    'unifi://username3:password3@host3/NE Pool,Rusty Gate,Homestead 2'
+```
+
+
 ## Theory of operation
-_Viewport_ is based on the client-server architecture, and is made of several parts:
+_Viewport_ is based on a simple client-server architecture, and is made of several parts:
 
 
 On the client side:
@@ -41,7 +53,8 @@ On the server side:
 * [Viewport Reflector](src/reflector) which is a simple livestream reflector server. This server uses the excellent
 node-based [Unifi Protect Library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
 Unifi Protect Controller and onto the Viewport Player, over Web Sockets.
-* [Viewport](src/viewport) which provides CLI and orchestrates the execution of all the parts. 
+* [Viewport](src/viewport) which provides CLI and orchestrates the execution of all the parts. Run the program 
+with the `--verbose` option to see the entire flow.
 
 
 
@@ -54,6 +67,6 @@ docker buildx build -t viewport:latest -f build/Dockerfile .
 
 
 ## Known issues
-* Sometimes a Viewport Player will freeze due to a MSE Buffer Full error. Refresh the web page.
-* The viewport only works on Google Chrome.
+* [Issue 3](https://github.com/j4zzcat/viewport/issues/3) - Sometimes a Viewport Player will freeze due to a MSE Buffer Full error. Temporary solution - refresh the web page.
+* [Issue 4](https://github.com/j4zzcat/viewport/issues/4) - The viewport only works on Google Chrome. 
 
