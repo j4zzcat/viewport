@@ -3,13 +3,13 @@ import os
 import subprocess
 import json
 
-from app.context import Context
+from app.backend import GlobalFactory
 from app.error import ApplicationException
 
 
 class SimpleReflectorController:
     def __init__(self):
-        self._logger = Context.get_logger().get_child(self.__class__.__name__)
+        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._reflector_process = None
         self._reflector_logger = None
 
@@ -19,7 +19,7 @@ class SimpleReflectorController:
     def run(self):
         self._logger.debug("Spawning the SimpleReflector Node process")
 
-        process = Context.get_executer().spwan(
+        process = GlobalFactory.get_executer().spwan(
             args=["node", "--no-warnings", "--import", "tsx", "src/simple-reflector.ts"],
             cwd=os.path.dirname(os.path.realpath(__file__)) + "/../../../../reflector",
             stdout=subprocess.PIPE,
@@ -29,7 +29,7 @@ class SimpleReflectorController:
         self._reflector_process = process
         self._logger.debug("Reflector started, pid: " + str(self._reflector_process.pid))
 
-        self._reflector_logger = Context.get_logger().get_child("SimpleReflector:{pid}".format(
+        self._reflector_logger = GlobalFactory.get_logger().get_child("SimpleReflector:{pid}".format(
             pid=self._reflector_process.pid))
 
         for line in self._reflector_process.stdout:

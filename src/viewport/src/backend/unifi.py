@@ -1,12 +1,12 @@
 import requests
 import json
 
-from app.context import Context
+from app.backend import GlobalFactory
 
 
 class SimpleUnifiProtectApi:
     def __init__(self, netloc):
-        self._logger = Context.get_logger().get_child("{clazz}:{host}".format(
+        self._logger = GlobalFactory.get_logger().get_child("{clazz}:{host}".format(
             clazz=self.__class__.__name__,
             host=netloc.split('@')[1]))
         self.host = netloc.split('@')[1]

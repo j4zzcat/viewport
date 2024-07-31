@@ -1,6 +1,6 @@
 /* 
  * This file is part of Viewport. 
- * By Sharon Dagan <https://github.com/j4zzcat>, (C) Copyright 2024.  
+ * By Sharon Dagan <https://github.com/j4zzcat>, Copyright (C) 2024.  
  *
  * Viewport is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free

@@ -8,18 +8,15 @@ import socket
 from urllib.parse import urlparse
 from jinja2 import Environment, PackageLoader, select_autoescape
 
-from app.context import Context
-from app.error import ApplicationException
-from app.layout.grid import GridLayout
+from backend.factory import GlobalFactory
+from backend.error import ApplicationException
+from ui.grid import GridLayout
 
 
 class StreamsCommand:
-    class SimpleHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
-        def log_message(self, fmt, *args):
-            pass
 
     def __init__(self, layout, urls, output_dir):
-        self._logger = Context.get_logger().get_child(self.__class__.__name__)
+        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._layout = layout
         self._urls = urls
         self._output_dir = output_dir
@@ -47,8 +44,8 @@ class StreamsCommand:
         # Start the Reflector if at least one 'unifi' protocol is specified
         if "unifi" in self._unique_protocols:
             self._logger.info("Starting the Reflector Server...")
-            self._reflector_controller = Context.create_reflector_controller()
-            Context.get_executer().submit(
+            self._reflector_controller = GlobalFactory.create_reflector_controller()
+            GlobalFactory.get_executer().submit(
                 self._reflector_controller,
                 mode="async_thread"
             )
@@ -133,7 +130,7 @@ class StreamsCommand:
 
             if url.scheme == 'unifi':
                 if url.netloc not in self._unifi_protect_api_by_netloc:
-                    upapi = Context.create_unifi_protect_api(url.netloc)
+                    upapi = GlobalFactory.create_unifi_protect_api(url.netloc)
                     if not upapi.login():
                         raise ApplicationException("Could not login to Unifi Protect Controller at '{url}'".format(url=url))
 

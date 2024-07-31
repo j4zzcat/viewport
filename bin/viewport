@@ -7,8 +7,7 @@ PYTHONUNBUFFERED=1 \
 PYTHONWARNINGS="ignore:Unverified HTTPS request" \
 python -c '
 import sys
-import pprint
 sys.path.pop(0)
 sys.path.append('\""$SCRIPT_DIR"/../src/viewport/src\"')
-from cli.cli import main
+from main import main
 main()' $@

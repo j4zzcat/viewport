@@ -4,8 +4,23 @@ import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
-from app.context import Context
-from app.error import ApplicationException
+from backend.factory import GlobalFactory
+from backend.error import ApplicationException
+
+
+class SimpleCommandServer:
+    class BaseCommand:
+        def initialize(self):
+            pass
+
+        def run(self) -> any:
+            pass
+
+        def finalize(self):
+            pass
+
+    def run_synchronously(self, command):
+        pass
 
 
 class SimpleExecuter:
@@ -20,7 +35,7 @@ class SimpleExecuter:
             pass
 
     def __init__(self):
-        self._logger = Context.get_logger().get_child(self.__class__.__name__)
+        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._logger.debug("Initializing")
 
         self._tpe = ThreadPoolExecutor(max_workers=10, thread_name_prefix='TPE')

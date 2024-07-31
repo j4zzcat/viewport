@@ -6,7 +6,7 @@ class SimpleLogger:
         def __init__(self):
             super().__init__()
             self._debug_formatter = logging.Formatter(
-                fmt="[%(asctime)s.%(msecs)-3d] (%(threadName)-10s) %(levelname)-5s %(name)-40s %(message)s",
+                fmt="[%(asctime)s.%(msecs)-3d] (%(threadName)-10s) %(levelname)-5s %(name)-20s %(message)s",
                 datefmt="%Y-%m-%d %H:%M:%S")
 
             self._info_formatter = logging.Formatter(
@@ -22,6 +22,8 @@ class SimpleLogger:
             for redaction in self._redactions:
                 record.msg = record.getMessage().replace(redaction, "[REDACTED]")
 
+            record.name = record.name[2:]  # remove x.
+
             if record.levelname == "DEBUG":
                 self.setFormatter(self._debug_formatter)
             else:
@@ -32,11 +34,8 @@ class SimpleLogger:
     def __init__(self):
         self._handler = SimpleLogger.SimpleHandler()
         self._handler.setLevel(logging.INFO)
-        self._handler.setFormatter(logging.Formatter(
-            fmt="[%(asctime)s.%(msecs)-3d] (%(threadName)-10s) %(levelname)-5s %(name)-40s %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S"))
 
-        self._root = logging.getLogger("app")
+        self._root = logging.getLogger("x")
         self._root.addHandler(self._handler)
         setattr(logging.getLoggerClass(), "add_redaction", self._handler.add_redaction)
 
