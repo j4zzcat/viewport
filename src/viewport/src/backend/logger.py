@@ -24,7 +24,7 @@ class SimpleLogger:
 
             record.name = record.name[2:]  # remove x.
 
-            if record.levelname == "DEBUG":
+            if self.level == logging.DEBUG:
                 self.setFormatter(self._debug_formatter)
             else:
                 self.setFormatter(self._info_formatter)

@@ -5,26 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bec54e5b-ea55-40a0-9ac2-2d2a752fb45d" name="Changes" comment="Fixed stupid bug">
-      <change afterPath="$PROJECT_DIR$/src/viewport/src/backend/factory.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/src/backend/httpd.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/viewport/test/httpd.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/viewport" beforeDir="false" afterPath="$PROJECT_DIR$/bin/viewport" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/player/src/simple-player.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/player/src/simple-player.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/reflector/src/simple-reflector.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/reflector/src/simple-reflector.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/command/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/commands/streams.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/context.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/error.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/backend/error.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/executer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/backend/cmdsrv.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/layout/grid.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/ui/grid.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/backend/logger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/reflector/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/backend/reflector.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/ui/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/app/unifi/protect.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/backend/unifi.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/cli/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/src/version.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/version.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/viewport/test/streams.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/test/streams.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/backend/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/backend/logger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/viewport/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/viewport/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +57,7 @@
     "Python tests.Python tests in livestream_urls_construction.py.executor": "Run",
     "Python tests.Python tests in streams_command.py.executor": "Run",
     "Python tests.Python tests in unifi_api.py.executor": "Run",
-    "Python tests.Test httpd.executor": "Run",
+    "Python tests.Test httpd.executor": "Debug",
     "Python tests.Test streams_command.executor": "Run",
     "Python tests.Test template.executor": "Run",
     "Python tests.Test unifi_api.executor": "Run",
@@ -381,6 +364,11 @@
           <line>23</line>
           <option name="timeStamp" value="23" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/viewport/src/backend/logger.py</url>
+          <line>26</line>
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
@@ -389,7 +377,7 @@
     <SUITE FILE_PATH="coverage/viewport@RSpec.rcov" NAME="RSpec Coverage Results" MODIFIED="1721223919455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport" MODULE_NAME="viewport" />
     <SUITE FILE_PATH="coverage/viewport$Viewport.coverage" NAME="Viewport Coverage Results" MODIFIED="1722342682806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/viewport$Viewport__1_.coverage" NAME="Viewport (1) Coverage Results" MODIFIED="1722288139650" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/viewport$.coverage" NAME=" Coverage Results" MODIFIED="1722466215063" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport/test" />
+    <SUITE FILE_PATH="coverage/viewport$.coverage" NAME=" Coverage Results" MODIFIED="1722467235777" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/viewport/test" />
     <SUITE FILE_PATH="coverage/viewport$controller.coverage" NAME="controller Coverage Results" MODIFIED="1722115732711" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/viewport@controller.rcov" NAME="controller Coverage Results" MODIFIED="1721085140952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="controller" />
     <SUITE FILE_PATH="coverage/viewport@viewport.rcov" NAME="viewport Coverage Results" MODIFIED="1721850641653" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="rcov" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" MODULE_NAME="viewport" />
