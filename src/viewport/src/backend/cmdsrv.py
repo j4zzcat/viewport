@@ -11,16 +11,45 @@ from backend.error import ApplicationException
 class SimpleCommandServer:
     class BaseCommand:
         def initialize(self):
-            pass
+            if hasattr(self, "_logger"):
+                self._logger.debug("Initializing")
 
         def run(self) -> any:
-            pass
+            if hasattr(self, "_logger"):
+                self._logger.debug("Running")
 
         def finalize(self):
-            pass
+            if hasattr(self, "_logger"):
+                self._logger.debug("Finalized")
+
+    def __init__(self):
+        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
 
     def run_synchronously(self, command):
-        pass
+        self._logger.debug("Running command {command} synchronously".format(command=command.__class__.__name__))
+        self._run(command)
+
+    def _run(self, command):
+        try:
+            try:
+                self._logger.debug("Initializing command: '{command}'".format(command=command))
+                command.initialize()
+            except Exception as e:
+                self._logger.error("Exception while initializing command: '{command}'".format(command=command))
+                raise e
+
+            try:
+                self._logger.debug("Running command: '{command}'".format(command=command))
+                command.run()
+            except Exception as e:
+                self._logger.error("Exception while running command: '{command}'".format(command=command))
+                raise e
+        finally:
+            self._logger.debug("Finalizing command: '{command}'".format(command=command))
+            try:
+                command.finalize()
+            except Exception as e:
+                self._logger.error("Exception while finalizing command: '{command}'".format(command=command))
 
 
 class SimpleExecuter:

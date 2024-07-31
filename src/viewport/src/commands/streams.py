@@ -1,19 +1,17 @@
 import http
 import os
-import signal
 import socketserver
 import subprocess
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-import socket
 from urllib.parse import urlparse
 from jinja2 import Environment, PackageLoader, select_autoescape
 
+from backend.cmdsrv import SimpleCommandServer
 from backend.factory import GlobalFactory
 from backend.error import ApplicationException
 from ui.grid import GridLayout
 
 
-class StreamsCommand:
+class StreamsCommand(SimpleCommandServer.BaseCommand):
 
     def __init__(self, layout, urls, output_dir):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
@@ -22,7 +20,7 @@ class StreamsCommand:
         self._output_dir = output_dir
 
     def initialize(self):
-        self._logger.debug("Initializing")
+        super().initialize()
 
         self._layout = self._parse_layout(self._layout)
         self._logger.debug("Parsed layout: {layout}".format(layout=self._layout))
@@ -36,7 +34,7 @@ class StreamsCommand:
         self._unifi_protect_api_by_netloc = {}  # key = u:p@host
 
     def run(self):
-        self._logger.debug("Running")
+        super().run()
 
         self._logger.debug("Creating Player URLs")
         player_urls = self._get_player_urls(self._urls)
@@ -58,9 +56,6 @@ class StreamsCommand:
             self._logger.info("Web Server is ready on localhost:8001")
             self._logger.info("Open Google Chrome on http://localhost:8001 to get started")
             httpd.serve_forever()
-
-    def dispose(self):
-        self._logger.debug("Disposed")
 
     def _parse_layout(self, layout):
         self._logger.debug("Parsing layout: {layout}".format(layout=layout))

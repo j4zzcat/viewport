@@ -26,7 +26,7 @@ class GlobalFactory:
             from backend.cmdsrv import SimpleCommandServer
             self._command_server = SimpleCommandServer()
 
-        return self._executer
+        return self._command_server
 
     def new_web_server(self, host, port, directory):
         self._logger.debug("Creating new SimpleWebServer instance")
