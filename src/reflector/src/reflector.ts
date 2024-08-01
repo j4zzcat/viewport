@@ -35,8 +35,8 @@ const Logger = winston.createLogger({
  * ensuring low latency.
  */
 
-class SimpleReflector {
-    private _logger = Logger.child({source: SimpleReflector.name});
+class Reflector {
+    private _logger = Logger.child({source: Reflector.name});
     private _wss: WebSocketServer;
     private _protectApis = new Map<string, ProtectApi>();
 
@@ -181,4 +181,4 @@ class SimpleReflector {
     }
 }
 
-const dummy = new SimpleReflector();
+const dummy = new Reflector();
