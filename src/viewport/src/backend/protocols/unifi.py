@@ -92,8 +92,8 @@ class SimpleReflectorController(SimpleCommandServer.BaseCommand):
         self._logger.debug("Spawning the SimpleReflector Node process")
 
         process = GlobalFactory.get_command_server().spwan(
-            args=["node", "--no-warnings", "--import", "tsx", "src/reflector.ts", self.host, self.port],
-            cwd=os.path.dirname(os.path.realpath(__file__)) + "/../../../../reflector",
+            args=["node", "--no-warnings", "--import", "tsx", "reflector.ts", self.host, str(self.port)],
+            cwd="{reflector_root}/src".format(reflector_root=GlobalFactory.get_directories()["reflector_root"]),
             stdout=subprocess.PIPE,
             preexec_fn=os.setsid,
             text=True)

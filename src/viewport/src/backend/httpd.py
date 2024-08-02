@@ -1,3 +1,4 @@
+import signal
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import functools
 import socketserver
@@ -17,11 +18,17 @@ class SimpleWebServer:
         self._host = host
         self._port = port
         self._directory = directory
+        self._server = None
 
     def __enter__(self):
+        signal.signal(signal.SIGINT, self._cleanup)
         handler = functools.partial(SimpleWebServer.DefaultHandler, directory=self._directory)
-        return socketserver.TCPServer((self._host, self._port), handler)
+        self._server = socketserver.TCPServer((self._host, self._port), handler)
+        return self._server
 
     def __exit__(self, *args):
         pass
+
+    def _cleanup(self, signum, frame):
+        self._server.shutdown()
 
