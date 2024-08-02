@@ -2,7 +2,7 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 import functools
 import socketserver
 
-from backend.factory import GlobalFactory
+from context import GlobalFactory
 
 
 class SimpleWebServer:

@@ -46,7 +46,7 @@ import sys
 from docopt import docopt
 import logging
 
-from backend.factory import GlobalFactory
+from context import GlobalFactory
 from backend.error import ApplicationException
 from version import Version
 
@@ -72,7 +72,7 @@ def main():
 
         try:
             GlobalFactory.get_command_server().run_synchronously(
-                GlobalFactory.new_streams_command(
+                GlobalFactory.new_streams_cli_command(
                     layout=args['--layout'],
                     urls=args['<url>'],
                     output_dir=args["--output-dir"]))

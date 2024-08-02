@@ -1,6 +1,6 @@
 import unittest
 
-from backend.factory import GlobalFactory
+from backend.context import GlobalFactory
 
 
 class UnifiApiTestCase(unittest.TestCase):

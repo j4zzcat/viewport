@@ -22,30 +22,35 @@ class GlobalFactory:
 
     def get_command_server(self):
         if not self._command_server:
-            self._logger.debug("Creating CommandServer Singleton")
             from backend.cmdsrv import SimpleCommandServer
+            self._logger.debug("Creating {clazz} Singleton".format(clazz=SimpleCommandServer))
             self._command_server = SimpleCommandServer()
 
         return self._command_server
 
+    def new_streams_cli_command(self, layout, urls, output_dir):
+        from cli.streams import StreamsCliCommand
+        self._logger.debug("Creating new {clazz} instance".format(clazz=StreamsCliCommand))
+        return StreamsCliCommand(layout, urls, output_dir)
+
     def new_web_server(self, host, port, directory):
-        self._logger.debug("Creating new SimpleWebServer instance")
         from backend.httpd import SimpleWebServer
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleWebServer))
         return SimpleWebServer(host, port, directory)
 
-    def new_streams_command(self, layout, urls, output_dir):
-        self._logger.debug("Creating new StreamsCommand instance")
-        from commands.streams import StreamsCommand
-        return StreamsCommand(layout, urls, output_dir)
+    def new_unifi_protocol_controller(self):
+        from backend.protocol.unifi import SimpleUnifiProtocolController
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUnifiProtocolController))
+        return SimpleUnifiProtocolController()
 
-    def new_reflector_controller(self):
-        self._logger.debug("Creating new SimpleReflectorController instance")
-        from backend.reflector import SimpleReflectorController
+    def new_unifi_reflector_controller(self):
+        from backend.protocol.unifi import SimpleReflectorController
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleReflectorController))
         return SimpleReflectorController()
 
     def new_unifi_protect_api(self, netloc):
-        self._logger.debug("Creating new UnifiProtectApi instance")
-        from backend.unifi import SimpleUnifiProtectApi
+        from backend.protocol.unifi import SimpleUnifiProtectApi
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUnifiProtectApi))
         return SimpleUnifiProtectApi(netloc)
 
 

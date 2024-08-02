@@ -1,10 +1,9 @@
 import os
 import signal
 import subprocess
-import sys
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
-from backend.factory import GlobalFactory
+from backend.context import GlobalFactory
 from backend.error import ApplicationException
 
 
@@ -24,10 +23,18 @@ class SimpleCommandServer:
 
     def __init__(self):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self._tpe = ThreadPoolExecutor(max_workers=10, thread_name_prefix='TPE')
+        self._tpe_futures = []
 
     def run_synchronously(self, command):
         self._logger.debug("Running command {command} synchronously".format(command=command.__class__.__name__))
         self._run(command)
+
+    def run_asynchronously(self, command):
+        self._logger.debug("Running command {command} asynchronously".format(command=command.__class__.__name__))
+        future = self._tpe.submit(self._run, command)
+        self._tpe_futures.append(future)
+        return future
 
     def _run(self, command):
         try:

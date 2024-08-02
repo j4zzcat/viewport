@@ -16,7 +16,7 @@
  * This software. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {ProtectApi, ProtectLivestream} from "unifi-protect";
+import {ProtectApi} from "unifi-protect";
 import {WebSocket, WebSocketServer} from "ws";
 import winston from 'winston';
 const { combine, timestamp, json } = winston.format;
@@ -35,21 +35,21 @@ const Logger = winston.createLogger({
  * ensuring low latency.
  */
 
-class Reflector {
-    private _logger = Logger.child({source: Reflector.name});
+class SimpleReflector {
+    private _logger = Logger.child({source: SimpleReflector.name});
     private _wss: WebSocketServer;
     private _protectApis = new Map<string, ProtectApi>();
 
-    public constructor() {
-        this.initialize()
+    public constructor(host: string, port: number) {
+        this.initialize(host, port)
     }
 
-    private initialize() {
-        this._wss = new WebSocketServer({port: 4001});
+    private initialize(host: string, port: number) {
+        this._wss = new WebSocketServer({host: host, port: port});
 
         this._wss.once("listening", () => {
             // @ts-ignore
-            this._logger.info(`Reflector Server is ready on localhost:${this._wss.address().port}`);
+            this._logger.info(`SimpleReflector is ready on localhost:${this._wss.address().port}`);
         });
 
         this._wss.on("connection", async (ws: WebSocket, req) => {
@@ -63,7 +63,7 @@ class Reflector {
 
                 /*
                  * This initial request is expected to arrive over WebSocket and formatted as follows:
-                 * ws://server:port/unifi://<username>:<password>@<controller>/<camera-id>
+                 * ws://reflector:port/unifi://<username>:<password>@<controller>/<camera-id>
                  */
 
                 // @ts-ignore
@@ -172,13 +172,13 @@ class Reflector {
 
         } else {
             this._logger.debug(`Reusing ProtectApi instance`)
-            // Todo
-            // If needed, refresh the cached ProtectApi instance, as it might get stale
-            // Maybe by bootstrapping again?
         }
 
         return protectApi;
     }
 }
 
-const dummy = new Reflector();
+const args = process.argv.slice(2)
+const host = args[0] || "127.0.0.1";
+const port = Number(args[1]) || 4001
+const dummy = new SimpleReflector(host, port);

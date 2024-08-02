@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from backend.cmdsrv import SimpleCommandServer
-from backend.factory import GlobalFactory
+from backend.context import GlobalFactory
 from backend.error import ApplicationException
 from ui.grid import GridLayout
 
@@ -22,7 +22,7 @@ from ui.grid import GridLayout
 #
 
 
-class StreamsCommand(SimpleCommandServer.BaseCommand):
+class StreamsCliCommand(SimpleCommandServer.BaseCommand):
     def __init__(self, layout, urls, output_dir):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
 
@@ -61,33 +61,34 @@ class StreamsCommand(SimpleCommandServer.BaseCommand):
             GlobalFactory.new_ui_renderer(player_urls, self._layout, self._output_dir))
 
         # Serve the web page
-        GlobalFactory.get_command_server().run_synchronously(
-            GlobalFactory.new_web_server())
+        with GlobalFactory.new_web_server("localhost", 8777, self._output_dir) as web_server:
+            web_server.serve_forever()
 
 
 
 
 
-        self._logger.debug("Creating Player URLs")
-        player_urls = self._get_player_urls(self._urls)
 
-        # Start the Reflector if at least one 'unifi' protocol is specified
-        if "unifi" in self._unique_protocols:
-            self._logger.info("Starting the Reflector Server...")
-            self._reflector_controller = GlobalFactory.create_reflector_controller()
-            GlobalFactory.get_executer().submit(
-                self._reflector_controller,
-                mode="async_thread"
-            )
-
-        self._render_viewport(self._layout, player_urls, self._output_dir)
-
-        self._logger.info("Starting the Web Server...")
-        os.chdir(self._output_dir)
-        with socketserver.TCPServer(("localhost", 8001), StreamsCommand.SimpleHTTPRequestHandler) as httpd:
-            self._logger.info("Web Server is ready on localhost:8001")
-            self._logger.info("Open Google Chrome on http://localhost:8001 to get started")
-            httpd.serve_forever()
+        # self._logger.debug("Creating Player URLs")
+        # player_urls = self._get_player_urls(self._urls)
+        #
+        # # Start the Reflector if at least one 'unifi' protocol is specified
+        # if "unifi" in self._unique_protocols:
+        #     self._logger.info("Starting the Reflector Server...")
+        #     self._reflector_controller = GlobalFactory.create_reflector_controller()
+        #     GlobalFactory.get_executer().submit(
+        #         self._reflector_controller,
+        #         mode="async_thread"
+        #     )
+        #
+        # self._render_viewport(self._layout, player_urls, self._output_dir)
+        #
+        # self._logger.info("Starting the Web Server...")
+        # os.chdir(self._output_dir)
+        # with socketserver.TCPServer(("localhost", 8001), StreamsCommand.SimpleHTTPRequestHandler) as httpd:
+        #     self._logger.info("Web Server is ready on localhost:8001")
+        #     self._logger.info("Open Google Chrome on http://localhost:8001 to get started")
+        #     httpd.serve_forever()
 
     def _parse_layout(self, layout):
         self._logger.debug("Parsing layout: {layout}".format(layout=layout))
