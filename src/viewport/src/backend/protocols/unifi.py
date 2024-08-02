@@ -85,8 +85,8 @@ class SimpleReflectorController(SimpleCommandServer.BaseCommand):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._reflector_process = None
         self._reflector_logger = None
-        self.host = "127.0.0.1"
-        self.port = "4001"
+        self.host = GlobalFactory.get_settings()["protocol"]["unifi"]["reflector"]["host"]
+        self.port = GlobalFactory.get_settings()["protocol"]["unifi"]["reflector"]["port"]
 
     def run(self):
         self._logger.debug("Spawning the SimpleReflector Node process")

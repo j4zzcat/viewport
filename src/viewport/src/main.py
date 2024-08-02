@@ -48,20 +48,21 @@ import logging
 
 from context import GlobalFactory
 from backend.error import ApplicationException
-from version import Version
 
 
 def main():
+    settings = GlobalFactory.get_settings()
+    logger = GlobalFactory.get_logger().get_child("main")
+
     args = docopt(
         __doc__,
-        version="Viewport {version}".format(version=Version))
+        version="Viewport {version}".format(version=settings["version"]))
 
     if len(sys.argv) == 1:
         print("Viewport - Display livestream videos in a simple, unattended web page.")
         print("Try 'viewport --help' for more information.")
         exit(0)
 
-    logger = GlobalFactory.get_logger().get_child("main")
 
     if args['--verbose']:
         GlobalFactory.get_logger().set_level(logging.DEBUG)

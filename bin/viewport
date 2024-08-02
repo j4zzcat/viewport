@@ -9,5 +9,6 @@ python -c '
 import sys
 sys.path.pop(0)
 sys.path.append('\""$SCRIPT_DIR"/../src/viewport/src\"')
+sys.path.append('\""$SCRIPT_DIR"/../src/viewport/resource\"')
 from main import main
 main()' $@

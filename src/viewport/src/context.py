@@ -1,24 +1,26 @@
+import os
+import tomllib
+
 from backend.logger import SimpleLogger
 
 
 class GlobalFactory:
     def __init__(self):
+        self._settings = None
         self._root_logger = SimpleLogger()
         self._root_logger.set_level("INFO")
         self._logger = self._root_logger.get_child("GlobalFactory")
-        self._executer = None
         self._command_server = None
+
+    def get_settings(self):
+        if not self._settings:
+            with open(os.path.dirname(os.path.realpath(__file__)) + "/../resource/settings.toml", "rb") as f:
+                self._settings = tomllib.load(f)
+
+        return self._settings
 
     def get_logger(self):
         return self._root_logger
-
-    def get_executer(self):
-        if not self._executer:
-            self._logger.debug("Creating Executer Singleton")
-            from backend.cmdsrv import SimpleExecuter
-            self._executer = SimpleExecuter()
-
-        return self._executer
 
     def get_command_server(self):
         if not self._command_server:

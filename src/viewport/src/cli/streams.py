@@ -59,7 +59,11 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
             GlobalFactory.new_ui_renderer(self._layout, player_urls, self._output_dir))
 
         # Serve the web page
-        with GlobalFactory.new_web_server("localhost", 8777, self._output_dir) as web_server:
+        with GlobalFactory.new_web_server(
+                GlobalFactory.get_settings()["httpd"]["host"],
+                GlobalFactory.get_settings()["httpd"]["port"],
+                self._output_dir) as web_server:
+
             web_server.serve_forever()
 
     def _parse_layout(self, layout):
