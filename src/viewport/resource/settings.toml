@@ -6,11 +6,11 @@ port = 8777
 
 [protocol.unifi]
 [protocol.unifi.reflector]
-host = "127.0.0.0"
+host = "127.0.0.1"
 port = 4001
 
 [protocol.rtsp]
 [protocol.rtsp.mediaserver]
-host = "127.0.0.0"
+host = "127.0.0.1"
 
 
