@@ -5,6 +5,8 @@ from backend.logger import SimpleLogger
 
 
 class GlobalFactory:
+    HERE_DIR = os.path.dirname(os.path.abspath(__file__))
+
     def __init__(self):
         self._settings = None
         self._root_logger = SimpleLogger()
@@ -12,12 +14,21 @@ class GlobalFactory:
         self._logger = self._root_logger.get_child("GlobalFactory")
         self._command_server = None
 
+    def get_directories(self):
+        return {
+            "root": "{here}/../../..".format(here=self.HERE_DIR),
+            "viewport_root": "{here}/..".format(here=self.HERE_DIR),
+            "reflector_root": "{here}/../../../src/reflector".format(here=self.HERE_DIR),
+            "player_root": "{here}/../../../src/player".format(here=self.HERE_DIR),
+        }
+
     def get_settings(self):
         if not self._settings:
-            with open(os.path.dirname(os.path.realpath(__file__)) + "/../resource/settings.toml", "rb") as f:
+            with open("{root}/resource/settings.toml".format(root=self.get_directories()["viewport_root"]), "rb") as f:
                 self._settings = tomllib.load(f)
 
         return self._settings
+
 
     def get_logger(self):
         return self._root_logger
