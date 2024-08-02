@@ -53,5 +53,10 @@ class GlobalFactory:
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUnifiProtectApi))
         return SimpleUnifiProtectApi(netloc)
 
+    def new_ui_renderer(self, layout, player_urls, output_dir):
+        from backend.ui.renderer import SimpleUIRenderer
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUIRenderer))
+        return SimpleUIRenderer(layout, player_urls, output_dir)
+
 
 GlobalFactory = GlobalFactory()

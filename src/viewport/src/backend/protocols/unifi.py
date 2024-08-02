@@ -58,7 +58,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
             for camera in self._apis[key].bootstrap["cameras"]:
                 livestreams.append(SimpleUnifiProtocolController.SimpleLivestreamController(
                     self._reflector_controller,
-                    "unifi://{netloc}/{camera_id}".format(
+                    "{netloc}/{camera_id}".format(
                         netloc=url.netloc,
                         camera_id=camera["id"])))
         else:

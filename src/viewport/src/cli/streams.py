@@ -1,7 +1,7 @@
 from urllib.parse import urlparse
 
 from context import GlobalFactory
-from backend.layout.grid import GridLayout
+from backend.ui.grid import GridLayout
 from backend.cmdsrv import SimpleCommandServer
 from backend.error import ApplicationException
 
@@ -52,11 +52,11 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
             livestreams = protocol_controllers[url.scheme].create_livestream_controller(url)
             self._livestreams += livestreams
             [livestream.start() for livestream in livestreams]
-            player_urls += [livestream.get_url for livestream in livestreams]
+            player_urls += [livestream.get_url() for livestream in livestreams]
 
         # Render the web page
         GlobalFactory.get_command_server().run_synchronously(
-            GlobalFactory.new_ui_renderer(player_urls, self._layout, self._output_dir))
+            GlobalFactory.new_ui_renderer(self._layout, player_urls, self._output_dir))
 
         # Serve the web page
         with GlobalFactory.new_web_server("localhost", 8777, self._output_dir) as web_server:
@@ -67,8 +67,8 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
 
         parsed_layout = None
         name = layout.split(":")[0]
-        params = layout.split(":")[1]
         if name == "grid":
+            params = layout.split(":")[1]
             rows = int(params.split("x")[0])
             columns = int(params.split("x")[1])
             parsed_layout = GridLayout(rows, columns)

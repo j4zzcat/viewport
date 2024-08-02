@@ -16,7 +16,11 @@
             align-items: center;
         }
         .container {
-            {{ layout.render() }}
+            display: grid;
+            grid-template-rows: {{ layout.to1fr(layout.rows) }};
+            grid-template-columns: {{ layout.to1fr(layout.columns) }};
+            width: 100%;
+            height: 100%;
         }
         .container > div {
             border: 1px solid #000;

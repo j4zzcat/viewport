@@ -59,7 +59,8 @@ class SimpleReflector {
              */
 
             try {
-                let url = new URL(`unifi:/${req.url}`);
+                let url = new URL(req.url.slice(1));
+                this._logger.debug(`Received url: '${url}'`);
 
                 /*
                  * This initial request is expected to arrive over WebSocket and formatted as follows:
