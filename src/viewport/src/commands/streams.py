@@ -10,31 +10,63 @@ from backend.factory import GlobalFactory
 from backend.error import ApplicationException
 from ui.grid import GridLayout
 
+# SRS
+# docker run --rm -it -p 1935:1935 -p 1985:1985 -p 8080:8080 \
+#     -p 8000:8000/udp -p 10080:10080/udp ossrs/srs:6
+#
+# RTSP to SRS
+# ffmpeg -re \
+#   -i 'rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp' \
+#   -vcodec copy \
+#   -f flv -y rtmp://localhost/live/livestream1
+#
+
 
 class StreamsCommand(SimpleCommandServer.BaseCommand):
-
     def __init__(self, layout, urls, output_dir):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+
         self._layout = layout
         self._urls = urls
         self._output_dir = output_dir
+        self._unifi_protect_api_by_netloc = {}  # key = u:p@host
 
     def initialize(self):
         super().initialize()
 
         self._layout = self._parse_layout(self._layout)
-        self._logger.debug("Parsed layout: {layout}".format(layout=self._layout))
-
         self._urls = self._parse_urls(self._urls)
-        self._logger.debug("Parsed URLs: {urls}".format(urls=self._urls))
-
-        self._unique_protocols = {url.scheme for url in self._urls}
-        self._logger.debug("Unique protocols: {protocols}".format(protocols=self._unique_protocols))
-
-        self._unifi_protect_api_by_netloc = {}  # key = u:p@host
 
     def run(self):
         super().run()
+
+        # Iterate over the unique protocols and start the necessary infrastructure
+        # to serve them. For unifi, this is Reflector Server, for rtsp(s) this is
+        # the SRS Media Server.
+        protocol_controller = {}
+        for protocol in {url.scheme for url in self._urls}:
+            protocol_controller[protocol] = GlobalFactory.get_command_server().run_synchronously(
+                eval("GlobalFactory.new_{protocol}_controller()".format(protocol=protocol)))
+
+        # Iterate over the URLs in the order received.
+        # Reconstruct the url from the PoV of the player, taking into account
+        # the protocol infrastructure.
+        player_urls = []
+        for url in self._urls:
+            player_url = protocol_controller[url.scheme].get_player_url(url)
+            player_urls.append(player_url)
+
+        # Render the web page
+        GlobalFactory.get_command_server().run_synchronously(
+            GlobalFactory.new_ui_renderer(player_urls, self._layout, self._output_dir))
+
+        # Serve the web page
+        GlobalFactory.get_command_server().run_synchronously(
+            GlobalFactory.new_web_server())
+
+
+
+
 
         self._logger.debug("Creating Player URLs")
         player_urls = self._get_player_urls(self._urls)
@@ -59,15 +91,20 @@ class StreamsCommand(SimpleCommandServer.BaseCommand):
 
     def _parse_layout(self, layout):
         self._logger.debug("Parsing layout: {layout}".format(layout=layout))
+
+        parsed_layout = None
         name = layout.split(":")[0]
         params = layout.split(":")[1]
         if name == "grid":
             rows = int(params.split("x")[0])
             columns = int(params.split("x")[1])
-            return GridLayout(rows, columns)
+            parsed_layout = GridLayout(rows, columns)
 
         else:
             raise ApplicationException("Unknown layout: {layout}".format(layout=layout))
+
+        self._logger.debug("Parsed layout: {result}".format(result=parsed_layout))
+        return parsed_layout
 
     def _parse_urls(self, urls):
         self._logger.debug("Parsing {len} URLs".format(len=len(urls)))
@@ -93,6 +130,7 @@ class StreamsCommand(SimpleCommandServer.BaseCommand):
                     url=url,
                     error=e))
 
+        self._logger.debug("Parsed URLs: {parsed_urls}".format(parsed_urls=parsed_urls))
         return parsed_urls
 
     def _get_player_url_for_unifi_protocol(self, url, unifi_protect_api):

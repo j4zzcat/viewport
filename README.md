@@ -51,7 +51,7 @@ binds all the views together.
 
 On the server side:
 * [Viewport Reflector](src/reflector) which is a simple livestream reflector server. This server uses the excellent
-node-based Unifi Protect [Library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
+node-based Unifi Protect [library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
 Unifi Protect Controller and onto the Viewport Player, over Web Sockets.
 * [Viewport](src/viewport) which provides CLI and orchestrates the execution of all the parts. Run the program 
 with the `--verbose` option to see the entire flow.
