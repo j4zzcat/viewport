@@ -3,8 +3,7 @@ import signal
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
-from backend.context import GlobalFactory
-from backend.error import ApplicationException
+from context import GlobalFactory
 
 
 class SimpleCommandServer:
@@ -25,16 +24,24 @@ class SimpleCommandServer:
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._tpe = ThreadPoolExecutor(max_workers=10, thread_name_prefix='TPE')
         self._tpe_futures = []
+        self._processes = {}
+        signal.signal(signal.SIGINT, self._cleanup)
 
     def run_synchronously(self, command):
         self._logger.debug("Running command {command} synchronously".format(command=command.__class__.__name__))
-        self._run(command)
+        return self._run(command)
 
     def run_asynchronously(self, command):
         self._logger.debug("Running command {command} asynchronously".format(command=command.__class__.__name__))
         future = self._tpe.submit(self._run, command)
         self._tpe_futures.append(future)
         return future
+
+    def spwan(self, *args, **kwargs):
+        self._logger.debug("Subprocessing {name}".format(name=kwargs["args"][0]))
+        process = subprocess.Popen(*args, **kwargs)
+        self._processes[process.pid] = process
+        return process
 
     def _run(self, command):
         try:
@@ -47,7 +54,7 @@ class SimpleCommandServer:
 
             try:
                 self._logger.debug("Running command: '{command}'".format(command=command))
-                command.run()
+                return command.run()
             except Exception as e:
                 self._logger.error("Exception while running command: '{command}'".format(command=command))
                 raise e
@@ -58,66 +65,11 @@ class SimpleCommandServer:
             except Exception as e:
                 self._logger.error("Exception while finalizing command: '{command}'".format(command=command))
 
-
-class SimpleExecuter:
-    class Thingy:
-        def initialize(self):
-            pass
-
-        def run(self):
-            pass
-
-        def dispose(self):
-            pass
-
-    def __init__(self):
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._logger.debug("Initializing")
-
-        self._tpe = ThreadPoolExecutor(max_workers=10, thread_name_prefix='TPE')
-        self._tpe_futures = []
-        self._processes = {}
-
-        signal.signal(signal.SIGINT, self._cleanup)
-        signal.signal(signal.SIGTERM, self._cleanup)
-
     def _cleanup(self, signum, frame):
-        self._logger.info("Cleaning up")
-        self.shutdown()
-        for pid in self._processes.keys():
-            os.killpg(os.getpgid(pid), signal.SIGTERM)
+        for future in self._tpe_futures:
+            future.cancel()
 
-        os._exit(1)
-
-    def shutdown(self):
         self._tpe.shutdown(wait=False)
-        [future.cancel() for future in self._tpe_futures]
 
-    def submit(self, thingy, mode="sync"):
-        self._logger.debug("Thingy '{thingy}' submitted, mode: {mode}".format(thingy=thingy.__class__.__name__, mode=mode))
-        if mode == "sync":
-            return self._execute(thingy)
-
-        elif mode == "async_thread":
-            future = self._tpe.submit(self._execute, thingy)
-            self._tpe_futures.append(future)
-            return future
-
-    def spwan(self, *args, **kwargs):
-        self._logger.debug("Subprocessing {name}".format(name=kwargs["args"][0]))
-        process = subprocess.Popen(*args, **kwargs)
-        self._processes[process.pid] = process
-        return process
-
-    def _execute(self, thingy):
-        try:
-            self._logger.debug("Calling {thingy}.initialize()".format(thingy=thingy.__class__.__name__))
-            thingy.initialize()
-
-            self._logger.debug("Calling {thingy}.run()".format(thingy=thingy.__class__.__name__))
-            return thingy.run()
-        except Exception as e:
-            raise ApplicationException("Thingy raised exception: {e}".format(e=e))
-        finally:
-            self._logger.debug("Calling {thingy}.dispose()".format(thingy=thingy.__class__.__name__))
-            thingy.dispose()
+        for pid in self._processes.keys():
+            os.kill(pid, signal.SIGKILL)

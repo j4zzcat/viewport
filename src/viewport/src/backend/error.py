@@ -1,7 +1,7 @@
 import sys
 import traceback
 
-from backend.context import GlobalFactory
+from context import GlobalFactory
 
 
 class ApplicationException(Exception):

@@ -35,16 +35,19 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
 
     def run(self):
         super().run()
-
-        future = GlobalFactory.get_command_server().run_asynchronously(
-            GlobalFactory.new_unifi_reflector_controller())
-        self._reflector_controller = future.result()
+        self._reflector_controller = GlobalFactory.new_unifi_reflector_controller()
+        GlobalFactory.get_command_server().run_asynchronously(
+            self._reflector_controller)
+        return self
 
     def create_livestream_controller(self, url):
         url = urllib.parse(url) if isinstance(url, str) else url
-        key = "{username}:{host}".format(username=url.username, host=url.host)
-        if self._apis[key] is None:
-            self._apis[key] = SimpleUnifiProtectApi(url.netloc)
+        host = url.netloc.split('@')[1]
+
+        key = "{username}:{host}".format(username=host, host=host)
+        if key not in self._apis:
+            self._apis[key] = SimpleUnifiProtectApi(url.username, url.password, host)
+            self._apis[key].login()
 
         livestreams = []
         path = url.path[1:]  # remove leading '/'
@@ -83,12 +86,12 @@ class SimpleReflectorController(SimpleCommandServer.BaseCommand):
         self._reflector_process = None
         self._reflector_logger = None
         self.host = "127.0.0.1"
-        self.port = 4001
+        self.port = "4001"
 
     def run(self):
         self._logger.debug("Spawning the SimpleReflector Node process")
 
-        process = GlobalFactory.get_executer().spwan(
+        process = GlobalFactory.get_command_server().spwan(
             args=["node", "--no-warnings", "--import", "tsx", "src/reflector.ts", self.host, self.port],
             cwd=os.path.dirname(os.path.realpath(__file__)) + "/../../../../reflector",
             stdout=subprocess.PIPE,
@@ -122,15 +125,15 @@ class SimpleReflectorController(SimpleCommandServer.BaseCommand):
 
 
 class SimpleUnifiProtectApi:
-    def __init__(self, netloc):
+    def __init__(self, username, password, host):
         self._logger = GlobalFactory.get_logger().get_child("{clazz}:{host}".format(
             clazz=self.__class__.__name__,
-            host=netloc.split('@')[1]))
-        self.host = netloc.split('@')[1]
-        self.username = netloc.split("@")[0].split(":")[0]
-        self.password = netloc.split("@")[0].split(":")[1]
-        self._headers = {}
+            host=host))
+        self.host = host
+        self.username = username
+        self.password = password
         self.bootstrap = None
+        self._headers = {}
 
     def login(self):
         self._logger.debug("Logging in")

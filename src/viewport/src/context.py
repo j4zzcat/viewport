@@ -39,17 +39,17 @@ class GlobalFactory:
         return SimpleWebServer(host, port, directory)
 
     def new_unifi_protocol_controller(self):
-        from backend.protocol.unifi import SimpleUnifiProtocolController
+        from backend.protocols.unifi import SimpleUnifiProtocolController
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUnifiProtocolController))
         return SimpleUnifiProtocolController()
 
     def new_unifi_reflector_controller(self):
-        from backend.protocol.unifi import SimpleReflectorController
+        from backend.protocols.unifi import SimpleReflectorController
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleReflectorController))
         return SimpleReflectorController()
 
     def new_unifi_protect_api(self, netloc):
-        from backend.protocol.unifi import SimpleUnifiProtectApi
+        from backend.protocols.unifi import SimpleUnifiProtectApi
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUnifiProtectApi))
         return SimpleUnifiProtectApi(netloc)
 

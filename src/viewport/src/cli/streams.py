@@ -38,9 +38,9 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         # Iterate over the unique protocols and start the necessary infrastructure
         # to serve them. For unifi, this is the Reflector Server, for rtsp(s) this is
         # the SRS Media Server.
-        protocol_controller = {}
+        protocol_controllers = {}
         for protocol in {url.scheme for url in self._urls}:
-            protocol_controller[protocol] = GlobalFactory.get_command_server().run_synchronously(
+            protocol_controllers[protocol] = GlobalFactory.get_command_server().run_synchronously(
                 eval("GlobalFactory.new_{protocol}_protocol_controller()".format(protocol=protocol)))
 
         # Iterate over the URLs in the order received.
@@ -49,7 +49,7 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         # may be returned.
         player_urls = []
         for url in self._urls:
-            livestreams = protocol_controller[url.scheme].create_livestream_controller(url)
+            livestreams = protocol_controllers[url.scheme].create_livestream_controller(url)
             self._livestreams += livestreams
             [livestream.start() for livestream in livestreams]
             player_urls += [livestream.get_url for livestream in livestreams]

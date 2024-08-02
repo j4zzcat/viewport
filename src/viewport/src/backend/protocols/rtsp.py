@@ -1,4 +1,4 @@
-from backend.protocol import AbstractProtocolController
+from backend.protocols import AbstractProtocolController
 from context import GlobalFactory
 
 
