@@ -1,14 +1,20 @@
 #! /bin/bash
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-source "$SCRIPT_DIR"/../src/viewport/.venv/bin/activate
+ACTIVATE_SCRIPT="$SCRIPT_DIR"/../src/viewport/.venv/bin/activate
+if [ -f "$ACTIVATE_SCRIPT" ]; then
+  source "$ACTIVATE_SCRIPT"
+  PYTHON=python
+else
+  PYTHON=python3
+fi
 
-PYTHONUNBUFFERED=1 \
-PYTHONWARNINGS="ignore:Unverified HTTPS request" \
-python -c '
+export PYTHONUNBUFFERED=1
+export PYTHONWARNINGS="ignore:Unverified HTTPS request"
+"$PYTHON" -c '
 import sys
 sys.path.pop(0)
-sys.path.append('\""$SCRIPT_DIR"/../src/viewport/src\"')
-sys.path.append('\""$SCRIPT_DIR"/../src/viewport/resource\"')
+sys.path.append("'"$SCRIPT_DIR"'/../src/viewport/src")
+sys.path.append("'"$SCRIPT_DIR"'/../src/viewport/resource")
 from main import main
 main()' $@
