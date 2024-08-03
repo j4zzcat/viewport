@@ -24,11 +24,11 @@ class GlobalFactory:
 
     def get_settings(self):
         if not self._settings:
-            with open("{root}/resource/settings.toml".format(root=self.get_directories()["viewport_root"]), "rb") as f:
+            with open("{viewport_root}/resource/settings.toml".format(
+                    viewport_root=self.get_directories()["viewport_root"]), "rb") as f:
                 self._settings = tomllib.load(f)
 
         return self._settings
-
 
     def get_logger(self):
         return self._root_logger
