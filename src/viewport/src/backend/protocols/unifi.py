@@ -8,11 +8,11 @@ import json
 from context import GlobalFactory
 from backend.cmdsrv import SimpleCommandServer
 from backend.error import ApplicationException
-from backend.protocol import AbstractProtocolController
+from backend.protocol import AbstractProtocolController, AbstractLivestreamController
 
 
 class SimpleUnifiProtocolController(AbstractProtocolController):
-    class SimpleLivestreamController(AbstractProtocolController.LivestreamController):
+    class LivestreamController(AbstractLivestreamController):
         def __init__(self, reflector_controller, url):
             self._reflector_controller = reflector_controller
             self._url = url
@@ -56,7 +56,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
             # handle unifi://u:p@host/_all
 
             for camera in self._apis[key].bootstrap["cameras"]:
-                livestreams.append(SimpleUnifiProtocolController.SimpleLivestreamController(
+                livestreams.append(SimpleUnifiProtocolController.LivestreamController(
                     self._reflector_controller,
                     "{netloc}/{camera_id}".format(
                         netloc=url.netloc,
@@ -71,7 +71,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
                         camera_name=camera_name, host=self._apis[key].host))
 
                 camera = self._apis[key].get_camera_by_name(camera_name)
-                livestreams.append(SimpleUnifiProtocolController.SimpleLivestreamController(
+                livestreams.append(SimpleUnifiProtocolController.LivestreamController(
                     self._reflector_controller,
                     "unifi://{netloc}/{camera_id}".format(
                         netloc=url.netloc,

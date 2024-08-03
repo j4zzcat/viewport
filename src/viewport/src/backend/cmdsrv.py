@@ -28,8 +28,10 @@ class SimpleCommandServer:
             self.args = args
 
     class ProcessGroup(BaseCommand):
-        def __init__(self, descriptors, restart):
-            self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        def __init__(self, name, descriptors, restart):
+            self._logger = GlobalFactory.get_logger().get_child("{clazz}:{name}".format(
+                clazz=self.__class__.__name__, name=name))
+            self._name = name
             self._descriptors = descriptors
             self._restart = restart
 
@@ -46,20 +48,29 @@ class SimpleCommandServer:
                     *descriptor.args,
                     stdout=subprocess.PIPE)
 
-                stdout_task = asyncio.create_task(self._log_stream(descriptor.id, process.stdout))
+                stdout_task = asyncio.create_task(
+                    self._log_stream("{group_name}:{id}:{pid}".format(
+                            group_name=self._name,
+                            id=descriptor.id,
+                            pid=process.pid),
+                        process.stdout))
+
                 return_code = await process.wait()
                 await stdout_task
 
                 if return_code == 0:
-                    print("Process {args} completed successfully.".format(args=descriptor.args))
+                    self._logger.debug("Process {args} completed successfully.".format(args=descriptor.args))
                     break
                 else:
-                    print("Process {args} failed with return code {return_code}".format(
+                    self._logger.debug("Process {args} failed with return code {return_code}".format(
                         args=descriptor.args, return_code=return_code))
-                    await asyncio.sleep(5)  # Wait before restarting
+                    if self._restart:
+                        await asyncio.sleep(random.randrange(5))  # Jitter
+                    else:
+                        break
 
         async def _log_stream(self, id, stream):
-            logger = GlobalFactory.get_logger().get_child("process:{id}".format(id=id))
+            logger = GlobalFactory.get_logger().get_child(id)
             while True:
                 line = await stream.readline()
                 if line:

@@ -41,7 +41,7 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         protocol_controllers = {}
         for protocol in {url.scheme for url in self._urls}:
             protocol_controllers[protocol] = GlobalFactory.get_command_server().run_synchronously(
-                eval("GlobalFactory.new_{protocol}_protocol_controller()".format(protocol=protocol)))
+                eval("GlobalFactory.get_{protocol}_protocol_controller()".format(protocol=protocol)))
 
         # Iterate over the URLs in the order received.
         # Create the livestream controller for each url. Depending on the input url,

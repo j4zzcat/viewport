@@ -13,6 +13,8 @@ class GlobalFactory:
         self._root_logger.set_level("INFO")
         self._logger = self._root_logger.get_child("GlobalFactory")
         self._command_server = None
+        self._unifi_protocol_controller = None
+        self._rtsp_protocol_controller = None
 
     def get_directories(self):
         return {
@@ -41,10 +43,10 @@ class GlobalFactory:
 
         return self._command_server
 
-    def new_process_group(self, descriptors, restart=True):
+    def new_process_group(self, name, descriptors, restart=True):
         from backend.cmdsrv import SimpleCommandServer
         self._logger.debug("Creating {clazz} instance".format(clazz=SimpleCommandServer.ProcessGroup))
-        return SimpleCommandServer.ProcessGroup(descriptors, restart)
+        return SimpleCommandServer.ProcessGroup(name, descriptors, restart)
 
     def new_streams_cli_command(self, layout, urls, output_dir):
         from cli.streams import StreamsCliCommand
@@ -56,10 +58,13 @@ class GlobalFactory:
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleWebServer))
         return SimpleWebServer(host, port, directory)
 
-    def new_unifi_protocol_controller(self):
-        from backend.protocols.unifi import SimpleUnifiProtocolController
-        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUnifiProtocolController))
-        return SimpleUnifiProtocolController()
+    def get_unifi_protocol_controller(self):
+        if not self._unifi_protocol_controller:
+            from backend.protocols.unifi import SimpleUnifiProtocolController
+            self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUnifiProtocolController))
+            self._unifi_protocol_controller = SimpleUnifiProtocolController()
+
+        return self._unifi_protocol_controller
 
     def new_unifi_reflector_controller(self):
         from backend.protocols.unifi import SimpleReflectorController
@@ -70,6 +75,17 @@ class GlobalFactory:
         from backend.protocols.unifi import SimpleUnifiProtectApi
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUnifiProtectApi))
         return SimpleUnifiProtectApi(netloc)
+
+    def get_rtsp_protocol_controller(self):
+        if not self._rtsp_protocol_controller:
+            from backend.protocols.rtsp import SimpleRTSPProtocolController
+            self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleRTSPProtocolController))
+            self._rtsp_protocol_controller = SimpleRTSPProtocolController()
+
+        return self._rtsp_protocol_controller
+
+    def get_rtsps_protocol_controller(self):
+        return self.get_rtsp_protocol_controller()
 
     def new_ui_renderer(self, layout, player_urls, output_dir):
         from backend.ui.renderer import SimpleUIRenderer
