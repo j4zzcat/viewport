@@ -63,7 +63,6 @@ def main():
         print("Try 'viewport --help' for more information.")
         exit(0)
 
-
     if args['--verbose']:
         GlobalFactory.get_logger().set_level(logging.DEBUG)
 

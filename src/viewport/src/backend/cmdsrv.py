@@ -1,4 +1,6 @@
+import asyncio
 import os
+import random
 import signal
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
@@ -19,6 +21,51 @@ class SimpleCommandServer:
         def finalize(self):
             if hasattr(self, "_logger"):
                 self._logger.debug("Finalized")
+
+    class Descriptor:
+        def __init__(self, id, args):
+            self.id = id
+            self.args = args
+
+    class ProcessGroup(BaseCommand):
+        def __init__(self, descriptors, restart):
+            self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+            self._descriptors = descriptors
+            self._restart = restart
+
+        def run(self):
+            self._logger.debug("Running asyncio.run()")
+            asyncio.run(self._run(self._descriptors))
+
+        async def _run(self, descriptors):
+            await asyncio.gather(*(self._start_process(descriptor) for descriptor in descriptors))
+
+        async def _start_process(self, descriptor):
+            while True:
+                process = await asyncio.create_subprocess_exec(
+                    *descriptor.args,
+                    stdout=subprocess.PIPE)
+
+                stdout_task = asyncio.create_task(self._log_stream(descriptor.id, process.stdout))
+                return_code = await process.wait()
+                await stdout_task
+
+                if return_code == 0:
+                    print("Process {args} completed successfully.".format(args=descriptor.args))
+                    break
+                else:
+                    print("Process {args} failed with return code {return_code}".format(
+                        args=descriptor.args, return_code=return_code))
+                    await asyncio.sleep(5)  # Wait before restarting
+
+        async def _log_stream(self, id, stream):
+            logger = GlobalFactory.get_logger().get_child("process:{id}".format(id=id))
+            while True:
+                line = await stream.readline()
+                if line:
+                    logger.debug(line)
+                else:
+                    break
 
     def __init__(self):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
@@ -49,21 +96,21 @@ class SimpleCommandServer:
                 self._logger.debug("Initializing command: '{command}'".format(command=command))
                 command.initialize()
             except Exception as e:
-                self._logger.error("Exception while initializing command: '{command}'".format(command=command))
+                self._logger.error("Exception while initializing command: '{command}', error: 'e'".format(command=command, e=e))
                 raise e
 
             try:
                 self._logger.debug("Running command: '{command}'".format(command=command))
                 return command.run()
             except Exception as e:
-                self._logger.error("Exception while running command: '{command}'".format(command=command))
+                self._logger.error("Exception while running command: '{command}', error: '{e}'".format(command=command, e=e))
                 raise e
         finally:
             self._logger.debug("Finalizing command: '{command}'".format(command=command))
             try:
                 command.finalize()
             except Exception as e:
-                self._logger.error("Exception while finalizing command: '{command}'".format(command=command))
+                self._logger.warn("Exception while finalizing command: '{command}', error: '{e}'".format(command=command,e=e))
 
     def _cleanup(self, signum, frame):
         for future in self._tpe_futures:
@@ -73,3 +120,4 @@ class SimpleCommandServer:
 
         for pid in self._processes.keys():
             os.kill(pid, signal.SIGKILL)
+
