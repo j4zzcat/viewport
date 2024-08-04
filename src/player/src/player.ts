@@ -17,7 +17,6 @@
  */
 
 import log from "loglevel";
-// require("flv.js");
 
 /*
  * SimplePlayer - plays the video feed of a Unifi camera, with low latency.
