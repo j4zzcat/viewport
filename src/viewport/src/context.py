@@ -44,10 +44,10 @@ class GlobalFactory:
 
         return self._command_server
 
-    def new_process_group(self, name, descriptors, restart=True):
+    def new_process_group(self, name, descriptors, restart=True, stdout=True):
         from backend.cmdsrv import SimpleCommandServer
         self._logger.debug("Creating {clazz} instance".format(clazz=SimpleCommandServer.ProcessGroup))
-        return SimpleCommandServer.ProcessGroup(name, descriptors, restart)
+        return SimpleCommandServer.ProcessGroup(name, descriptors, restart, stdout)
 
     def new_streams_cli_command(self, layout, urls, output_dir):
         from cli.streams import StreamsCliCommand

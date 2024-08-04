@@ -10,7 +10,8 @@ host = "127.0.0.1"
 port = 4001
 
 [protocol.rtsp]
-[protocol.rtsp.mediaserver]
-host = "127.0.0.1"
+[protocol.rtsp.media_server]
+flv_host = "127.0.0.1"
+flv_port = 8080
 
 

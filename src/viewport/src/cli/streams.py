@@ -5,17 +5,6 @@ from backend.ui.grid import GridLayout
 from backend.cmdsrv import SimpleCommandServer
 from backend.error import ApplicationException
 
-# SRS
-# docker run --rm -it -p 1935:1935 -p 1985:1985 -p 8080:8080 \
-#     -p 8000:8000/udp -p 10080:10080/udp ossrs/srs:6
-#
-# RTSP to SRS
-# ffmpeg -re \
-#   -i 'rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp' \
-#   -vcodec copy \
-#   -f flv -y rtmp://localhost:1935/live/livestream1
-#
-
 
 class StreamsCliCommand(SimpleCommandServer.BaseCommand):
     def __init__(self, layout, urls, output_dir):

@@ -28,12 +28,13 @@ class SimpleCommandServer:
             self.args = args
 
     class ProcessGroup(BaseCommand):
-        def __init__(self, name, descriptors, restart):
+        def __init__(self, name, descriptors, restart, stdout):
             self._logger = GlobalFactory.get_logger().get_child("{clazz}:{name}".format(
                 clazz=self.__class__.__name__, name=name))
             self._name = name
             self._descriptors = descriptors
             self._restart = restart
+            self._stdout = stdout
 
         def run(self):
             self._logger.debug("Running asyncio.run()")
@@ -46,17 +47,20 @@ class SimpleCommandServer:
             while True:
                 process = await asyncio.create_subprocess_exec(
                     *descriptor.args,
-                    stdout=subprocess.PIPE)
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.DEVNULL)
 
-                stdout_task = asyncio.create_task(
-                    self._log_stream("{group_name}:{id}:{pid}".format(
-                            group_name=self._name,
-                            id=descriptor.id,
-                            pid=process.pid),
-                        process.stdout))
+                if self._stdout:
+                    stdout_task = asyncio.create_task(
+                        self._log_stream("{group_name}:{id}:{pid}".format(
+                                group_name=self._name,
+                                id=descriptor.id,
+                                pid=process.pid),
+                            process.stdout))
 
                 return_code = await process.wait()
-                await stdout_task
+                if self._stdout:
+                    await stdout_task
 
                 if return_code == 0:
                     self._logger.debug("Process {args} completed successfully.".format(args=descriptor.args))

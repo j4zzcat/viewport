@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+import urllib
 
 from backend.cmdsrv import SimpleCommandServer
 from backend.protocol import AbstractProtocolController, AbstractLivestreamController
@@ -9,17 +10,23 @@ from context import GlobalFactory
 
 class SimpleRTSPProtocolController(AbstractProtocolController):
     class LivestreamController(AbstractLivestreamController):
-        def __init__(self, media_server_controller, url):
+        def __init__(self, unique_id, media_server_controller, url):
+            self._unique_id = unique_id
             self._media_server_controller = media_server_controller
             self._url = url
 
         def get_url(self):
-            return self._url
+            return "http://{host}:{port}/live/{unique_id}.flv".format(
+                host=self._media_server_controller.flv_host,
+                port=self._media_server_controller.flv_port,
+                unique_id=self._unique_id)
 
     def __init__(self):
         super().__init__()
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self.media_server = None
+        self._media_server_controller = None
+        self._counter = 0
+        self._livestreams = []
 
     def initialize(self):
         super().initialize()
@@ -32,10 +39,30 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
         return self
 
     def create_livestream_controller(self, url):
-        return [SimpleRTSPProtocolController.LivestreamController(self._media_server_controller, url)]
+        livestream = SimpleRTSPProtocolController.LivestreamController(
+            self._increment_counter(),
+            self._media_server_controller,
+            url)
+
+        self._livestreams.append(livestream)
+        return [livestream]
 
     def start_livestreams(self):
-        pass
+        descriptors = []
+        for livestream in self._livestreams:
+            descriptors.append(
+                SimpleCommandServer.Descriptor(
+                    id=livestream._unique_id,
+                    args="ffmpeg -re -i {rtsp_url} -vcodec copy -f flv -y rtmp://localhost/live/{unique_id}".format(
+                        rtsp_url=urllib.parse.urlunparse(livestream._url),
+                        unique_id=livestream._unique_id).split(" ")))
+
+        pg = GlobalFactory.new_process_group("ffmpeg", descriptors, restart=False, stdout=True)
+        GlobalFactory.get_command_server().run_asynchronously(pg)
+
+    def _increment_counter(self):
+        self._counter += 1
+        return self._counter
 
 
 class SimpleMediaServerController(SimpleCommandServer.BaseCommand):
@@ -43,6 +70,8 @@ class SimpleMediaServerController(SimpleCommandServer.BaseCommand):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._media_server_process = None
         self._media_server_logger = None
+        self.flv_host = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["flv_host"]
+        self.flv_port = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["flv_port"]
 
     def run(self):
         self._logger.debug("Spawning the SRS Media Server process")
