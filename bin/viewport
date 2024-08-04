@@ -1,20 +1,34 @@
 #! /bin/bash
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-ACTIVATE_SCRIPT="$SCRIPT_DIR"/../src/viewport/.venv/bin/activate
-if [ -f "$ACTIVATE_SCRIPT" ]; then
-  source "$ACTIVATE_SCRIPT"
-  PYTHON=python
-else
-  PYTHON=python3
-fi
+ROOT_DIR="$SCRIPT_DIR/.."
 
-export PYTHONUNBUFFERED=1
-export PYTHONWARNINGS="ignore:Unverified HTTPS request"
-"$PYTHON" -c '
+if [ -f /.dockerenv ]; then
+  export PYTHONUNBUFFERED=1
+  export PYTHONWARNINGS="ignore:Unverified HTTPS request"
+  python3 -c '
 import sys
 sys.path.pop(0)
-sys.path.append("'"$SCRIPT_DIR"'/../src/viewport/src")
-sys.path.append("'"$SCRIPT_DIR"'/../src/viewport/resource")
+sys.path.append("'"$ROOT_DIR"'/src/viewport/src")
+sys.path.append("'"$ROOT_DIR"'/src/viewport/resource")
 from main import main
 main()' $@
+else
+  # If TEST env is set, then the script is called again this time running
+  # inside docker, and mapping the source dirs of the project into the docker
+  # container
+  if [ -n "$TEST" ]; then
+    docker run \
+      -it --rm \
+      --network host \
+      -v "$ROOT_DIR/bin":/opt/viewport/bin \
+      -v "$ROOT_DIR/src/viewport/src":/opt/viewport/src/viewport/src \
+      -v "$ROOT_DIR/src/reflector/src":/opt/viewport/src/reflector/src \
+      -v "$ROOT_DIR/src/player/src":/opt/viewport/src/player/src \
+      viewport:latest \
+      $@
+  else
+    echo "Can't run outside docker"
+    exit 127
+  fi
+fi

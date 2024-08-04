@@ -32,6 +32,7 @@
         }
     </style>
     <script src="bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.5.0/flv.min.js"></script>
 </head>
 <body>
 <div id="video-streams-placeholder" class="container">
@@ -62,10 +63,23 @@
         const jitter = Math.floor(Math.random() * videoStreamUrls.length * .75 * 1000)
         setTimeout(() =>
             {
-                const videoPlayer = new viewport.SimplePlayer(
-                    `video-${index}`,
-                    videoStreamUrl
-                );
+                if(videoStreamUrl.endsWith(".flv")) {
+                    // RTSP/FLV
+                    var flvPlayer = flvjs.createPlayer({
+                        isLive: true,
+                        type: "flv",
+                        url: videoStreamUrl
+                    });
+                    flvPlayer.attachMediaElement(videoElement);
+                    flvPlayer.load();
+                    flvPlayer.play();
+
+                } else {
+                    // Unifi
+                    const videoPlayer = new viewport.SimplePlayer(
+                        `video-${index}`,
+                        videoStreamUrl);
+                }
             },
             jitter);
     })

@@ -16,8 +16,8 @@
  * This software. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {Queue} from "typescript-collections";
 import log from "loglevel";
+// require("flv.js");
 
 /*
  * SimplePlayer - plays the video feed of a Unifi camera, with low latency.
@@ -42,7 +42,7 @@ export class SimplePlayer {
     private _ws: WebSocket;
     private _mediaSource: MediaSource;
     private _sourceBuffer: SourceBuffer;
-    private _queue: Queue<Uint8Array>;
+    private _queue: Uint8ArrayQueue
 
     private HOUSEKEEPING_INTERVAL_MESSAGES = 100;
     private CLEANUP_INTERVAL_SECONDS = 20;
@@ -89,7 +89,9 @@ export class SimplePlayer {
                 /*
                  * Jump to the end of the stream.
                  */
-                this._videoElement.currentTime = this._sourceBuffer.buffered.end(0);
+                if(this._sourceBuffer && this._sourceBuffer.buffered) {
+                    this._videoElement.currentTime = this._sourceBuffer.buffered.end(0);
+                }
             }
         });
     }
@@ -126,7 +128,7 @@ export class SimplePlayer {
                 }
 
                 this._sourceBuffer = this._mediaSource.addSourceBuffer(this._mimeCodecs);
-                this._queue = new Queue<Uint8Array>();
+                this._queue = new Uint8ArrayQueue();
 
                 this._logger.info("Starting video");
                 return;
@@ -239,7 +241,7 @@ export class SimplePlayer {
      * Dequeues all Uint8Array elements from the provided queue, concatenates them,
      * and returns a single Uint8Array containing all the data.
      */
-    private dehydrateQueue(queue: Queue<Uint8Array>): Uint8Array {
+    private dehydrateQueue(queue: Uint8ArrayQueue): Uint8Array {
         const buffers: Uint8Array[] = [];
 
         let totalLength = 0;
@@ -261,3 +263,30 @@ export class SimplePlayer {
     }
 }
 
+class Uint8ArrayQueue {
+    private queue: Uint8Array[];
+
+    constructor() {
+        this.queue = [];
+    }
+
+    enqueue(element: Uint8Array): void {
+        this.queue.push(element);
+    }
+
+    dequeue(): Uint8Array | undefined {
+        return this.queue.shift();
+    }
+
+    peek(): Uint8Array | undefined {
+        return this.queue[0];
+    }
+
+    isEmpty(): boolean {
+        return this.queue.length === 0;
+    }
+
+    size(): number {
+        return this.queue.length;
+    }
+}
