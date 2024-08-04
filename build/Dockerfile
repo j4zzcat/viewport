@@ -21,6 +21,7 @@ RUN git clone https://github.com/ossrs/srs.git ${SRS_BUILD_DIR} \
       && cp -r ${SRS_BUILD_DIR}/trunk/conf ${SRS_DIR} \
       && cp ${SRS_BUILD_DIR}/trunk/objs/srs ${SRS_DIR}/objs \
       && cp -r ${SRS_BUILD_DIR}/trunk/objs/nginx ${SRS_DIR}/objs \
+      && ln -s ${SRS_DIR}/objs/srs /usr/local/bin/srs \
       && rm -rf ${SRS_BUILD_DIR}
 
 ENV VIEWPORT_DIR=/opt/viewport

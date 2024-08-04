@@ -16,3 +16,7 @@ class AbstractProtocolController(SimpleCommandServer.BaseCommand):
     def create_livestream_controller(self, url) -> [AbstractLivestreamController]:
         pass
 
+    def start_livestreams(self):
+        pass
+
+

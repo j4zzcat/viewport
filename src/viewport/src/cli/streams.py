@@ -13,7 +13,7 @@ from backend.error import ApplicationException
 # ffmpeg -re \
 #   -i 'rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp' \
 #   -vcodec copy \
-#   -f flv -y rtmp://localhost/live/livestream1
+#   -f flv -y rtmp://localhost:1935/live/livestream1
 #
 
 
@@ -24,7 +24,6 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         self._layout = layout
         self._urls = urls
         self._output_dir = output_dir
-        self._livestreams = []
 
     def initialize(self):
         super().initialize()
@@ -50,9 +49,10 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         player_urls = []
         for url in self._urls:
             livestreams = protocol_controllers[url.scheme].create_livestream_controller(url)
-            self._livestreams += livestreams
-            [livestream.start() for livestream in livestreams]
             player_urls += [livestream.get_url() for livestream in livestreams]
+
+        for protocol_controller in protocol_controllers.values():
+            protocol_controller.start_livestreams()
 
         # Render the web page
         GlobalFactory.get_command_server().run_synchronously(

@@ -22,6 +22,7 @@ class GlobalFactory:
             "viewport_root": "{here}/..".format(here=self.HERE_DIR),
             "reflector_root": "{here}/../../../src/reflector".format(here=self.HERE_DIR),
             "player_root": "{here}/../../../src/player".format(here=self.HERE_DIR),
+            "srs_root": "/opt/srs"
         }
 
     def get_settings(self):
@@ -86,6 +87,11 @@ class GlobalFactory:
 
     def get_rtsps_protocol_controller(self):
         return self.get_rtsp_protocol_controller()
+
+    def new_media_server_controller(self):
+        from backend.protocols.rtsp import SimpleMediaServerController
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleMediaServerController))
+        return SimpleMediaServerController()
 
     def new_ui_renderer(self, layout, player_urls, output_dir):
         from backend.ui.renderer import SimpleUIRenderer
