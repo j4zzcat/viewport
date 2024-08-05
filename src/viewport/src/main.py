@@ -37,7 +37,7 @@ Example:
              'unifi://username1:password1@192.168.4.10/_all' \\
              'unifi://username2:password2@192.168.12.10/NE Gate,Homestead 2,Pool' \\
              'rtsps://192.168.4.10:7441/DEVTOTALX1X?nightVision=off' \\
-             'rtsps://192.168.4.10:7441/C0FFEE0X1XY'
+             'rtsp://192.168.106.10:7441/C0FFEE0X1XY'
 
   Then open the url 'http://localhost:8001' in Google Chrome web browser.
 """
