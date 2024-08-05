@@ -116,7 +116,8 @@ export class SimplePlayer {
 
                 /*
                  * The first message from the server contains the codecs of this stream, which
-                 * are usually avc1.4d4032 for video and mp4a.40.2 for audio.
+                 * are usually avc1.4d4032 for video (Main profile of H.264, constrains apply, 5.0)
+                 * and mp4a.40.2 for audio.
                  */
                 this._mimeCodecs = `video/mp4; codecs="${event.data}"`
 
