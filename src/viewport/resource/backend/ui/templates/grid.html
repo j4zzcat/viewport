@@ -42,7 +42,7 @@
 <script>
     const videoStreamUrls = [
         {% for url in player_urls %}
-          "{{ url }}",
+          "{{ url['scheme'] }}://" + window.location.hostname + ":{{ url['port'] }}{{ url['path'] }}",
         {% endfor %}
     ];
 

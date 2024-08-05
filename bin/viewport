@@ -14,15 +14,16 @@ sys.path.append("'"$ROOT_DIR"'/src/viewport/resource")
 from main import main
 main()' $@
 else
-  # If TEST env is set, then the script is called again this time running
+  # If DOCKERIZE env is set, then the script is called again this time running
   # inside docker, and mapping the source dirs of the project into the docker
   # container
-  if [ -n "$TEST" ]; then
+  if [ -n "$DOCKERIZE" ]; then
     docker run \
       -it --rm \
       --network host \
       -v "$ROOT_DIR/bin":/opt/viewport/bin \
       -v "$ROOT_DIR/src/viewport/src":/opt/viewport/src/viewport/src \
+      -v "$ROOT_DIR/src/viewport/resource":/opt/viewport/src/viewport/resource \
       -v "$ROOT_DIR/src/reflector/src":/opt/viewport/src/reflector/src \
       -v "$ROOT_DIR/src/player/src":/opt/viewport/src/player/src \
       viewport:latest \

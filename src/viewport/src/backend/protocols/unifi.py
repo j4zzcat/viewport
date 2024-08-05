@@ -18,11 +18,11 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
             self._url = url
 
         def get_url(self):
-            return "ws://{host}:{port}/unifi://{url}".format(
-                host=self._reflector_controller.host,
-                port=self._reflector_controller.port,
-                url=self._url
-            )
+            return {
+                "scheme": "ws",
+                "port": self._reflector_controller.port,
+                "path": "/unifi://{url}".format(url=self._url)
+            }
 
     def __init__(self):
         super().__init__()

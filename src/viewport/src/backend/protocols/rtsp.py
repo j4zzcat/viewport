@@ -16,10 +16,10 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
             self._url = url
 
         def get_url(self):
-            return "http://{host}:{port}/live/{unique_id}.flv".format(
-                host=self._media_server_controller.flv_host,
-                port=self._media_server_controller.flv_port,
-                unique_id=self._unique_id)
+            return {
+                "scheme": "http",
+                "port": self._media_server_controller.flv_port,
+                "path": "/live/{unique_id}.flv".format(unique_id=self._unique_id)}
 
     def __init__(self):
         super().__init__()

@@ -15,6 +15,7 @@ class SimpleWebServer:
             self._logger.debug(fmt % args)
 
     def __init__(self, host, port, directory):
+        self._logger = GlobalFactory.get_logger().get_child("SimpleWebServer")
         self._host = host
         self._port = port
         self._directory = directory
@@ -24,6 +25,7 @@ class SimpleWebServer:
         signal.signal(signal.SIGINT, self._cleanup)
         handler = functools.partial(SimpleWebServer.DefaultHandler, directory=self._directory)
         self._server = socketserver.TCPServer((self._host, self._port), handler)
+        self._logger.info("Listening on {host}:{port}".format(host=self._host, port=self._port))
         return self._server
 
     def __exit__(self, *args):
