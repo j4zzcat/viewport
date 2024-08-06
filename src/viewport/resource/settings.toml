@@ -1,17 +1,22 @@
 version = "1.2.0"
 
 [httpd]
-host = "0.0.0.0"
-port = 8001
+bind = "0.0.0.0"
+port = "8001"
 
 [protocol.unifi]
 [protocol.unifi.reflector]
-host = "0.0.0.0"
-port = 4001
+bind = "0.0.0.0"
+port = "8002"
 
 [protocol.rtsp]
-[protocol.rtsp.media_server]
-flv_host = "0.0.0.0"
-flv_port = 8080
+[protocol.rtsp.media_server.flv]
+bind = "0.0.0.0"
+port = "8003"
+
+[protocol.rtsp.media_server.rtmp]
+bind = "127.0.0.1"
+port = "1935"
+
 
 

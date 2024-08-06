@@ -49,7 +49,7 @@ class SimpleReflector {
 
         this._wss.once("listening", () => {
             // @ts-ignore
-            this._logger.info(`SimpleReflector is ready on localhost:${this._wss.address().port}`);
+            this._logger.info(`Simple Reflector is ready, WebSocketServer: ${host}:${this._wss.address().port}`);
         });
 
         this._wss.on("connection", async (ws: WebSocket, req) => {

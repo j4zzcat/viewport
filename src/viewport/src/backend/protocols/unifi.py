@@ -68,7 +68,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
                 camera = self._apis[key].get_camera_by_name(camera_name)
                 if camera is None:
                     raise ApplicationException("Camera '{camera_name}' not found in Unifi Protect Controller: {host}".format(
-                        camera_name=camera_name, host=self._apis[key].host))
+                        camera_name=camera_name, host=self._apis[key].bind))
 
                 camera = self._apis[key].get_camera_by_name(camera_name)
                 livestreams.append(SimpleUnifiProtocolController.LivestreamController(
@@ -85,14 +85,14 @@ class SimpleReflectorController(SimpleCommandServer.BaseCommand):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._reflector_process = None
         self._reflector_logger = None
-        self.host = GlobalFactory.get_settings()["protocol"]["unifi"]["reflector"]["host"]
+        self.bind = GlobalFactory.get_settings()["protocol"]["unifi"]["reflector"]["bind"]
         self.port = GlobalFactory.get_settings()["protocol"]["unifi"]["reflector"]["port"]
 
     def run(self):
         self._logger.debug("Spawning the SimpleReflector Node process")
 
         process = GlobalFactory.get_command_server().spwan(
-            args=["node", "--no-warnings", "--import", "tsx", "reflector.ts", self.host, str(self.port)],
+            args=["node", "--no-warnings", "--import", "tsx", "reflector.ts", self.bind, str(self.port)],
             cwd="{reflector_root}/src".format(reflector_root=GlobalFactory.get_directories()["reflector_root"]),
             stdout=subprocess.PIPE,
             preexec_fn=os.setsid,

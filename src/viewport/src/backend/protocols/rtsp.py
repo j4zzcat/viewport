@@ -70,24 +70,57 @@ class SimpleMediaServerController(SimpleCommandServer.BaseCommand):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._media_server_process = None
         self._media_server_logger = None
-        self.flv_host = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["flv_host"]
-        self.flv_port = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["flv_port"]
+        self.rtmp_bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["rtmp"]["bind"]
+        self.rtmp_port = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["rtmp"]["port"]
+        self.flv_bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["flv"]["bind"]
+        self.flv_port = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["flv"]["port"]
 
     def run(self):
         self._logger.debug("Spawning the SRS Media Server process")
+        conf = """listen              {rtmp_bind}:{rtmp_port};
+            max_connections     32;
+            daemon              off;
+            srs_log_tank        console;
+            http_server {{
+                enabled         on;
+                listen          {flv_bind}:{flv_port};
+                dir             ./objs/nginx/html;
+            }}
+            vhost __defaultVhost__ {{
+                http_remux {{
+                    enabled     on;
+                    mount       [vhost]/[app]/[stream].flv;
+                }}
+            }}
+        """.format(
+                rtmp_bind=self.rtmp_bind,
+                rtmp_port=self.rtmp_port,
+                flv_bind=self.flv_bind,
+                flv_port=self.flv_port)
+
+        srs_root = GlobalFactory.get_directories()["srs_root"]
+        with open("{srs_root}/conf/viewport.conf".format(srs_root=srs_root), "w") as f:
+            f.write(conf)
 
         process = GlobalFactory.get_command_server().spwan(
-            args=["srs", "-c", "conf/http.flv.live.conf"],
-            cwd="{srs_root}".format(srs_root=GlobalFactory.get_directories()["srs_root"]),
+            args=["srs", "-c", "conf/viewport.conf"],
+            cwd="{srs_root}".format(srs_root=srs_root),
             stdout=subprocess.PIPE,
             preexec_fn=os.setsid,
             text=True)
 
         self._media_server_process = process
-        self._logger.debug("Media Server started, pid: " + str(self._media_server_process.pid))
+        self._logger.debug("Media Server started, pid: {pid}".format(pid=self._media_server_process.pid))
 
         self._media_server_logger = GlobalFactory.get_logger().get_child("MediaServer:{pid}".format(
             pid=self._media_server_process.pid))
+
+        self._media_server_logger.info(
+            "Media Server is ready, RTMP: {rtmp_bind}:{rtmp_port}, FLV: {flv_bind}:{flv_port}".format(
+                rtmp_bind=self.rtmp_bind,
+                rtmp_port=self.rtmp_port,
+                flv_bind=self.flv_bind,
+                flv_port=self.flv_port))
 
         log_pattern = re.compile(
             r'\[(?P<timestamp>.*?)\]\['
@@ -107,7 +140,7 @@ class SimpleMediaServerController(SimpleCommandServer.BaseCommand):
                 parsed_line = match.groupdict()
                 msg = parsed_line["message"]
                 level = parsed_line["level"].lower()
-                if level != "info":
+                if level != "info" and level != "warn":
                     eval("self._media_server_logger.{level}(msg)".format(level=level))
             else:
                 self._logger.warn("Failed to parse Media Server output, offending line: '{line}'".format(line=line))

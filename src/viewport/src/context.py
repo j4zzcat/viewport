@@ -54,10 +54,10 @@ class GlobalFactory:
         self._logger.debug("Creating new {clazz} instance".format(clazz=StreamsCliCommand))
         return StreamsCliCommand(layout, urls, output_dir)
 
-    def new_web_server(self, host, port, directory):
+    def new_web_server(self, directory, host=None, port=None, ):
         from backend.httpd import SimpleWebServer
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleWebServer))
-        return SimpleWebServer(host, port, directory)
+        return SimpleWebServer(directory, host, port)
 
     def get_unifi_protocol_controller(self):
         if not self._unifi_protocol_controller:
