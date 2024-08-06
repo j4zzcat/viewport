@@ -1,5 +1,6 @@
 **/.DS_Store
 **/*.swp
-.idea/
-!./idea/modules.xml
+.idea/*
+!.idea/modules.xml
+!.idea/*.iml
 
