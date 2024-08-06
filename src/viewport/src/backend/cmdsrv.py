@@ -138,5 +138,5 @@ class SimpleCommandServer:
         for pid in self._processes.keys():
             os.kill(pid, signal.SIGKILL)
 
-        os.kill(os.getpid(), signal.SIGKILL)
+        exit(127)
 
