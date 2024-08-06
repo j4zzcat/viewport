@@ -52,11 +52,12 @@ class SimpleCommandServer:
 
                 if self._stdout:
                     stdout_task = asyncio.create_task(
-                        self._log_stream("{group_name}:{id}:{pid}".format(
+                        self._log_stream(
+                            id="{group_name}:{id}:{pid}".format(
                                 group_name=self._name,
                                 id=descriptor.id,
                                 pid=process.pid),
-                            process.stdout))
+                            stream=process.stdout))
 
                 return_code = await process.wait()
                 if self._stdout:

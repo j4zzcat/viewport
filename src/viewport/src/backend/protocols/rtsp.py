@@ -1,7 +1,10 @@
+import asyncio
 import os
 import re
 import subprocess
+import sys
 import urllib
+from websockets.server import serve
 
 from backend.cmdsrv import SimpleCommandServer
 from backend.protocol import AbstractProtocolController, AbstractLivestreamController
@@ -53,6 +56,7 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
             descriptors.append(
                 SimpleCommandServer.Descriptor(
                     id=livestream._unique_id,
+                    # ffmpeg -i 'rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp' -vcodec copy -fflags nobuffer -tune zerolatency -flags low_delay -strict experimental -probesize 32 -f hls - | vlc -
                     args="ffmpeg -re -i {rtsp_url} -vcodec copy -f flv -y rtmp://localhost/live/{unique_id}".format(
                         rtsp_url=urllib.parse.urlunparse(livestream._url),
                         unique_id=livestream._unique_id).split(" ")))
@@ -63,6 +67,54 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
     def _increment_counter(self):
         self._counter += 1
         return self._counter
+
+class SimpleRTSPToFragmentedMP4Server(SimpleCommandServer.BaseCommand):
+    def __init__(self):
+        super().__init__()
+        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+
+    def run(self):
+        self._logger.debug("Running asyncio.run()")
+        asyncio.run(self._runforever())
+
+    async def _runforever(self):
+        async with serve(self.onConnection, "localhost", 8765):
+            await asyncio.Future()  # run forever
+
+    async def onConnection(self, websocket):
+        rtsp_url = websocket.path[1:]
+        self._logger.debug("Connection established for {rtsp_url}".format(rtsp_url=rtsp_url))
+
+        process = await asyncio.create_subprocess_exec(
+            "ffmpeg",
+                "-re",
+                      "-i", rtsp_url,
+                      "-c:v", "libx264",
+                      "-c:a", "aac",
+                      "-b:v", "800k",
+                      "-b:a", "128k",
+                      "-f", "mp4", "-movflags", "frag_keyframe+empty_moov+default_base_moof",
+                      "-",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL)
+
+
+        io_worker_task = asyncio.create_task(self._io_worker(
+            stdin=process.stdout,
+            websocket=websocket))
+
+        return_code = await process.wait()
+        self._logger.debug(return_code)
+
+        await io_worker_task
+
+    async def _io_worker(self, stdin, websocket):
+        self._logger.debug("IO worker started")
+        while True:
+            b = await stdin.read(1)
+            await websocket.send(b)
+
+
 
 
 class SimpleMediaServerController(SimpleCommandServer.BaseCommand):

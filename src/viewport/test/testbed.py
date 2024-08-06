@@ -2,21 +2,15 @@ import time
 
 from backend.cmdsrv import SimpleCommandServer
 from context import GlobalFactory
+from backend.protocols.rtsp import SimpleRTSPToFragmentedMP4Server
 
 if __name__ == '__main__':
     GlobalFactory.get_logger().set_level("DEBUG")
     scs = SimpleCommandServer()
 
-    pg = GlobalFactory.new_process_group(
-        "ffmpeg", [
-            SimpleCommandServer.Descriptor(id="1", args=["bash", "/tmp/script.sh"]),
-            SimpleCommandServer.Descriptor(id="2", args=["bash", "/tmp/script.sh"]),
-            SimpleCommandServer.Descriptor(id="3", args=["bash", "-c", "exit 33"])],
-        restart=False
-    )
+    server = SimpleRTSPToFragmentedMP4Server()
 
-    scs.run_asynchronously(pg)
+    scs.run_asynchronously(server)
 
     while True:
-        time.sleep(3)
-        print("Main thread")
+        time.sleep(10)
