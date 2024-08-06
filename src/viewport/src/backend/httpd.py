@@ -1,12 +1,14 @@
+import os
 import signal
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import functools
 import socketserver
 
+from backend.cmdsrv import SimpleCommandServer
 from context import GlobalFactory
 
 
-class SimpleWebServer:
+class SimpleWebServer(SimpleCommandServer.BaseCommand):
     class DefaultHandler(SimpleHTTPRequestHandler):
         def log_message(self, fmt, *args):
             if not hasattr(self, "_logger"):
@@ -21,16 +23,10 @@ class SimpleWebServer:
         self._port = port if port is not None else GlobalFactory.get_settings()["httpd"]["port"]
         self._server = None
 
-    def __enter__(self):
-        signal.signal(signal.SIGINT, self._cleanup)
+    def run(self):
         handler = functools.partial(SimpleWebServer.DefaultHandler, directory=self._directory)
         self._server = socketserver.TCPServer((self._bind, int(self._port)), handler)
+
         self._logger.info("Simple Web Server is ready, HTTP: {bind}:{port}".format(bind=self._bind, port=self._port))
-        return self._server
 
-    def __exit__(self, *args):
-        pass
-
-    def _cleanup(self, signum, frame):
-        self._server.shutdown()
-
+        self._server.serve_forever()

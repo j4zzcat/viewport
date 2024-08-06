@@ -47,9 +47,11 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         GlobalFactory.get_command_server().run_synchronously(
             GlobalFactory.new_ui_renderer(self._layout, player_urls, self._output_dir))
 
-        # Serve the web page
-        with GlobalFactory.new_web_server(self._output_dir) as web_server:
-            web_server.serve_forever()
+        GlobalFactory.get_command_server().run_asynchronously(
+            GlobalFactory.new_web_server(self._output_dir)
+        )
+
+        # Leave MainThread free for signal handling
 
     def _parse_layout(self, layout):
         self._logger.debug("Parsing layout: {layout}".format(layout=layout))

@@ -41,6 +41,7 @@ Example:
 
   Then open the url 'http://localhost:8001' in Google Chrome web browser.
 """
+import signal
 import sys
 
 from docopt import docopt

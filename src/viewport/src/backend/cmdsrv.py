@@ -84,7 +84,7 @@ class SimpleCommandServer:
 
     def __init__(self):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._tpe = ThreadPoolExecutor(max_workers=10, thread_name_prefix='TPE')
+        self._tpe = ThreadPoolExecutor(max_workers=20, thread_name_prefix='TPE')
         self._tpe_futures = []
         self._processes = {}
         signal.signal(signal.SIGINT, self._cleanup)
@@ -128,6 +128,8 @@ class SimpleCommandServer:
                 self._logger.warn("Exception while finalizing command: '{command}', error: '{e}'".format(command=command,e=e))
 
     def _cleanup(self, signum, frame):
+        self._logger.info("Cleaning up")
+
         for future in self._tpe_futures:
             future.cancel()
 
@@ -135,4 +137,6 @@ class SimpleCommandServer:
 
         for pid in self._processes.keys():
             os.kill(pid, signal.SIGKILL)
+
+        os.kill(os.getpid(), signal.SIGKILL)
 
