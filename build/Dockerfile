@@ -32,9 +32,9 @@ ENV PLAYER_SRC_DIR=${VIEWPORT_DIR}/src/player
 ADD / /opt/viewport/
 RUN pip install --break-system-packages -r ${VIEWPORT_SRC_DIR}/requirements.txt \
       && cd ${REFLECTOR_SRC_DIR} \
-      && npm i --save \
+      && npm i --save --no-package-lock \
       && cd ${PLAYER_SRC_DIR} \
-      && npm i --save
+      && npm i --save --no-package-lock
 
 EXPOSE 8001
 ENTRYPOINT [ "/bin/bash", "/opt/viewport/bin/viewport" ]
