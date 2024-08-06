@@ -1,8 +1,5 @@
-.DS_Store
+**/.DS_Store
+**/*.swp
 .idea/
-**/__pycache__/
-**/node_modules/
-**/.venv/
-**/dist/
-**/out/
+!./idea/modules.xml
 
