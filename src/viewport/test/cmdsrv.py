@@ -36,5 +36,6 @@ class SimpleCommandServerTestCase(unittest.TestCase):
         scs.run_forever("test", [TestExecCommand(1),TestExecCommand(2)])
         time.sleep(100)
 
+
 if __name__ == '__main__':
     unittest.main()
