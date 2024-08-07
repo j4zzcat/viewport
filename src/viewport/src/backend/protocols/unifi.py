@@ -17,6 +17,9 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
             self._reflector_controller = reflector_controller
             self._url = url
 
+        def get_type(self) -> str:
+            return "unifi"
+
         def get_url(self):
             return {
                 "scheme": "ws",

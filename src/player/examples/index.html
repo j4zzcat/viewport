@@ -27,7 +27,8 @@
             box-sizing: border-box;
         }
     </style>
-    <script src="../dist/bundle.js"></script>
+    <script src="bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.5.0/flv.min.js"></script>
 </head>
 <body>
 <div id="video-streams-placeholder" class="container">
@@ -36,15 +37,11 @@
 </body>
 <script>
     const cameraIds = [
-        "65d764350170b803",
-        "64c7643501b8d203",
-        "65776435038b7d03",
-        "66776435024e4603",
-        "64c7643501d9d203"
+        "rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp"
     ];
 
     const placeholderElement = document.getElementById("video-streams-placeholder");
-    cameraIds.forEach((cameraId, index) => {
+    cameraIds.forEach((url, index) => {
         let divElement = document.createElement("div");
         let videoElement = document.createElement("video");
 
@@ -57,10 +54,19 @@
         divElement.appendChild(videoElement);
         placeholderElement.appendChild(divElement);
 
-        const videoPlayer = new SimplePlayer(
-            `video-${index}`,
-            `ws://localhost:4001/user:password@192.168.4.10/${cameraId}`
-        );
+        // const videoPlayer = new viewport.SimplePlayer(
+        //     `video-${index}`,
+        //     `ws://localhost:8765/${url}`
+        // );
+
+        var flvPlayer = flvjs.createPlayer({
+            isLive: true,
+            type: "flv",
+            url: `ws://localhost:8765/${url}`
+        });
+        flvPlayer.attachMediaElement(videoElement);
+        flvPlayer.load();
+        flvPlayer.play();
     })
 </script>
 </html>

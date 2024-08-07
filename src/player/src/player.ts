@@ -116,10 +116,14 @@ export class SimplePlayer {
 
                 /*
                  * The first message from the server contains the codecs of this stream, which
-                 * are usually avc1.4d4032 for video (Main profile of H.264, constrains apply, 5.0)
+                 * for unifi are usually avc1.4d4032 for video (Main profile of H.264, constrains apply, 5.0)
                  * and mp4a.40.2 for audio.
                  */
-                this._mimeCodecs = `video/mp4; codecs="${event.data}"`
+                if(event.data) {
+                    this._mimeCodecs = `video/mp4; codecs="${event.data}"`
+                } else {
+                    this._mimeCodecs = "video/mp4;"
+                }
 
                 this._logger.info(`mimeCodecs: ${this._mimeCodecs}`);
                 if (!MediaSource.isTypeSupported(this._mimeCodecs)) {

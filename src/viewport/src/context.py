@@ -88,10 +88,10 @@ class GlobalFactory:
     def get_rtsps_protocol_controller(self):
         return self.get_rtsp_protocol_controller()
 
-    def new_media_server_controller(self):
-        from backend.protocols.rtsp import SimpleMediaServerController
-        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleMediaServerController))
-        return SimpleMediaServerController()
+    def new_ffmpeg_server(self):
+        from backend.protocols.rtsp import SimpleFFMpegServer
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleFFMpegServer))
+        return SimpleFFMpegServer()
 
     def new_ui_renderer(self, layout, player_urls, output_dir):
         from backend.ui.renderer import SimpleUIRenderer

@@ -4,6 +4,8 @@ import re
 import subprocess
 import sys
 import urllib
+from pprint import pprint
+
 from websockets.server import serve
 
 from backend.cmdsrv import SimpleCommandServer
@@ -13,22 +15,23 @@ from context import GlobalFactory
 
 class SimpleRTSPProtocolController(AbstractProtocolController):
     class LivestreamController(AbstractLivestreamController):
-        def __init__(self, unique_id, media_server_controller, url):
-            self._unique_id = unique_id
-            self._media_server_controller = media_server_controller
+        def __init__(self, ffmpeg_server, url):
+            self._ffmpeg_server = ffmpeg_server
             self._url = url
+
+        def get_type(self) -> str:
+            return "flv"
 
         def get_url(self):
             return {
-                "scheme": "http",
-                "port": self._media_server_controller.flv_port,
-                "path": "/live/{unique_id}.flv".format(unique_id=self._unique_id)}
+                "scheme": "ws",
+                "port": self._ffmpeg_server.port,
+                "path": "/{url}".format(url=self._url.geturl())}
 
     def __init__(self):
         super().__init__()
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._media_server_controller = None
-        self._counter = 0
+        self._ffmpeg_server = None
         self._livestreams = []
 
     def initialize(self):
@@ -36,166 +39,99 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
 
     def run(self):
         super().run()
-        self._media_server_controller = GlobalFactory.new_media_server_controller()
+        self._ffmpeg_server = GlobalFactory.new_ffmpeg_server()
         GlobalFactory.get_command_server().run_asynchronously(
-            self._media_server_controller)
+            self._ffmpeg_server)
+
         return self
 
     def create_livestream_controller(self, url):
         livestream = SimpleRTSPProtocolController.LivestreamController(
-            self._increment_counter(),
-            self._media_server_controller,
+            self._ffmpeg_server,
             url)
 
         self._livestreams.append(livestream)
         return [livestream]
 
-    def start_livestreams(self):
-        descriptors = []
-        for livestream in self._livestreams:
-            descriptors.append(
-                SimpleCommandServer.Descriptor(
-                    id=livestream._unique_id,
-                    # ffmpeg -i 'rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp' -vcodec copy -fflags nobuffer -tune zerolatency -flags low_delay -strict experimental -probesize 32 -f hls - | vlc -
-                    args="ffmpeg -re -i {rtsp_url} -vcodec copy -f flv -y rtmp://localhost/live/{unique_id}".format(
-                        rtsp_url=urllib.parse.urlunparse(livestream._url),
-                        unique_id=livestream._unique_id).split(" ")))
 
-        pg = GlobalFactory.new_process_group("ffmpeg", descriptors, restart=False, stdout=True)
-        GlobalFactory.get_command_server().run_asynchronously(pg)
-
-    def _increment_counter(self):
-        self._counter += 1
-        return self._counter
-
-class SimpleRTSPToFragmentedMP4Server(SimpleCommandServer.BaseCommand):
+class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
     def __init__(self):
         super().__init__()
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self.bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["ffmpeg_server"]["bind"]
+        self.port = GlobalFactory.get_settings()["protocol"]["rtsp"]["ffmpeg_server"]["port"]
 
     def run(self):
-        self._logger.debug("Running asyncio.run()")
+        super().run()
         asyncio.run(self._runforever())
 
     async def _runforever(self):
-        async with serve(self.onConnection, "localhost", 8765):
+        self._logger.info("Simple FFMPEG Server ready, WS: {bind}:{port}".format(bind=self.bind, port=self.port))
+        async with serve(self.onConnection, self.bind, int(self.port)):
             await asyncio.Future()  # run forever
 
     async def onConnection(self, websocket):
         rtsp_url = websocket.path[1:]
-        self._logger.debug("Connection established for {rtsp_url}".format(rtsp_url=rtsp_url))
+        self._logger.info("Client {client_address}:{client_port} asks for '{rtsp_url}'".format(
+            client_address=websocket.remote_address[0],
+            client_port=websocket.remote_address[1],
+            rtsp_url=rtsp_url))
 
+        self._logger.debug("Starting ffmpeg to transcode '{url}' to 'flv'".format(url=rtsp_url))
         process = await asyncio.create_subprocess_exec(
             "ffmpeg",
+                "-hide_banner", "-loglevel", "error", "-nostats",
                 "-re",
-                      "-i", rtsp_url,
-                      "-c:v", "libx264",
-                      "-c:a", "aac",
-                      "-b:v", "800k",
-                      "-b:a", "128k",
-                      "-f", "mp4", "-movflags", "frag_keyframe+empty_moov+default_base_moof",
-                      "-",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL)
+                "-i", rtsp_url,
+                "-err_detect", "ignore_err",
+                "-flags", "+bitexact",
+                "-tune", "zerolatency",
+                "-vcodec", "copy",
+                "-an",
+                "-f", "flv",
+                "-",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE)
 
+        io_worker_task = asyncio.create_task(
+            self._io_worker(
+                process=process,
+                websocket=websocket))
 
-        io_worker_task = asyncio.create_task(self._io_worker(
-            stdin=process.stdout,
-            websocket=websocket))
+        stderr_logger_task = asyncio.create_task(self._stderr_logger(process=process))
 
-        return_code = await process.wait()
-        self._logger.debug(return_code)
+        done, pending = await asyncio.wait([io_worker_task, stderr_logger_task], return_when=asyncio.FIRST_COMPLETED)
+        for task in pending:
+            task.cancel()
+        process.terminate()
 
-        await io_worker_task
+    async def _io_worker(self, process, websocket):
+        self._logger.debug("Wiring the livestream to the client's WebSocket")
+        try:
+            while True:
+                b = await process.stdout.read(1)
+                await websocket.send(b)
+        except Exception as e:
+            self._logger.debug(e)
+            self._logger.info("Stopping livestream for client: '{client_address}:{client_port}".format(
+                client_address=websocket.remote_address[0],
+                client_port=websocket.remote_address[1]
+            ))
+            try:
+                await websocket.close()
+            except Exception as e:
+                self._logger.error(e)
 
-    async def _io_worker(self, stdin, websocket):
-        self._logger.debug("IO worker started")
-        while True:
-            b = await stdin.read(1)
-            await websocket.send(b)
-
-
-
-
-class SimpleMediaServerController(SimpleCommandServer.BaseCommand):
-    def __init__(self):
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._media_server_process = None
-        self._media_server_logger = None
-        self.rtmp_bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["rtmp"]["bind"]
-        self.rtmp_port = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["rtmp"]["port"]
-        self.flv_bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["flv"]["bind"]
-        self.flv_port = GlobalFactory.get_settings()["protocol"]["rtsp"]["media_server"]["flv"]["port"]
-
-    def run(self):
-        self._logger.debug("Spawning the SRS Media Server process")
-        conf = """listen              {rtmp_bind}:{rtmp_port};
-            max_connections     32;
-            daemon              off;
-            srs_log_tank        console;
-            http_server {{
-                enabled         on;
-                listen          {flv_bind}:{flv_port};
-                dir             ./objs/nginx/html;
-            }}
-            vhost __defaultVhost__ {{
-                http_remux {{
-                    enabled     on;
-                    mount       [vhost]/[app]/[stream].flv;
-                }}
-            }}
-        """.format(
-                rtmp_bind=self.rtmp_bind,
-                rtmp_port=self.rtmp_port,
-                flv_bind=self.flv_bind,
-                flv_port=self.flv_port)
-
-        srs_root = GlobalFactory.get_directories()["srs_root"]
-        with open("{srs_root}/conf/viewport.conf".format(srs_root=srs_root), "w") as f:
-            f.write(conf)
-
-        process = GlobalFactory.get_command_server().spwan(
-            args=["srs", "-c", "conf/viewport.conf"],
-            cwd="{srs_root}".format(srs_root=srs_root),
-            stdout=subprocess.PIPE,
-            preexec_fn=os.setsid,
-            text=True)
-
-        self._media_server_process = process
-        self._logger.debug("Media Server started, pid: {pid}".format(pid=self._media_server_process.pid))
-
-        self._media_server_logger = GlobalFactory.get_logger().get_child("MediaServer:{pid}".format(
-            pid=self._media_server_process.pid))
-
-        self._media_server_logger.info(
-            "Media Server is ready, RTMP: {rtmp_bind}:{rtmp_port}, FLV: {flv_bind}:{flv_port}".format(
-                rtmp_bind=self.rtmp_bind,
-                rtmp_port=self.rtmp_port,
-                flv_bind=self.flv_bind,
-                flv_port=self.flv_port))
-
-        log_pattern = re.compile(
-            r'\[(?P<timestamp>.*?)\]\['
-            r'(?P<level>.*?)\]\['
-            r'(?P<dummy>.*?)\]\['
-            r'(?P<thread>.*?)\]'
-            r'(?:\[(?P<errno>.*?)\])? '  # Non-capturing group for optional dummy2
-            r'(?P<message>.*)'
-        )
-
-        ansi_escape = re.compile(r'\x1B[@-_][0-?]*[ -/]*[@-~]')
-
-        for line in self._media_server_process.stdout:
-            line = ansi_escape.sub("", line)
-            match = log_pattern.match(line)
-            if match:
-                parsed_line = match.groupdict()
-                msg = parsed_line["message"]
-                level = parsed_line["level"].lower()
-                if level != "info" and level != "warn":
-                    eval("self._media_server_logger.{level}(msg)".format(level=level))
-            else:
-                self._logger.warn("Failed to parse Media Server output, offending line: '{line}'".format(line=line))
-
+    async def _stderr_logger(self, process):
+        logger = GlobalFactory.get_logger().get_child("ffmpeg:{pid}".format(pid=process.pid))
+        try:
+            while True:
+                line = await process.stderr.readline()
+                if line:
+                    logger.error(line)
+                else:
+                    break
+        except Exception as e:
+            self._logger.error(e)
 
 

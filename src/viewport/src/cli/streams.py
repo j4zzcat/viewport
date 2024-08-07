@@ -38,10 +38,8 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         player_urls = []
         for url in self._urls:
             livestreams = protocol_controllers[url.scheme].create_livestream_controller(url)
-            player_urls += [livestream.get_url() for livestream in livestreams]
-
-        for protocol_controller in protocol_controllers.values():
-            protocol_controller.start_livestreams()
+            player_urls += [(livestream.get_type(), livestream.get_url()) for livestream in livestreams]
+            [livestream.start() for livestream in livestreams]
 
         # Render the web page
         GlobalFactory.get_command_server().run_synchronously(
