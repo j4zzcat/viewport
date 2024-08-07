@@ -54,6 +54,23 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
         return [livestream]
 
 
+#
+# The SimpleFFMpegServer acts as an RTSP to WebSocket server, leveraging
+# ffmpeg to transcode RTSP streams into the FLV format, which are then streamed
+# to WebSocket clients. It uses Python's asyncio framework for asynchronous
+# handling of tasks.
+#
+# When the run() method is called, it starts the server by initiating a coroutine
+# that runs indefinitely. The server waits for incoming WebSocket
+# connections, and for each connection, the onConnection() method is invoked.
+#
+# In onConnection(), the RTSP URL is extracted from the WebSocket request path,
+# and an ffmpeg subprocess is started to transcode the RTSP stream to an FLV
+# stream. This subprocess runs concurrently with tasks for managing the IO
+# between the ffmpeg process and the WebSocket client, as well as logging any
+# errors from the ffmpeg process.
+#
+
 class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
     def __init__(self):
         super().__init__()
