@@ -66,13 +66,13 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
         asyncio.run(self._runforever())
 
     async def _runforever(self):
-        self._logger.info("Simple FFMPEG Server ready, WS: {bind}:{port}".format(bind=self.bind, port=self.port))
+        self._logger.info("Simple FFMPEG Server is ready, WS: {bind}:{port}".format(bind=self.bind, port=self.port))
         async with serve(self.onConnection, self.bind, int(self.port)):
             await asyncio.Future()  # run forever
 
     async def onConnection(self, websocket):
         rtsp_url = websocket.path[1:]
-        self._logger.info("Client {client_address}:{client_port} asks for '{rtsp_url}'".format(
+        self._logger.debug("Client {client_address}:{client_port} asks for '{rtsp_url}'".format(
             client_address=websocket.remote_address[0],
             client_port=websocket.remote_address[1],
             rtsp_url=rtsp_url))
@@ -106,14 +106,18 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
         process.terminate()
 
     async def _io_worker(self, process, websocket):
-        self._logger.debug("Wiring the livestream to the client's WebSocket")
+        self._logger.info("Starting 'flv' livestream for client '{client_address}:{client_port}'".format(
+            client_address=websocket.remote_address[0],
+            client_port=websocket.remote_address[1]
+        ))
+
         try:
             while True:
                 b = await process.stdout.read(1)
                 await websocket.send(b)
         except Exception as e:
             self._logger.debug(e)
-            self._logger.info("Stopping livestream for client: '{client_address}:{client_port}".format(
+            self._logger.info("Stopping 'flv' livestream for client: '{client_address}:{client_port}".format(
                 client_address=websocket.remote_address[0],
                 client_port=websocket.remote_address[1]
             ))

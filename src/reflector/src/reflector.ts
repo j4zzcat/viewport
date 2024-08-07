@@ -49,7 +49,7 @@ class SimpleReflector {
 
         this._wss.once("listening", () => {
             // @ts-ignore
-            this._logger.info(`Simple Reflector is ready, WebSocketServer: ${host}:${this._wss.address().port}`);
+            this._logger.info(`Simple Unifi Reflector is ready, WS: ${host}:${this._wss.address().port}`);
         });
 
         this._wss.on("connection", async (ws: WebSocket, req) => {
@@ -128,7 +128,7 @@ class SimpleReflector {
                     logger.debug(`Socket closed, code: ${code}, reason: ${reason}`);
 
                     livestream.stop();
-                    logger.info(`Stopping livestream for client: '${clientId}'`);
+                    logger.info(`Stopping 'fmp4' livestream for client: '${clientId}'`);
                 });
 
                 ws.on("error", (ws, error) => {
@@ -137,7 +137,7 @@ class SimpleReflector {
                     logger.info(`Stopping livestream for client: '${clientId}'`);
                 });
 
-                logger.info(`Starting livestream for client: '${clientId}'`);
+                logger.info(`Starting 'fmp4' livestream for client: '${clientId}'`);
                 await livestream.start(cameraId, 0);
 
             } catch (e) {
