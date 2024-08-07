@@ -19,7 +19,7 @@ Follow the following procedure:
 1. Click _Add_ and close the app.
 1. Run the following in the terminal:
 ```bash
-docker run -it --rm --network host viewport:1.1 \ 
+docker run -it --rm --network host viewport:1.2 \ 
   streams 'unifi://username:password@host/_all'
 ```
 Replace _username_ and _password_ with those used above, replace _host_ with the hostname or ip address
@@ -28,7 +28,7 @@ of the Unifi Protect Controller. Once _Viewport_ starts, use Google Chrome to na
 ### Another example
 Display cameras from several controllers and RTPS sources on a 4x4 grid:
 ```bash
-docker run -it --rm --network host viewport:1.1 \ 
+docker run -it --rm --network host viewport:1.2 \ 
   streams \
     --layout grid:4x4 \
     'unifi://username1:password1@host1/_all' \
@@ -56,7 +56,7 @@ On the server side:
 * [Viewport Reflector](src/reflector) which is a simple livestream reflector server. This server uses the excellent
 node-based Unifi Protect [library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
 Unifi Protect Controller and onto the Viewport Player, over Web Sockets.
-* [Viewport FFMpeg Server] which is a simple transcoding server that uses FFMPEG to transcode the specified
+* [Viewport FFMpeg Server](src/viewport/src/backend/protocols/rtsp.py) which is a simple transcoding server that uses FFMPEG to transcode the specified
 RTSP(S) streams into FLV and sends it the FLV Player over Web Sockets.
 * [Viewport](src/viewport) which provides CLI and orchestrates the execution of all the parts. Run the program 
 with the `--verbose` option to see the entire flow.
