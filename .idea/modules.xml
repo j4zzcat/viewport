@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/src/player/player.iml" filepath="$PROJECT_DIR$/src/player/player.iml" />
-      <module fileurl="file://$PROJECT_DIR$/src/reflector/reflector.iml" filepath="$PROJECT_DIR$/src/reflector/reflector.iml" />
-      <module fileurl="file://$PROJECT_DIR$/src/viewport/viewport.iml" filepath="$PROJECT_DIR$/src/viewport/viewport.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/player/.idea/player.iml" filepath="$PROJECT_DIR$/src/player/.idea/player.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/reflector/.idea/reflector.iml" filepath="$PROJECT_DIR$/src/reflector/.idea/reflector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/viewport/.idea/viewport.iml" filepath="$PROJECT_DIR$/src/viewport/.idea/viewport.iml" />
     </modules>
   </component>
 </project>
+

@@ -3,7 +3,7 @@
 <img src="man/screenshot1.png" align="right" width="40%"/>
 
 *Viewport* is a simple program to display multiple, side-by-side Unifi Protect 
-video streams in an unattended web page, making it ideal for passive, security 
+and RTPS(S) video streams in an unattended web page. It is designed for passive, security 
 cameras view-only scenarios (i.e., 'Kiosk'). Viewport is easy to use, uses little 
 resources and has low latency.
 
@@ -19,21 +19,22 @@ Follow the following procedure:
 1. Click _Add_ and close the app.
 1. Run the following in the terminal:
 ```bash
-docker run -it --rm --network host viewport:1.1 \ 
+docker run -it --rm --network host viewport:1.2 \ 
   streams 'unifi://username:password@host/_all'
 ```
 Replace _username_ and _password_ with those used above, replace _host_ with the hostname or ip address
 of the Unifi Protect Controller. Once _Viewport_ starts, use Google Chrome to navigate to [http://localhost:8001](http://localhost:8001).
 
 ### Another example
-Display cameras from several controllers on a 4x4 grid:
+Display cameras from several controllers and RTPS sources on a 4x4 grid:
 ```bash
-docker run -it --rm --network host viewport:1.1 \ 
+docker run -it --rm --network host viewport:1.2 \ 
   streams \
     --layout grid:4x4 \
     'unifi://username1:password1@host1/_all' \
     'unifi://username2:password2@host2/camera name 5,camera name 3' \
-    'unifi://username3:password3@host3/NE Pool,Rusty Gate,Homestead 2'
+    'rtsp://host3/ABCDEFG' \
+    'rtsps://host3/HIJKLMNOP?nighmode=false'
 ```
 
 
@@ -45,14 +46,18 @@ On the client side:
 * [Viewport Player](src/player) which is a simple livestream video player written in TypeScript. This player
 uses Media Source Extension API to play the H.264 fMP4 livestream video from the Unifi Protect Controller through 
 the Viewport Reflector Server.
-* [index.html](src/viewport/src/app/templates) which is a simple web page that is rendered once by the server and 
+* [FLV Player](https://github.com/bilibili/flv.js/tree/master) which plays the FLV streams transcoded by the
+FFMpegServer from RTSP(S). 
+* [index.html](src/viewport/resource/backend/ui/templates) which is a simple web page that is rendered once by the server and 
 binds all the views together. 
 
 
 On the server side:
 * [Viewport Reflector](src/reflector) which is a simple livestream reflector server. This server uses the excellent
-node-based [Unifi Protect Library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
+node-based Unifi Protect [library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
 Unifi Protect Controller and onto the Viewport Player, over Web Sockets.
+* [Viewport FFMpeg Server](src/viewport/src/backend/protocols/rtsp.py#L57) which is a simple transcoding server that uses FFMPEG to transcode the specified
+RTSP(S) streams into FLV and sends it the FLV Player over Web Sockets.
 * [Viewport](src/viewport) which provides CLI and orchestrates the execution of all the parts. Run the program 
 with the `--verbose` option to see the entire flow.
 
@@ -67,6 +72,14 @@ docker buildx build -t viewport:latest -f build/Dockerfile .
 
 
 ## Known issues
-* [Issue 3](https://github.com/j4zzcat/viewport/issues/3) - Sometimes a Viewport Player will freeze due to a MSE Buffer Full error. Temporary solution - refresh the web page.
-* [Issue 4](https://github.com/j4zzcat/viewport/issues/4) - The viewport only works on Google Chrome. 
+* Somewhat working on Safari and Firefox.
+* Not working on iOS.
+
+## Todo
+* Better error handling. Should exit cleanly on fatal.
+* Better unit testing.
+* Migrate away from FLV player to [mpegts.js](https://github.com/xqq/mpegts.js)
+* Investigate why is that RTPS(S) streams paused when focus is taken away.
+* Explore ways to optimize the RTSP(S) transcoding.
+
 

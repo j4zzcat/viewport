@@ -1,6 +1,6 @@
-.DS_Store
-**/node_modules/
-**/.venv/
-**/dist/
-**/out/
+**/.DS_Store
+**/*.swp
+.idea/*
+!.idea/modules.xml
+!.idea/*.iml
 

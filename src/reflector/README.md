@@ -1,8 +1,6 @@
 # Simple Reflector
 
-SimpleReflector acts as a proxy/app.reflector server to retrieve video streams
-from Unifi Protect cameras and deliver them to a [Simple Player](../simple-player) 
-over WebSockets. It initializes a WebSocketServer on port 4001, listens for 
-connections, and continuously copies the stream from Unifi Protect to the client. 
-The video stream is sent in the correct format directly to the client without
-transcoding, ensuring low latency.
+_Simple Reflector_ is a straightforward livestream proxy server written in TypeScript and runs
+on node. The program utilizes the open source node-based Unifi Protect [Library](https://github.com/hjdhjd/unifi-protect) 
+to fetch livestreams from a Unifi Protect Controller and relay them to the [Simple Player](../player) via WebSocket.
+

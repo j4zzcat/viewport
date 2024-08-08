@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from app.command.streams import StreamsCommand
 from app.executer import SimpleExecuter
 from app.unifi.protect import SimpleUnifiProtectApi
-from app.context import Context
+from app.backend import GlobalFactory
 
 
 class StreamsCommandTestCase(unittest.TestCase):
