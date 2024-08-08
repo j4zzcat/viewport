@@ -16,7 +16,7 @@ main()' $@
 else
   # If DOCKERIZE env is set, then the script is called again this time running
   # inside docker, and mapping the source dirs of the project into the docker
-  # container
+  # container. This trick is only good for development.
   if [ -n "$DOCKERIZE" ]; then
     docker run \
       -it --rm \
