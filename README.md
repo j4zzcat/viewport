@@ -48,7 +48,7 @@ uses Media Source Extension API to play the H.264 fMP4 livestream video from the
 the Viewport Reflector Server.
 * [FLV Player](https://github.com/bilibili/flv.js/tree/master) which plays the FLV streams transcoded by the
 FFMpegServer from RTSP(S). 
-* [index.html](src/viewport/src/app/templates) which is a simple web page that is rendered once by the server and 
+* [index.html](src/viewport/resource/backend/ui/templates) which is a simple web page that is rendered once by the server and 
 binds all the views together. 
 
 
