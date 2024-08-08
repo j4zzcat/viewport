@@ -72,5 +72,8 @@ docker buildx build -t viewport:latest -f build/Dockerfile .
 
 
 ## Known issues
-None.
+* Might, or might not, work on Safari and Firefox. 
+* RTPS(S) streams are paused when focus is taken away.
+* RTSP(S) to FLV transcoding is not optimized and is CPU hungry.
+* Error handling is not good enough.
 
