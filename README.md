@@ -72,8 +72,14 @@ docker buildx build -t viewport:latest -f build/Dockerfile .
 
 
 ## Known issues
-* Might, or might not, work on Safari and Firefox. 
-* RTPS(S) streams are paused when focus is taken away.
-* RTSP(S) to FLV transcoding is not optimized and is CPU hungry.
-* Error handling is not good enough.
+* Somewhat working on Safari and Firefox.
+* Not working on iOS.
+
+## Todo
+* Better error handling. Should exit cleanly on fatal.
+* Better unit testing.
+* Migrate away from FLV player to [mpegts.js](https://github.com/xqq/mpegts.js)
+* Investigate why is that RTPS(S) streams paused when focus is taken away.
+* Explore ways to optimize the RTSP(S) transcoding.
+
 
