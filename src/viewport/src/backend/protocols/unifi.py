@@ -71,12 +71,12 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
                 camera = self._apis[key].get_camera_by_name(camera_name)
                 if camera is None:
                     raise ApplicationException("Camera '{camera_name}' not found in Unifi Protect Controller: {host}".format(
-                        camera_name=camera_name, host=self._apis[key].bind))
+                        camera_name=camera_name, host=self._apis[key].host))
 
                 camera = self._apis[key].get_camera_by_name(camera_name)
                 livestreams.append(SimpleUnifiProtocolController.LivestreamController(
                     self._reflector_controller,
-                    "unifi://{netloc}/{camera_id}".format(
+                    "{netloc}/{camera_id}".format(
                         netloc=url.netloc,
                         camera_id=camera["id"])))
 
