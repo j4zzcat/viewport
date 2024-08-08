@@ -25,7 +25,8 @@ class SimpleUIRenderer(SimpleCommandServer.BaseCommand):
 
         # Copy the player bundle to output_dir
         self._logger.debug("Copying player bundle to output directory")
-        os.environ["DIST_DIR"] = os.getcwd() if self._output_dir == "." else self._output_dir
+
+        os.environ["DIST_DIR"] = self._output_dir
         subprocess.run(["npx", "webpack"],
             cwd=GlobalFactory.get_directories()["player_root"],
             capture_output=True)

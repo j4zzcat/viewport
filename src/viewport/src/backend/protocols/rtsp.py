@@ -20,7 +20,7 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
             self._url = url
 
         def get_type(self) -> str:
-            return "flv"
+            return self._ffmpeg_server.format
 
         def get_url(self):
             return {
@@ -77,6 +77,7 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self.bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["ffmpeg_server"]["bind"]
         self.port = GlobalFactory.get_settings()["protocol"]["rtsp"]["ffmpeg_server"]["port"]
+        self.format = GlobalFactory.get_settings()["protocol"]["rtsp"]["ffmpeg_server"]["format"]
 
     def run(self):
         super().run()
@@ -94,7 +95,7 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
             client_port=websocket.remote_address[1],
             rtsp_url=rtsp_url))
 
-        self._logger.debug("Starting ffmpeg to transcode '{url}' to 'flv'".format(url=rtsp_url))
+        self._logger.debug("Starting ffmpeg to transcode '{url}' to '{format}'".format(url=rtsp_url, format=self.format))
         process = await asyncio.create_subprocess_exec(
             "ffmpeg",
                 "-hide_banner", "-loglevel", "error", "-nostats",
@@ -105,7 +106,7 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
                 "-tune", "zerolatency",
                 "-vcodec", "copy",
                 "-an",
-                "-f", "flv",
+                "-f", self.format,
                 "-",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE)
@@ -123,7 +124,8 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
         process.terminate()
 
     async def _io_worker(self, process, websocket):
-        self._logger.info("Starting 'flv' livestream for client '{client_address}:{client_port}'".format(
+        self._logger.info("Starting '{format}' livestream for client '{client_address}:{client_port}'".format(
+            format=self.format,
             client_address=websocket.remote_address[0],
             client_port=websocket.remote_address[1]
         ))

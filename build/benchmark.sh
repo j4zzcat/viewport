@@ -23,7 +23,7 @@ sample_process() {
 top_log_file=$(mktemp)
 sample_process 'ffmpeg' "$top_log_file"
 for pid in $(sort <"$top_log_file" | awk '{print $1}' | uniq); do
-  grep <"$top_log_file" "$pid" | awk 'BEGIN{s=0}{s=s+$2}END{print '"$pid"', s/NR}'
+  grep <"$top_log_file" "$pid" | gawk 'BEGIN{s=0}{s=s+$2}END{print '"$pid"', s/NR}'
 done
 
 

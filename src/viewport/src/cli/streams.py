@@ -1,3 +1,4 @@
+import os
 from urllib.parse import urlparse
 
 from context import GlobalFactory
@@ -16,6 +17,9 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
 
     def initialize(self):
         super().initialize()
+        if not os.path.isdir(self._output_dir):
+            os.mkdir(self._output_dir)
+        self._output_dir = os.path.abspath(self._output_dir)
 
         self._layout = self._parse_layout(self._layout)
         self._urls = self._parse_urls(self._urls)

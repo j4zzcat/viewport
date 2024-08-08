@@ -10,7 +10,7 @@ resources and has low latency.
 ## Quickstart
 To display the video streams of a _Unify Protect Controller_, first define a local Admin on that
 controller, with minimum privileges. This user is used by Viewport to access the livestream feeds.
-Follow the following procedure:
+Follow this procedure:
 1. Open up Unifi Protect web application, select _OS Settings_ from the top-level navigation bar. 
 1. Click _Admins and Users_, then click the _+_ (plus) button in the top right corner to _Add Admin_.
 1. In the _Add Admin_ panel, check _Restrict to local access only_, then fill in the *username* and

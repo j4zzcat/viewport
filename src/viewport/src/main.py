@@ -25,7 +25,7 @@ Usage:
 Options:
   -v, --verbose           Be verbose.
   -l, --layout=<layout>   The layout to use. Supported layouts: grid. [Default: grid:3x3]
-  -o, --output-dir=<dir>  The output directory where web-related files will be created. [Default: .]
+  -o, --output-dir=<dir>  The output directory where web-related files will be created. [Default: .viewport]
   <url>                   The URL of a live video stream. Supported protocols: unifi and rtsp(s).
                           Unifi protocol takes the form of unifi://u:p@host/(_all|camera name,...)
 
