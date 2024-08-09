@@ -13,6 +13,70 @@ port = "8002"
 [protocol.rtsp.ffmpeg_server]
 bind = "0.0.0.0"
 port = "8003"
-format = "flv"
+default_preset = "hls"
+
+[protocol.rtsp.ffmpeg_server.preset]
+hls = """ffmpeg \
+  -i {input} \
+  -hide_banner -loglevel error -nostats \
+  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+  -vcodec copy \
+  -an \
+  -f hls \
+  -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
+  {file}"""
+
+mpegts = """ffmpeg \
+  -i {input} \
+  -hide_banner -loglevel error -nostats \
+  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+  -vcodec copy \
+  -an \
+  -f mpegts \
+  {pipe}"""
+
+flv = """ffmpeg \
+  -i {input} \
+  -hide_banner -loglevel error -nostats \
+  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+  -vcodec copy \
+  -an \
+  -f flv \
+  {pipe}"""
+
+fmp4_1 = """ffmpeg \
+  -i {input} \
+  -hide_banner -loglevel error -nostats \
+  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+  -vcodec copy \
+  -an \
+  -f mp4 \
+  -movflags frag_keyframe+empty_moov+default_base_moof \
+  {pipe}"""
+
+fmp4_2 = """ffmpeg \
+  -i {input} \
+  -hide_banner -loglevel error -nostats \
+  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+  -fflags nobuffer -rtsp_transport tcp \
+  -buffer_size 100000k -analyzeduration 1000000 -probesize 1000000 \
+  -vcodec copy \
+  -an \
+  -f mp4 \
+  -movflags frag_keyframe+empty_moov+default_base_moof \
+  {pipe}"""
+
+fmp4_3 = """ffmpeg \
+  -i {input} \
+  -hide_banner -loglevel error -nostats \
+  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+  -fflags nobuffer -rtsp_transport tcp \
+  -max_delay 5000000 \
+  -analyzeduration 1000000 -probesize 1000000 \
+  -vcodec copy \
+  -an \
+  -f mp4 \
+  -movflags frag_keyframe+empty_moov+default_base_moof \
+  {pipe}"""
 
 

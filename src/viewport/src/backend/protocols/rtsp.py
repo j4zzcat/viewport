@@ -1,11 +1,4 @@
 import asyncio
-import os
-import re
-import subprocess
-import sys
-import urllib
-from pprint import pprint
-
 from websockets.server import serve
 
 from backend.cmdsrv import SimpleCommandServer
@@ -72,6 +65,7 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
 #
 
 class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
+
     def __init__(self):
         super().__init__()
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
@@ -96,18 +90,9 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
             rtsp_url=rtsp_url))
 
         self._logger.debug("Starting ffmpeg to transcode '{url}' to '{format}'".format(url=rtsp_url, format=self.format))
+
         process = await asyncio.create_subprocess_exec(
-            "ffmpeg",
-                "-hide_banner", "-loglevel", "error", "-nostats",
-                "-re",
-                "-i", rtsp_url,
-                "-err_detect", "ignore_err",
-                "-flags", "+bitexact",
-                "-tune", "zerolatency",
-                "-vcodec", "copy",
-                "-an",
-                "-f", self.format,
-                "-",
+            *self._ffmpeg_command[self.format].format(url=rtsp_url).split(" "),
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE)
 
@@ -136,7 +121,8 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
                 await websocket.send(b)
         except Exception as e:
             self._logger.debug(e)
-            self._logger.info("Stopping 'flv' livestream for client: '{client_address}:{client_port}".format(
+            self._logger.info("Stopping {format} livestream for client: '{client_address}:{client_port}".format(
+                format=self.format,
                 client_address=websocket.remote_address[0],
                 client_port=websocket.remote_address[1]
             ))
@@ -157,4 +143,6 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
         except Exception as e:
             self._logger.error(e)
 
-
+# Best
+# 1. ffmpeg -fflags nobuffer -rtsp_transport tcp -i 'rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp' -max_delay 5000000                         -analyzeduration 1000000 -probesize 1000000 -err_detect ignore_err -tune zerolatency -c:v copy -an -f mp4 -movflags frag_keyframe+empty_moov - | ffplay -
+# 2. ffmpeg -fflags nobuffer -rtsp_transport tcp -i 'rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp'                       -buffer_size 100000k -analyzeduration 1000000 -probesize 1000000 -err_detect ignore_err -tune zerolatency -c:v copy -an -f mp4 -movflags frag_keyframe+empty_moov - | ffplay -

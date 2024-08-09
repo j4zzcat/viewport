@@ -43,7 +43,7 @@
 <script>
     const videoStreamUrls = [
         
-          [ "flv", "ws://" + window.location.hostname + ":8003/rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp" ],
+          [ "fmp4", "ws://" + window.location.hostname + ":8003/rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp" ],
         
     ];
 
@@ -86,5 +86,15 @@
             },
             jitter);
     })
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const container = document.querySelector('.container');
+        const rect = container.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+
+        console.log('Width: ' + width + 'px, Height: ' + height + 'px');
+    });
 </script>
 </html>

@@ -87,4 +87,14 @@
             jitter);
     })
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const container = document.querySelector('.container');
+        const rect = container.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+
+        console.log('Width: ' + width + 'px, Height: ' + height + 'px');
+    });
+</script>
 </html>
