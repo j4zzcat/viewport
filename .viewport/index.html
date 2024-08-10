@@ -21,7 +21,7 @@
         }
         .container {
             display: grid;
-            grid-template-rows: 1fr 1fr ;
+            grid-template-rows: 1fr 1fr 1fr ;
             grid-template-columns: 1fr 1fr 1fr ;
             width: 100%;
             height: 100%;
@@ -43,7 +43,7 @@
 <script>
     const videoStreamUrls = [
         
-          [ "fmp4", "ws://" + window.location.hostname + ":8003/rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp" ],
+          [ "self._ffmpeg_server.transcoder", "ws://" + window.location.hostname + ":8003/rtsps://192.168.4.10:7441/kJQJx6iNWalq0GJ0?enableSrtp:mpegts" ],
         
     ];
 

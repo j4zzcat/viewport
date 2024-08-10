@@ -6,16 +6,19 @@ port = "8001"
 
 [protocol.unifi]
 [protocol.unifi.reflector]
+protocol = "ws"
 bind = "0.0.0.0"
 port = "8002"
+default_transcoder = "fmp4"
 
 [protocol.rtsp]
-[protocol.rtsp.ffmpeg_server]
+[protocol.rtsp.reflector]
+protocol = "ws"
 bind = "0.0.0.0"
 port = "8003"
-default_preset = "hls"
+default_transcoder = "hls"
 
-[protocol.rtsp.ffmpeg_server.preset]
+[protocol.rtsp.transcoders]
 hls = """ffmpeg \
   -i {input} \
   -hide_banner -loglevel error -nostats \
@@ -33,7 +36,7 @@ mpegts = """ffmpeg \
   -vcodec copy \
   -an \
   -f mpegts \
-  {pipe}"""
+  {stdout}"""
 
 flv = """ffmpeg \
   -i {input} \
@@ -42,7 +45,7 @@ flv = """ffmpeg \
   -vcodec copy \
   -an \
   -f flv \
-  {pipe}"""
+  {stdout}"""
 
 fmp4_1 = """ffmpeg \
   -i {input} \
@@ -52,7 +55,7 @@ fmp4_1 = """ffmpeg \
   -an \
   -f mp4 \
   -movflags frag_keyframe+empty_moov+default_base_moof \
-  {pipe}"""
+  {stdout}"""
 
 fmp4_2 = """ffmpeg \
   -i {input} \
@@ -64,7 +67,7 @@ fmp4_2 = """ffmpeg \
   -an \
   -f mp4 \
   -movflags frag_keyframe+empty_moov+default_base_moof \
-  {pipe}"""
+  {stdout}"""
 
 fmp4_3 = """ffmpeg \
   -i {input} \
@@ -77,6 +80,6 @@ fmp4_3 = """ffmpeg \
   -an \
   -f mp4 \
   -movflags frag_keyframe+empty_moov+default_base_moof \
-  {pipe}"""
+  {stdout}"""
 
 
