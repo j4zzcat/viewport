@@ -19,25 +19,26 @@
 """Viewport - Display livestream videos in a simple, unattended web page.
 
 Usage:
-  viewport [-v] streams [--layout=<layout>] [--output-dir=<dir>] <url>...
+  viewport [-v] streams [--layout=<layout>] <url>...
   viewport [--version] [--help]
 
 Options:
   -v, --verbose           Be verbose.
   -l, --layout=<layout>   The layout to use. Supported layouts: grid. [Default: grid:3x3]
-  -o, --output-dir=<dir>  The output directory where web-related files will be created. [Default: .viewport]
   <url>                   The URL of a live video stream. Supported protocols: unifi and rtsp(s).
                           Unifi protocol takes the form of unifi://u:p@host/(_all|camera name,...)
+                          Rtsp(s) protocol takes the form of rtsp(s)://url(::format)
 
 Example:
-  Display Unifi Protect and RTPSP streams, side by side:
+  Display Unifi Protect and RTPSP streams, side by side, transcode the RTSP stream to MPEG-TS
+  for lower latency:
 
     $ viewport \\
          streams --layout grid:3x3 \\
              'unifi://username1:password1@192.168.4.10/_all' \\
              'unifi://username2:password2@192.168.12.10/NE Gate,Homestead 2,Pool' \\
              'rtsps://192.168.4.10:7441/DEVTOTALX1X?nightVision=off' \\
-             'rtsp://192.168.106.10:7441/C0FFEE0X1XY'
+             'rtsp://192.168.106.10:7441/C0FFEE0X1XY::mpegts'
 
   Then open the url 'http://localhost:8001' in Google Chrome web browser.
 """
@@ -75,8 +76,7 @@ def main():
             GlobalFactory.get_command_server().run_synchronously(
                 GlobalFactory.new_streams_cli_command(
                     layout=args['--layout'],
-                    urls=args['<url>'],
-                    output_dir=args["--output-dir"]))
+                    urls=args['<url>']))
 
         except ApplicationException as e:
             print("Fatal error, stopping. Exit code: 127")

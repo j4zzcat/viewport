@@ -23,7 +23,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
         def get_url(self):
             return {
                 "scheme": "ws",
-                "port": self._reflector_controller.port,
+                "port": self._reflector_controller._port,
                 "path": "/unifi://{url}".format(url=self._url)
             }
 

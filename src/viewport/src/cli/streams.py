@@ -8,19 +8,15 @@ from backend.error import ApplicationException
 
 
 class StreamsCliCommand(SimpleCommandServer.BaseCommand):
-    def __init__(self, layout, urls, output_dir):
+    def __init__(self, layout, urls):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
 
         self._layout = layout
         self._urls = urls
-        self._output_dir = output_dir
+        self._web_dir = None
 
     def initialize(self):
         super().initialize()
-        if not os.path.isdir(self._output_dir):
-            os.mkdir(self._output_dir)
-        self._output_dir = os.path.abspath(self._output_dir)
-        GlobalFactory.set_property("args", "output_dir", self._output_dir)
 
         self._layout = self._parse_layout(self._layout)
         self._urls = self._parse_urls(self._urls)
@@ -49,11 +45,10 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
 
         # Render the web page
         GlobalFactory.get_command_server().run_synchronously(
-            GlobalFactory.new_ui_renderer(self._layout, player_urls, self._output_dir))
+            GlobalFactory.new_ui_renderer(self._layout, player_urls, self._web_dir))
 
         GlobalFactory.get_command_server().run_asynchronously(
-            GlobalFactory.new_web_server(self._output_dir)
-        )
+            GlobalFactory.get_web_server())
 
         # Leave MainThread free for signal handling
 

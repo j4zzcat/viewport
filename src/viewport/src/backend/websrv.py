@@ -16,7 +16,27 @@
 # This software. If not, see <https://www.gnu.org/licenses/>.
 #
 
-class SimpleWebServer:
+import logging
+
+from aiohttp import web
+
+from backend.cmdsrv import SimpleCommandServer
+from context import GlobalFactory
+
+
+class SimpleWebServer(SimpleCommandServer.BaseCommand):
     def __init__(self):
-        pass
+        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+
+        self._bind = GlobalFactory.get_settings()["httpd"]["bind"]
+        self._port = GlobalFactory.get_settings()["httpd"]["port"]
+        self._root_dir = GlobalFactory.get_dirs()["web_root"]
+
+    def run(self):
+        self._logger.info("Simple Web Server is ready, HTTP: {bind}:{port}".format(bind=self._bind, port=self._port))
+        logging.getLogger("aiohttp").handlers = None
+
+        app = web.Application()
+        app.add_routes([web.static("/", self._root_dir)])
+        web.run_app(app, host=self._bind, port=self._port)
 

@@ -12,20 +12,13 @@ from context import GlobalFactory
 
 class SimpleRTSPProtocolController(AbstractProtocolController):
     class LivestreamController(AbstractLivestreamController):
-        def __init__(self, url, stream_format, ffmpeg_server):
+        def __init__(self, url, endpoint):
             self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
             self._url = url
-            self._stream_format = stream_format
-            self._ffmpeg_server = ffmpeg_server
+            self._endpoint = endpoint
 
         def get_endpoint(self):
-            endpoint = {
-                "stream_format": self._stream_format,
-                "scheme": self._ffmpeg_server.scheme,
-                "port": self._ffmpeg_server.port,
-                "path": "/{url}".format(url=self._url.geturl())}
-
-            return endpoint
+            return self._endpoint
 
         def start(self):
             self._ffmpeg_server.prepare(self)
@@ -67,10 +60,8 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
         else:
             stream_format = self._default_transcoder
 
-        livestream = SimpleRTSPProtocolController.LivestreamController(
-            url,
-            stream_format,
-            self._ffmpeg_server)
+        endpoint = self._ffmpeg_server.get_endpoint(url, stream_format)
+        livestream = SimpleRTSPProtocolController.LivestreamController(url, endpoint)
 
         return [livestream]
 
@@ -93,29 +84,50 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
 #
 
 class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
-    def __init__(self, props):
+    def __init__(self):
         super().__init__()
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._props = props
         self._livestreams = []
         self._stream_file_index = 0
 
-        self.bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["bind"]
-        self.port = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["port"]
+        self._bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["bind"]
+        self._port = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["port"]
         self._transcoders = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoders"]
 
     def prepare(self, livestream):
         self._livestreams.append(livestream)
 
+    def get_endpoint(self, url, stream_format):
+        command = self._transcoders[stream_format]
+
+        if "{pipe}" in command:
+            endpoint = {
+                "stream_format": stream_format,
+                "scheme": "ws",
+                "port": self._port,
+                "path": "/{url}".format(url=url.geturl())}
+
+        elif "{file}" in command:
+            self._stream_file_index += 1
+            file = "/streams/{index}/index.{stream_format}".format(
+                index=str(self._stream_file_index),
+                stream_format=stream_format)
+
+            endpoint = {
+                "stream_format": stream_format,
+                "scheme": "http",
+                "port": GlobalFactory.get_settings()["http"]["port"],
+                "path": file}
+
+        return endpoint
+
     def run(self):
         super().run()
-        os.mkdir()
-        GlobalFactory.get_web_server().add_route("/streams")
         asyncio.run(self._run_forever())
 
     async def _run_forever(self):
-        self._logger.info("Simple FFMPEG Server is ready, WS: {bind}:{port}".format(bind=self.bind, port=self.port))
-        async with serve(self._on_connection, self.bind, int(self.port)):
+        self._logger.info("Simple FFMPEG Server is ready, WS: {bind}:{port}".format(bind=self._bind, port=self._port))
+        async with serve(self._on_connection, self._bind, int(self._port)):
             await asyncio.Future()  # run forever
 
     async def _on_connection(self, websocket):
@@ -154,24 +166,19 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
                         self._stderr_logger(process=process))]
 
             elif "{file}" in command:
-                output_dir = GlobalFactory.get_args()["output_dir"]
-                if not os.path.isdir("{output_dir}/streams".format(output_dir=output_dir)):
-                    os.mkdir("{output_dir}/streams".format(output_dir=output_dir))
-
-                # By default - {cwd}/.viewport/streams/N/index.{stream_format}
-
                 self._stream_file_index += 1
-                stream_dir = "{output_dir}/streams/{index}".format(output_dir=output_dir, index=self._stream_file_index)
-                os.mkdir(stream_dir)
-
-                stream_file = "{stream_dir}/index.{stream_format}".format(
-                    stream_dir=stream_dir,
+                file = "/streams/{index}/index.{stream_format}".format(
+                    index=str(self._stream_file_index),
                     stream_format=stream_format)
 
-                path = "/streams/{index9.{stream_format}".format(stream_format=stream_format=
+                web_dir_root = GlobalFactory.get_dirs()["web_root"]
+                os.makedirs("{web_dir_root}/streams/{index}".format(
+                        web_dir_root=web_dir_root,
+                        index=str(self._stream_file_index)),
+                    exist_ok=True)
 
                 process = await asyncio.create_subprocess_exec(
-                    *command.format(url=rtsp_url, file=stream_file).split(" "),
+                    *command.format(url=rtsp_url, file=file).split(" "),
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE)
 
@@ -183,7 +190,7 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
                 await websocket.send({
                     "scheme": "http",
                     "port": GlobalFactory.get_settings()["httpd"]["port"],
-                    "path":
+                    "path": file
                 })
 
             # Wait for ffmpeg to exit

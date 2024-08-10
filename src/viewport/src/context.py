@@ -1,7 +1,6 @@
 import os
 import tomllib
 
-from backend.error import ApplicationException
 from backend.logger import SimpleLogger
 
 
@@ -20,6 +19,7 @@ class GlobalFactory:
     def _initialize_properties(self):
         properties = {}
 
+        # Important dirs
         here_dir = os.path.dirname(os.path.abspath(__file__))
         root_dir = "{here}/../../..".format(here=here_dir)
 
@@ -28,9 +28,19 @@ class GlobalFactory:
             "viewport_root": "{root_dir}/src/viewport".format(root_dir=root_dir),
             "reflector_root": "{root_dir}/src/reflector".format(root_dir=root_dir),
             "player_root": "{root_dir}/src/player".format(root_dir=root_dir),
-            "srs_root": "/opt/srs"
         }
 
+        # Web root dir
+        if "RAM_FS" in os.environ:
+            if os.path.isdir(os.environ["RAM_FS"]):
+                web_root = "{ram_fs}/viewport".format(ram_fs=os.environ["RAM_FS"])
+        else:
+            web_root = "/tmp/viewport"
+
+        os.makedirs(web_root, exist_ok=True)
+        properties["web_root"] = os.path.abspath(web_root)
+
+        # Settings.toml
         with open("{viewport_root}/resource/settings.toml".format(
                 viewport_root=properties["dirs"]["viewport_root"]), "rb") as f:
             properties["settings"] = tomllib.load(f)
@@ -47,6 +57,7 @@ class GlobalFactory:
 
     def set_property(self, section, key, value):
         if section not in self._properties:
+            from backend.error import ApplicationException
             raise ApplicationException("Section {section} is not defined".format(section=section))
         self._properties[section][key] = value
 
@@ -75,15 +86,10 @@ class GlobalFactory:
         self._logger.debug("Creating {clazz} instance".format(clazz=SimpleCommandServer.ProcessGroup))
         return SimpleCommandServer.ProcessGroup(name, descriptors, restart, stdout)
 
-    def new_streams_cli_command(self, layout, urls, output_dir):
+    def new_streams_cli_command(self, layout, urls):
         from cli.streams import StreamsCliCommand
         self._logger.debug("Creating new {clazz} instance".format(clazz=StreamsCliCommand))
-        return StreamsCliCommand(layout, urls, output_dir)
-
-    def new_web_server(self, directory, host=None, port=None, ):
-        from backend.httpd import SimpleWebServer
-        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleWebServer))
-        return SimpleWebServer(directory, host, port)
+        return StreamsCliCommand(layout, urls)
 
     def get_web_server(self):
         if not self._web_server:
