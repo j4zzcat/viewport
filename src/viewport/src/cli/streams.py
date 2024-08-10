@@ -20,6 +20,7 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         if not os.path.isdir(self._output_dir):
             os.mkdir(self._output_dir)
         self._output_dir = os.path.abspath(self._output_dir)
+        GlobalFactory.set_property("args", "output_dir", self._output_dir)
 
         self._layout = self._parse_layout(self._layout)
         self._urls = self._parse_urls(self._urls)
@@ -33,7 +34,8 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         protocol_controllers = {}
         for protocol in {url.scheme for url in self._urls}:
             protocol_controllers[protocol] = GlobalFactory.get_command_server().run_synchronously(
-                eval("GlobalFactory.get_{protocol}_protocol_controller()".format(protocol=protocol)))
+                eval("GlobalFactory.get_{protocol}_protocol_controller()".format(
+                    protocol=protocol)))
 
         # Iterate over the URLs in the order received.
         # Create the livestream controller for each url. Depending on the input url,

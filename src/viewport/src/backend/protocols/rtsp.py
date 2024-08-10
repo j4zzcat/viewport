@@ -1,4 +1,5 @@
 import asyncio
+import os
 from urllib import request
 
 from websockets.server import serve
@@ -11,29 +12,27 @@ from context import GlobalFactory
 
 class SimpleRTSPProtocolController(AbstractProtocolController):
     class LivestreamController(AbstractLivestreamController):
-        def __init__(self, url, stream_format, reflector):
+        def __init__(self, url, stream_format, ffmpeg_server):
             self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
             self._url = url
             self._stream_format = stream_format
-            self._reflector = reflector
+            self._ffmpeg_server = ffmpeg_server
 
         def get_endpoint(self):
             endpoint = {
                 "stream_format": self._stream_format,
-                "scheme": self._reflector.scheme,
-                "port": self._reflector.port,
+                "scheme": self._ffmpeg_server.scheme,
+                "port": self._ffmpeg_server.port,
                 "path": "/{url}".format(url=self._url.geturl())}
 
             return endpoint
 
         def start(self):
-            self._reflector.prepare(self)
+            self._ffmpeg_server.prepare(self)
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, props):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._ffmpeg_server = None
-        self._livestreams = []
 
         self._default_transcoder = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["default_transcoder"]
         self._transcoders = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoders"]
@@ -73,7 +72,6 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
             stream_format,
             self._ffmpeg_server)
 
-        self._livestreams.append(livestream)
         return [livestream]
 
 
@@ -95,19 +93,24 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
 #
 
 class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
-    def __init__(self):
+    def __init__(self, props):
         super().__init__()
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self._props = props
         self._livestreams = []
+        self._stream_file_index = 0
 
         self.bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["bind"]
         self.port = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["port"]
+        self._transcoders = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoders"]
 
     def prepare(self, livestream):
         self._livestreams.append(livestream)
 
     def run(self):
         super().run()
+        os.mkdir()
+        GlobalFactory.get_web_server().add_route("/streams")
         asyncio.run(self._run_forever())
 
     async def _run_forever(self):
@@ -122,43 +125,78 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
             client_port=websocket.remote_address[1],
             rtsp_url=rtsp_url))
 
-        # Is this rtsp_url a part of a previously prepared livestream?
-        for livestream in self._livestreams:
-            endpoint = livestream.get_endpoint()
+        prepared_paths = [livestream.get_endpoint()["path"] for livestream in self._livestreams]
+        if rtsp_url not in prepared_paths:
+            raise ApplicationException(
+                "The url '{rtsp_url}' was not previously prepared via a Livestream Controller".format(
+                    rtsp_url=rtsp_url))
+        else:
+            livestream = [livestream for livestream in self._livestreams if livestream.get_endpoint()["path"] == rtsp_url][0]
+            stream_format = livestream.get_endpoint()["stream_format"]
+            self._logger.debug("Starting ffmpeg to transcode '{rtsp_url}' to '{stream_format}'".format(
+                rtsp_url=rtsp_url, stream_format=stream_format))
 
-            if endpoint["path"] == rtsp_url:
-                self._logger.debug("Starting ffmpeg to transcode '{rtsp_url}' to '{stream_format}'".format(
-                    rtsp_url=rtsp_url, stream_format=endpoint["stream_format"]))
+            command = self._transcoders[stream_format]
 
-                command = self._known_transcoders[endpoint["stream_format"]]
+            if "{pipe}" in command:
+                # Client receives the stream via the web socket
+                process = await asyncio.create_subprocess_exec(
+                    *command.format(url=rtsp_url, pipe="-").split(" "),
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE)
 
-                if "{pipe}" in command:
-                    process = await asyncio.create_subprocess_exec(
-                        *command.format(url=rtsp_url, pipe="-").split(" "),
-                        stdout=asyncio.subprocess.PIPE,
-                        stderr=asyncio.subprocess.PIPE)
+                tasks = [
+                    asyncio.create_task(
+                        self._io_worker(
+                            process=process,
+                            websocket=websocket)),
+                    asyncio.create_task(
+                        self._stderr_logger(process=process))]
 
-                elif "{file}" in command:
-                    process = await asyncio.create_subprocess_exec(
-                        *command.format(url=rtsp_url, file="-").split(" "),
-                        stdout=asyncio.subprocess.PIPE,
-                        stderr=asyncio.subprocess.PIPE)
+            elif "{file}" in command:
+                output_dir = GlobalFactory.get_args()["output_dir"]
+                if not os.path.isdir("{output_dir}/streams".format(output_dir=output_dir)):
+                    os.mkdir("{output_dir}/streams".format(output_dir=output_dir))
 
-                io_worker_task = asyncio.create_task(
-                    self._io_worker(
-                        process=process,
-                        websocket=websocket))
+                # By default - {cwd}/.viewport/streams/N/index.{stream_format}
 
-                stderr_logger_task = asyncio.create_task(self._stderr_logger(process=process))
+                self._stream_file_index += 1
+                stream_dir = "{output_dir}/streams/{index}".format(output_dir=output_dir, index=self._stream_file_index)
+                os.mkdir(stream_dir)
 
-                done, pending = await asyncio.wait([io_worker_task, stderr_logger_task], return_when=asyncio.FIRST_COMPLETED)
-                for task in pending:
-                    task.cancel()
-                process.terminate()
+                stream_file = "{stream_dir}/index.{stream_format}".format(
+                    stream_dir=stream_dir,
+                    stream_format=stream_format)
 
-        # No it's not
-        raise ApplicationException("The url '{rtsp_url}' was not previously prepared via a Livestream Controller".format(
-            rtsp_url=rtsp_url))
+                path = "/streams/{index9.{stream_format}".format(stream_format=stream_format=
+
+                process = await asyncio.create_subprocess_exec(
+                    *command.format(url=rtsp_url, file=stream_file).split(" "),
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE)
+
+                tasks = [
+                    asyncio.create_task(
+                        self._stderr_logger(process=process))]
+
+                # Now tell the client about it
+                await websocket.send({
+                    "scheme": "http",
+                    "port": GlobalFactory.get_settings()["httpd"]["port"],
+                    "path":
+                })
+
+            # Wait for ffmpeg to exit
+            # When transcoding to a pipe, also wait for the io task
+            done, pending = await asyncio.wait(
+                tasks,
+                return_when=asyncio.FIRST_COMPLETED)
+
+            for task in pending:
+                task.cancel()
+
+            process.terminate()
+
 
     async def _io_worker(self, process, websocket):
         self._logger.info("Starting '{format}' livestream for client '{client_address}:{client_port}'".format(
@@ -194,4 +232,3 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
                     break
         except Exception as e:
             self._logger.error(e)
-

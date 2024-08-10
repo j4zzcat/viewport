@@ -3,4 +3,4 @@
 .idea/*
 !.idea/modules.xml
 !.idea/*.iml
-
+.viewport/*
