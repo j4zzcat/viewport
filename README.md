@@ -19,8 +19,9 @@ Follow this procedure:
 1. Click _Add_ and close the app.
 1. Run the following in the terminal:
 ```bash
-docker run -it --rm --network host viewport:1.2 \ 
-  streams 'unifi://username:password@host/_all'
+docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-mode=1777 \ 
+  viewport:1.2 \ 
+    streams 'unifi://username:password@host/_all'
 ```
 Replace _username_ and _password_ with those used above, replace _host_ with the hostname or ip address
 of the Unifi Protect Controller. Once _Viewport_ starts, use Google Chrome to navigate to [http://localhost:8001](http://localhost:8001).
@@ -28,14 +29,32 @@ of the Unifi Protect Controller. Once _Viewport_ starts, use Google Chrome to na
 ### Another example
 Display cameras from several controllers and RTPS sources on a 4x4 grid:
 ```bash
-docker run -it --rm --network host viewport:1.2 \ 
-  streams \
-    --layout grid:4x4 \
-    'unifi://username1:password1@host1/_all' \
-    'unifi://username2:password2@host2/camera name 5,camera name 3' \
-    'rtsp://host3/ABCDEFG' \
-    'rtsps://host3/HIJKLMNOP?nighmode=false'
+docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-mode=1777 \
+  viewport:1.2 \ 
+      streams \
+        --layout grid:4x4 \
+        'unifi://username1:password1@host1/_all' \
+        'unifi://username2:password2@host2/camera name 5,camera name 3' \
+        'rtsp://host3/ABCDEFG' \
+        'rtsps://host3/HIJKLMNOP?nighmode=false'
 ```
+
+### Yet another example
+By default, RTSP(S) streams are transcoded to HTTP Live Stream (HLS) format 
+(see [settings.toml](src/viewport/resource/settings.toml)). This format provides a reasonable balance between
+CPU consumption and latency. However, in situations where better latency is required, the transcoded format
+can be set individually per RTSP stream. Note that UNIFI streams are always transcoded to Fragmented MP4 (fMP4).
+
+
+The following will transcode the given RTSPS stream to MPEG-TS which has the lowest latency (and high CPU
+consumption):
+```bash
+docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-mode=1777 \
+  viewport:1.2 \ 
+      streams \
+        'rtsps://host3/ABCDEFG::mpegts' 
+```
+
 
 
 ## Theory of operation
