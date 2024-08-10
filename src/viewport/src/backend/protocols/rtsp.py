@@ -1,8 +1,8 @@
 import asyncio
 import os
-from urllib import request
 
 from websockets.server import serve
+from aiohttp import web
 
 from backend.cmdsrv import SimpleCommandServer
 from backend.error import ApplicationException
@@ -13,7 +13,6 @@ from context import GlobalFactory
 class SimpleRTSPProtocolController(AbstractProtocolController):
     class LivestreamController(AbstractLivestreamController):
         def __init__(self, url, endpoint):
-            self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
             self._url = url
             self._endpoint = endpoint
 
@@ -23,7 +22,7 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
         def start(self):
             self._ffmpeg_server.prepare(self)
 
-    def __init__(self, props):
+    def __init__(self):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._ffmpeg_server = None
 
@@ -90,12 +89,18 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
         self._livestreams = []
         self._stream_file_index = 0
 
-        self._bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["bind"]
-        self._port = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["port"]
+        self._ws_bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["ws"]["bind"]
+        self._ws_port = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["ws"]["port"]
+        self._http_bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["http"]["bind"]
+        self._http_port = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["http"]["port"]
+
+        self._web_root_dir = GlobalFactory.get_dirs()["web_root"]
+
         self._transcoders = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoders"]
 
     def prepare(self, livestream):
         self._livestreams.append(livestream)
+        # mkdirs etc
 
     def get_endpoint(self, url, stream_format):
         command = self._transcoders[stream_format]
@@ -126,16 +131,51 @@ class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
         asyncio.run(self._run_forever())
 
     async def _run_forever(self):
-        self._logger.info("Simple FFMPEG Server is ready, WS: {bind}:{port}".format(bind=self._bind, port=self._port))
-        async with serve(self._on_connection, self._bind, int(self._port)):
-            await asyncio.Future()  # run forever
+        http_server = SimpleFFMpegServer.HTTPServer(self._http_bind, int(self._http_port), self._web_root_dir)
+        await http_server.start()
+        self._logger.info("Simple FFMPEG Server is ready, HTTP: {http_bind}:{http_port}".format(
+            http_bind=self._http_bind,
+            http_port=self._http_port))
 
-    async def _on_connection(self, websocket):
-        rtsp_url = websocket.path[1:]  # Chop leading '/'
-        self._logger.debug("Client {client_address}:{client_port} asks for '{rtsp_url}'".format(
-            client_address=websocket.remote_address[0],
-            client_port=websocket.remote_address[1],
-            rtsp_url=rtsp_url))
+        ws_server = SimpleFFMpegServer.WSServer(self._ws_bind, int(self._ws_port))
+        await ws_server.start()
+        self._logger.info("Simple FFMPEG Server is ready, WS: {ws_bind}:{ws_port}".format(
+            ws_bind=self._ws_bind,
+            ws_port=self._ws_port))
+
+        await asyncio.Future()
+
+    class HTTPServer:
+        def __init__(self, bind, port, root_dir):
+            self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+            self._bind = bind
+            self._port = port
+            self._root_dir = root_dir
+
+        async def start(self):
+            web_app = web.Application()
+            web_app.add_routes([web.static("/", self._root_dir)])
+            web_server_runner = web.AppRunner(web_app)
+            web_server_site = web.TCPSite(web_server_runner, self._bind, int(self._port))
+
+            await web_server_runner.setup()
+            await web_server_site.start()
+
+    class WSServer:
+        def __init__(self, bind, port):
+            self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+            self._bind = bind
+            self._port = port
+
+        async def start(self):
+            await serve(self._on_connection, self._bind, int(self._port))
+
+        async def _on_connection(self, websocket):
+            rtsp_url = websocket.path[1:]  # Chop leading '/'
+            self._logger.debug("Client {client_address}:{client_port} asks for '{rtsp_url}'".format(
+                client_address=websocket.remote_address[0],
+                client_port=websocket.remote_address[1],
+                rtsp_url=rtsp_url))
 
         prepared_paths = [livestream.get_endpoint()["path"] for livestream in self._livestreams]
         if rtsp_url not in prepared_paths:

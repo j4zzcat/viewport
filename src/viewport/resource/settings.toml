@@ -6,17 +6,23 @@ port = "8001"
 
 [protocol.unifi]
 [protocol.unifi.reflector]
-protocol = "ws"
+default_transcoder = "fmp4"
+
+[protocol.unifi.reflector.ws]
 bind = "0.0.0.0"
 port = "8002"
-default_transcoder = "fmp4"
 
 [protocol.rtsp]
 [protocol.rtsp.reflector]
-protocol = "ws"
+default_transcoder = "hls"
+
+[protocol.rtsp.reflector.ws]
 bind = "0.0.0.0"
 port = "8003"
-default_transcoder = "hls"
+
+[protocol.rtsp.reflector.http]
+bind = "0.0.0.0"
+port = "8004"
 
 [protocol.rtsp.transcoders]
 hls = """ffmpeg \
