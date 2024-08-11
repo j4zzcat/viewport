@@ -11,20 +11,9 @@ from context import GlobalFactory
 
 
 class SimpleRTSPProtocolController(AbstractProtocolController):
-    class LivestreamController(AbstractLivestreamController):
-        def __init__(self, url, endpoint):
-            self._url = url
-            self._endpoint = endpoint
-
-        def get_endpoint(self):
-            return self._endpoint
-
-        def start(self):
-            self._ffmpeg_server.prepare(self)
-
     def __init__(self):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._ffmpeg_server = None
+        self._transcoding_server = None
 
         self._default_transcoder = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["default_transcoder"]
         self._transcoders = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoders"]
@@ -34,9 +23,9 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
 
     def run(self):
         super().run()
-        self._ffmpeg_server = GlobalFactory.new_ffmpeg_server()
-        GlobalFactory.get_command_server().run_asynchronously(
-            self._ffmpeg_server)
+        self._transcoding_server = GlobalFactory.new_transcoding_server()
+        GlobalFactory.get_command_server().run_synchronously(
+            self._transcoding_server)
 
         return self
 
@@ -52,6 +41,7 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
 
             if requested_stream_format in self._transcoders.keys():
                 stream_format = requested_stream_format
+                url = parts[0]  # Chop the {::stream_format} from the url
             else:
                 raise ApplicationException(
                     "Requested transcoder '{requested_stream_format}' is not known".format(
@@ -59,10 +49,123 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
         else:
             stream_format = self._default_transcoder
 
-        endpoint = self._ffmpeg_server.get_endpoint(url, stream_format)
-        livestream = SimpleRTSPProtocolController.LivestreamController(url, endpoint)
+        livestream = SimpleLivestreamController(url, stream_format, self._transcoding_server)
 
         return [livestream]
+
+
+class SimpleLivestreamController(AbstractLivestreamController):
+    def __init__(self, rtsp_url, stream_format, transcoding_server):
+        self._rtsp_url = rtsp_url
+        self._stream_format = stream_format
+        self._transcoding_server = transcoding_server
+
+    def get_endpoint(self):
+        return self._transcoding_server.get_endpoint(self._rtsp_url, self._stream_format)
+
+    def start(self):
+        self._transcoding_server.prepare(self._rtsp_url, self._stream_format)
+
+
+class SimpleTranscodingServer(SimpleCommandServer.BaseCommand):
+    def __init__(self):
+        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self._http_server = None
+        self._ws_server = None
+        self.file_transcoders = None
+        self.stdout_transcoders = None
+
+        self._transcoders = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoders"]
+
+    def initialize(self):
+        self._http_server = SimpleHTTPServer(
+            GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["http"]["bind"],
+            GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["http"]["port"],
+            GlobalFactory.get_dirs()["web_root"],
+            self)
+
+        self._ws_server = SimpleWSServer(
+            GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["ws"]["bind"],
+            GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["ws"]["port"],
+            self)
+
+        self.file_transcoders = [streaming_format for streaming_format, command in self._transcoders.items() if "{file}" in command]
+        self.stdout_transcoders = [streaming_format for streaming_format, command in self._transcoders.items() if "{stdout}" in command]
+
+    def run(self):
+        GlobalFactory.get_command_server().run_asynchronously(
+            self._http_server)
+
+        GlobalFactory.get_command_server().run_asynchronously(
+            self._ws_server)
+
+    def prepare(self, url, stream_format):
+        if stream_format in self._file_transcoders:
+            self._http_server.prepare(url, stream_format)
+        elif stream_format in self._stdout_transcoders:
+            self._ws_server.prepare(url, stream_format)
+        else:
+            raise ApplicationException("Stream format '{stream_format}' is not known".format(stream_format=stream_format))
+
+
+class SimpleHTTPServer(SimpleCommandServer.BaseCommand):
+    def __init__(self, bind, port, root_dir, transcoding_server):
+        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self._bind = bind
+        self._port = port
+        self._root_dir = root_dir
+        self._transcoding_server = transcoding_server
+
+        self._loop = None
+        self._stream_index = 0
+
+    def run(self):
+        super().run()
+        self._loop = asyncio.get_event_loop()
+        self._loop.run_until_complete(self._run_forever())
+
+    async def _run_forever(self):
+        web_app = web.Application()
+        web_app.add_routes([web.static("/", self._root_dir)])
+        web_server_runner = web.AppRunner(web_app)
+        web_server_site = web.TCPSite(web_server_runner, self._bind, int(self._port))
+
+        await web_server_runner.setup()
+        await web_server_site.start()
+
+    async def _stderr_logger(self, process):
+        logger = GlobalFactory.get_logger().get_child("ffmpeg:{pid}".format(pid=process.pid))
+        try:
+            while True:
+                line = await process.stderr.readline()
+                if line:
+                    logger.error(line)
+                else:
+                    break
+        except Exception as e:
+            self._logger.error(e)
+
+    def prepare(self, url, stream_format):
+        self._stream_index += 1
+        file = "/streams/{index}/index.{stream_format}".format(
+            index=str(self._stream_index),
+            stream_format=stream_format)
+
+        os.makedirs("{root_dir}/streams/{index}".format(
+            root_dir=self._root_dir,
+            index=str(self._stream_index)),
+            exist_ok=True)
+
+        command = self._transcoding_server.file_transcoders[stream_format]
+        process = self._loop.create_subprocess_exec(
+            *command.format(url=url, file=file).split(" "),
+            stdout=asyncio.subprocess.DEVNULL,
+            stderr=asyncio.subprocess.PIPE)
+
+        self._loop.create_task(self._stderr_logger(process=process))
+
+
+
 
 
 #
