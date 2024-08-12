@@ -6,11 +6,11 @@ class SimpleLogger:
         def __init__(self):
             super().__init__()
             self._debug_formatter = logging.Formatter(
-                fmt="[%(asctime)s.%(msecs)-3d] (%(threadName)-10s) %(levelname)-5s %(name)-30s %(message)s",
+                fmt="[%(asctime)s.%(msecs)-3d] (%(threadName)-10s) %(levelname)-5s %(name)-34s %(message)s",
                 datefmt="%Y-%m-%d %H:%M:%S")
 
             self._info_formatter = logging.Formatter(
-                fmt="[%(asctime)s] %(levelname)-5s %(name)-22s %(message)s",
+                fmt="[%(asctime)s] %(levelname)-5s %(message)s",
                 datefmt="%Y-%m-%d %H:%M:%S")
 
             self._redactions = []

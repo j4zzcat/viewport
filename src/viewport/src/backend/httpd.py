@@ -16,15 +16,15 @@ class SimpleWebServer(SimpleCommandServer.BaseCommand):
 
             self._logger.debug(fmt % args)
 
-    def __init__(self, directory, bind, port):
+    def __init__(self, directory, bind=None, port=None):
         self._logger = GlobalFactory.get_logger().get_child("SimpleWebServer")
-        self._directory = directory
+        self._root_dir = directory
         self._bind = bind if bind is not None else GlobalFactory.get_settings()["httpd"]["bind"]
         self._port = port if port is not None else GlobalFactory.get_settings()["httpd"]["port"]
         self._server = None
 
     def run(self):
-        handler = functools.partial(SimpleWebServer.DefaultHandler, directory=self._directory)
+        handler = functools.partial(SimpleWebServer.DefaultHandler, directory=self._root_dir)
         self._server = socketserver.TCPServer((self._bind, int(self._port)), handler)
 
         self._logger.info("Simple Web Server is ready, HTTP: {bind}:{port}".format(bind=self._bind, port=self._port))

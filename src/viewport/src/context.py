@@ -15,6 +15,7 @@ class GlobalFactory:
         self._web_server = None
         self._unifi_protocol_controller = None
         self._rtsp_protocol_controller = None
+        self._counters = {}
 
     def _initialize_properties(self):
         properties = {}
@@ -33,12 +34,12 @@ class GlobalFactory:
         # Web root dir
         if "RAM_FS" in os.environ:
             if os.path.isdir(os.environ["RAM_FS"]):
-                web_root = "{ram_fs}/viewport".format(ram_fs=os.environ["RAM_FS"])
+                data_dir = "{ram_fs}/viewport".format(ram_fs=os.environ["RAM_FS"])
         else:
-            web_root = "/tmp/viewport"
+            data_dir = "/tmp/viewport"
 
-        os.makedirs(web_root, exist_ok=True)
-        properties["web_root"] = os.path.abspath(web_root)
+        os.makedirs(data_dir, exist_ok=True)
+        properties["dirs"]["data_dir"] = os.path.abspath(data_dir)
 
         # Settings.toml
         with open("{viewport_root}/resource/settings.toml".format(
@@ -91,14 +92,6 @@ class GlobalFactory:
         self._logger.debug("Creating new {clazz} instance".format(clazz=StreamsCliCommand))
         return StreamsCliCommand(layout, urls)
 
-    def get_web_server(self):
-        if not self._web_server:
-            from backend.websrv import SimpleWebServer
-            self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleWebServer))
-            self._web_server = SimpleWebServer()
-
-        return self._web_server
-
     def get_unifi_protocol_controller(self):
         if not self._unifi_protocol_controller:
             from backend.protocols.unifi import SimpleUnifiProtocolController
@@ -128,15 +121,40 @@ class GlobalFactory:
     def get_rtsps_protocol_controller(self):
         return self.get_rtsp_protocol_controller()
 
-    def new_transcoding_server(self):
-        from backend.protocols.rtsp import SimpleTranscodingServer
-        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingServer))
-        return SimpleTranscodingServer()
+    def new_transcoding_controller(self):
+        from backend.protocols.rtsp import SimpleTranscodingController
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingController))
+        return SimpleTranscodingController()
 
-    def new_ui_renderer(self, layout, player_urls, output_dir):
+    def new_transcoding_file_server(self, transcoders, bind, port):
+        from backend.protocols.rtsp import SimpleTranscodingFileServer
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingFileServer))
+        return SimpleTranscodingFileServer(transcoders, bind, port)
+
+    def new_transcoding_streaming_server(self, transcoders, bind, port):
+        from backend.protocols.rtsp import SimpleTranscodingStreamingServer
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingStreamingServer))
+        return SimpleTranscodingStreamingServer(transcoders, bind, port)
+
+    def new_ui_renderer(self, layout, player_urls, directory):
         from backend.ui.renderer import SimpleUIRenderer
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUIRenderer))
-        return SimpleUIRenderer(layout, player_urls, output_dir)
+        return SimpleUIRenderer(layout, player_urls, directory)
+
+    def get_web_server(self, directory, bind=None, port=None):
+        if not self._web_server:
+            from backend.httpd import SimpleWebServer
+            self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleWebServer))
+            self._web_server = SimpleWebServer(directory, bind, port)
+
+        return self._web_server
+
+    def next_number(self, counter):
+        if counter not in self._counters:
+            self._counters[counter] = 0
+
+        self._counters[counter] += 1
+        return self._counters[counter]
 
 
 GlobalFactory = GlobalFactory()

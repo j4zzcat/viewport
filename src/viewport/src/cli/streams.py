@@ -13,7 +13,6 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
 
         self._layout = layout
         self._urls = urls
-        self._web_dir = None
 
     def initialize(self):
         super().initialize()
@@ -37,18 +36,22 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         # Create the livestream controller for each url. Depending on the input url,
         # such as in the case of 'unifi://u:p@host/_all', several livestream instances
         # may be returned.
-        player_urls = []
+        player_endpoints = []
         for url in self._urls:
             livestreams = protocol_controllers[url.scheme].new_livestream_controller(url)
-            player_urls += [livestream.get_url() for livestream in livestreams]
+            player_endpoints += [livestream.get_endpoint() for livestream in livestreams]
             [livestream.start() for livestream in livestreams]
 
         # Render the web page
+        html_dir = "{data_dir}/html".format(
+            data_dir=GlobalFactory.get_dirs()["data_dir"])
+        os.makedirs(html_dir, exist_ok=True)
+
         GlobalFactory.get_command_server().run_synchronously(
-            GlobalFactory.new_ui_renderer(self._layout, player_urls, self._web_dir))
+            GlobalFactory.new_ui_renderer(self._layout, player_endpoints, html_dir))
 
         GlobalFactory.get_command_server().run_asynchronously(
-            GlobalFactory.get_web_server())
+            GlobalFactory.get_web_server(html_dir))
 
         # Leave MainThread free for signal handling
 

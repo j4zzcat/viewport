@@ -1,5 +1,7 @@
 import asyncio
 import os
+from pprint import pprint
+from urllib.parse import ParseResult
 
 from websockets.server import serve
 from aiohttp import web
@@ -13,20 +15,22 @@ from context import GlobalFactory
 class SimpleRTSPProtocolController(AbstractProtocolController):
     def __init__(self):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._transcoding_server = None
+        self._transcoding_controller = None
 
     def initialize(self):
         super().initialize()
 
     def run(self):
         super().run()
-        self._transcoding_server = GlobalFactory.new_transcoding_server()
+        self._transcoding_controller = GlobalFactory.new_transcoding_controller()
         GlobalFactory.get_command_server().run_synchronously(
-            self._transcoding_server)
+            self._transcoding_controller)
 
         return self
 
-    def new_livestream_controller(self, url):
+    def new_livestream_controller(self, url: str):
+        if isinstance(url, ParseResult):
+            url = url.geturl()
         self._logger.debug("Creating a Livestream Controller for '{url}'".format(url=url))
 
         # See if the client asked for a specific stream format
@@ -37,22 +41,9 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
         else:
             transcoder = None
 
-        livestream = self._transcoding_server.new_livestream_controller(url, transcoder)
+        livestream = self._transcoding_controller.new_livestream_controller(url, transcoder)
 
         return [livestream]
-
-
-class SimpleLivestreamController(AbstractLivestreamController):
-    def __init__(self, rtsp_url, stream_format, transcoding_server):
-        self._rtsp_url = rtsp_url
-        self._stream_format = stream_format
-        self._transcoding_server = transcoding_server
-
-    def get_endpoint(self):
-        return self._transcoding_server.get_endpoint(self._rtsp_url, self._stream_format)
-
-    def start(self):
-        self._transcoding_server.livestream_prepare(self._rtsp_url, self._stream_format)
 
 
 class SimpleTranscodingController(SimpleCommandServer.BaseCommand):
@@ -63,58 +54,77 @@ class SimpleTranscodingController(SimpleCommandServer.BaseCommand):
         self.file_transcoders = None
         self.stdout_transcoders = None
 
-        self._transcoders = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoders"]
-        self._default_transcoder = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoders"]["default_transcoder"]
+        self._transcoders = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"]
+        self._default_transcoder = GlobalFactory.get_settings()["protocol"]["rtsp"]["default_transcoder"]
 
-        self._file_transcoding_server = GlobalFactory.new_file_transcoding_server(
-            [for format, command in self._transcoders if "file"
-        )
-        self._streaming_transcoding_server = GlobalFactory.new_stdout_transcoding_server(self._transcoders)
+        self._transcoding_streaming_server = GlobalFactory.new_transcoding_streaming_server(
+            {key: value for key, value in self._transcoders.items() if value["server"] == "streaming"},
+            GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["streaming"]["bind"],
+            GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["streaming"]["port"])
+
+        self._transcoding_file_server = GlobalFactory.new_transcoding_file_server(
+            {key: value for key, value in self._transcoders.items() if value["server"] == "file"},
+            GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["file"]["bind"],
+            GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["file"]["port"])
 
     def run(self):
-        GlobalFactory.get_command_server().run_asynchronously(self._file_transcoding_server)
-        GlobalFactory.get_command_server().run_asynchronously(self._stdout_transcoding_server)
+        GlobalFactory.get_command_server().run_asynchronously(self._transcoding_streaming_server)
+        GlobalFactory.get_command_server().run_asynchronously(self._transcoding_file_server)
 
     def new_livestream_controller(self, input_url, transcoder=None):
         if transcoder is None:
             transcoder = self._default_transcoder
+
+        if self._transcoding_file_server.can_transcode(transcoder):
+            transcoding_server = self._transcoding_file_server
+        elif self._transcoding_streaming_server.can_transcode(transcoder):
+            transcoding_server = self._transcoding_streaming_server
         else:
-            if transcoder not in self._transcoders:
-                raise ApplicationException("Transcoder '{transcoder}' is not supported".format(transcoder=transcoder))
+            raise ApplicationException("Transcoder '{transcoder}' is not supported".format(transcoder=transcoder))
 
-        if transcoder in self._file_transcoders:
-            self._file_transcoding_server.get_endpoint(input_url, )
+        return transcoding_server.new_livestream_controller(input_url, transcoder)
 
 
-def livestream_prepare(self, url, stream_format):
-        if stream_format in self._file_transcoders:
-            self._http_server.prepare(url, stream_format)
-        elif stream_format in self._stdout_transcoders:
-            self._ws_server.prepare(url, stream_format)
-        else:
-            raise ApplicationException("Stream format '{stream_format}' is not known".format(stream_format=stream_format))
-
-    def get_endpoint(self, url, stream_format):
-        if self._transcoders[stream_format] is not None:
-
-
-class SimpleWSServer(SimpleCommandServer.BaseCommand):
-    def __init__(self, transcoding_server, bind, port):
+class SimpleTranscodingStreamingServer(SimpleCommandServer.BaseCommand):
+    def __init__(self, transcoders, bind, port):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._transcoding_server = transcoding_server
+        self._transcoders = transcoders
         self._bind = bind
         self._port = port
 
-        self._prepared_paths = {}
+        self._stream_index = 0
+        self._endpoints = {}
 
-    def prepare(self, url, stream_format):
-        self._prepared_paths[url] = stream_format
+    def can_transcode(self, transcoder):
+        return transcoder in self._transcoders
+
+    class LivestreamController(AbstractLivestreamController):
+        def __init__(self, endpoint):
+            self._endpoint = endpoint
+
+        def get_endpoint(self):
+            return self._endpoint
+
+    def new_livestream_controller(self, input_url, transcoder):
+        endpoint = {
+            "original_url": input_url,
+            "format": transcoder,
+            "scheme": "ws",
+            "port": self._port,
+            "path": "/stream/{index}".format(index=GlobalFactory.next_number("stream"))
+        }
+
+        self._endpoints[endpoint["path"]] = endpoint
+
+        return SimpleTranscodingStreamingServer.LivestreamController(endpoint)
 
     def run(self):
+        super().run()
+        self._logger.info("Simple Transcoding Streaming Server is ready, WS: {bind}:{port}".format(bind=self._bind, port=self._port))
         asyncio.run(self._run_forever())
 
     async def _run_forever(self):
-        async with serve(self._on_connection, self.bind, int(self.port)):
+        async with serve(self._on_connection, self._bind, int(self._port)):
             await asyncio.Future()
 
     async def _on_connection(self, websocket):
@@ -123,80 +133,53 @@ class SimpleWSServer(SimpleCommandServer.BaseCommand):
             client_port=websocket.remote_address[1],
             path=websocket.path))
 
-        if websocket.path not in self._prepared_paths:
+        if websocket.path not in self._endpoints:
             raise ApplicationException(
-                "The '{path}' is not a known Livestream".format(
+                "The '{path}' is not a known Livestream endpoint".format(
                     path=websocket.path))
         else:
-            # The requested path belongs to a livestream, and it's a valid rtsp url.
-            stream_format = self._prepared_paths[websocket.path]
-            rtsp_url = websocket.path[1:]  # Chop leading '/'
+            endpoint = self._endpoints[websocket.path]
+            transcoder = self._transcoders[endpoint["format"]]
 
-            # livestream = [livestream for livestream in self._livestreams if livestream.get_endpoint()["path"] == rtsp_url][0]
-            # stream_format = livestream.get_endpoint()["stream_format"]
-            self._logger.debug("Starting ffmpeg to transcode '{rtsp_url}' to '{stream_format}'".format(
-                rtsp_url=rtsp_url, stream_format=stream_format))
+            self._logger.debug("Starting '{command}' to transcode '{original_url}' to '{format}'".format(
+                command=transcoder["command"],
+                original_url=endpoint["original_url"],
+                format=endpoint["format"]))
 
-            command = self._transcoding_server[stream_format]
+            if transcoder["program"] == "ffmpeg":
+                command = "ffmpeg -i {original_url} {options} -".format(
+                    original_url=endpoint["original_url"],
+                    options=transcoder["options"])
+            else:
+                raise ApplicationException("Transcoder program '{program}' is not supported".format(
+                    program=transcoder["program"]))
 
-        if "{pipe}" in command:
-            # Client receives the stream via the web socket
             process = await asyncio.create_subprocess_exec(
-                *command.format(url=rtsp_url, pipe="-").split(" "),
+                *command.split(" "),
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE)
 
             tasks = [
                 asyncio.create_task(
-                    self._io_worker(
+                    self._copy_stdout_to_ws(
                         process=process,
                         websocket=websocket)),
                 asyncio.create_task(
-                    self._stderr_logger(process=process))]
+                    self._log_stderr(process=process))]
 
-        elif "{file}" in command:
-            self._stream_file_index += 1
-            file = "/streams/{index}/index.{stream_format}".format(
-                index=str(self._stream_file_index),
-                stream_format=stream_format)
+            # Wait for ffmpeg to exit
+            # When transcoding to a pipe, also wait for the io task
+            done, pending = await asyncio.wait(
+                tasks,
+                return_when=asyncio.FIRST_COMPLETED)
 
-            web_dir_root = GlobalFactory.get_dirs()["web_root"]
-            os.makedirs("{web_dir_root}/streams/{index}".format(
-                web_dir_root=web_dir_root,
-                index=str(self._stream_file_index)),
-                exist_ok=True)
+            for task in pending:
+                task.cancel()
 
-            process = await asyncio.create_subprocess_exec(
-                *command.format(url=rtsp_url, file=file).split(" "),
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE)
+            process.terminate()
 
-            tasks = [
-                asyncio.create_task(
-                    self._stderr_logger(process=process))]
-
-            # Now tell the client about it
-            await websocket.send({
-                "scheme": "http",
-                "port": GlobalFactory.get_settings()["httpd"]["port"],
-                "path": file
-            })
-
-        # Wait for ffmpeg to exit
-        # When transcoding to a pipe, also wait for the io task
-        done, pending = await asyncio.wait(
-            tasks,
-            return_when=asyncio.FIRST_COMPLETED)
-
-        for task in pending:
-            task.cancel()
-
-        process.terminate()
-
-
-    async def _io_worker(self, process, websocket):
-        self._logger.info("Starting '{format}' livestream for client '{client_address}:{client_port}'".format(
-            format=self.transcoder,
+    async def _copy_stdout_to_ws(self, process, websocket):
+        self._logger.info("Starting livestream for client '{client_address}:{client_port}'".format(
             client_address=websocket.remote_address[0],
             client_port=websocket.remote_address[1]
         ))
@@ -207,17 +190,15 @@ class SimpleWSServer(SimpleCommandServer.BaseCommand):
                 await websocket.send(b)
         except Exception as e:
             self._logger.debug(e)
-            self._logger.info("Stopping {format} livestream for client: '{client_address}:{client_port}".format(
-                format=self.transcoder,
+            self._logger.info("Stopping livestream for client: '{client_address}:{client_port}".format(
                 client_address=websocket.remote_address[0],
-                client_port=websocket.remote_address[1]
-            ))
+                client_port=websocket.remote_address[1]))
             try:
                 await websocket.close()
             except Exception as e:
                 self._logger.error(e)
 
-    async def _stderr_logger(self, process):
+    async def _log_stdout(self, process):
         logger = GlobalFactory.get_logger().get_child("ffmpeg:{pid}".format(pid=process.pid))
         try:
             while True:
@@ -230,160 +211,94 @@ class SimpleWSServer(SimpleCommandServer.BaseCommand):
             self._logger.error(e)
 
 
-class SimpleHTTPServer(SimpleCommandServer.BaseCommand):
-    def __init__(self, transcoding_server, bind, port, root_dir, ):
+class SimpleTranscodingFileServer(SimpleCommandServer.BaseCommand):
+    def __init__(self, transcoders, bind, port):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._transcoding_server = transcoding_server
+        self._transcoders = transcoders
         self._bind = bind
         self._port = port
-        self._root_dir = root_dir
 
-        self._loop = None
-        self._stream_index = 0
+        self._root_dir = "{data_dir}/stream".format(data_dir=GlobalFactory.get_dirs()["data_dir"])
+        os.makedirs(self._root_dir, exist_ok=True)
 
-    def run(self):
-        super().run()
-        self._loop = asyncio.get_event_loop()
-        self._loop.run_until_complete(self._run_forever())
+        self._endpoints = {}
 
-    async def _run_forever(self):
-        web_app = web.Application()
-        web_app.add_routes([web.static("/", self._root_dir)])
-        web_server_runner = web.AppRunner(web_app)
-        web_server_site = web.TCPSite(web_server_runner, self._bind, int(self._port))
+    def can_transcode(self, transcoder):
+        return transcoder in self._transcoders
 
-        await web_server_runner.setup()
-        await web_server_site.start()
+    class LivestreamController(AbstractLivestreamController):
+        def __init__(self, endpoint):
+            self._endpoint = endpoint
 
-    async def _stderr_logger(self, process):
-        logger = GlobalFactory.get_logger().get_child("ffmpeg:{pid}".format(pid=process.pid))
-        try:
-            while True:
-                line = await process.stderr.readline()
-                if line:
-                    logger.error(line)
-                else:
-                    break
-        except Exception as e:
-            self._logger.error(e)
+        def get_endpoint(self):
+            return self._endpoint
 
-    def prepare(self, url, stream_format):
-        self._stream_index += 1
-        file = "/streams/{index}/index.{stream_format}".format(
-            index=str(self._stream_index),
-            stream_format=stream_format)
+    def new_livestream_controller(self, input_url, transcoder):
+        endpoint = {
+            "original_url": input_url,
+            "format": transcoder,
+            "scheme": "http",
+            "port": self._port,
+            "path": "/stream/{index}".format(index=GlobalFactory.next_number("stream"))
+        }
 
-        os.makedirs("{root_dir}/streams/{index}".format(
-            root_dir=self._root_dir,
-            index=str(self._stream_index)),
-            exist_ok=True)
+        self._endpoints[endpoint["path"]] = endpoint
 
-        command = self._transcoding_server.file_transcoders[stream_format]
-        asyncio.run_coroutine_threadsafe(coroutine, loop)
-        process = self._loop.create_subprocess_exec(
-            *command.format(url=url, file=file).split(" "),
-            stdout=asyncio.subprocess.DEVNULL,
-            stderr=asyncio.subprocess.PIPE)
-
-        self._loop.create_task(self._stderr_logger(process=process))
-
-
-
-
-
-#
-# The SimpleFFMpegServer acts as an RTSP to WebSocket server, leveraging
-# ffmpeg to transcode RTSP streams into the FLV format, which are then streamed
-# to WebSocket clients. It uses Python's asyncio framework for asynchronous
-# handling of tasks.
-#
-# When the run() method is called, it starts the server by initiating a coroutine
-# that runs indefinitely. The server waits for incoming WebSocket
-# connections, and for each connection, the onConnection() method is invoked.
-#
-# In onConnection(), the RTSP URL is extracted from the WebSocket request path,
-# and an ffmpeg subprocess is started to transcode the RTSP stream to an FLV
-# stream. This subprocess runs concurrently with tasks for managing the IO
-# between the ffmpeg process and the WebSocket client, as well as logging any
-# errors from the ffmpeg process.
-#
-
-class SimpleFFMpegServer(SimpleCommandServer.BaseCommand):
-    def __init__(self):
-        super().__init__()
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._livestreams = []
-        self._stream_file_index = 0
-
-        self._ws_bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["ws"]["bind"]
-        self._ws_port = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["ws"]["port"]
-        self._http_bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["http"]["bind"]
-        self._http_port = GlobalFactory.get_settings()["protocol"]["rtsp"]["reflector"]["http"]["port"]
-
-        self._web_root_dir = GlobalFactory.get_dirs()["web_root"]
-
-        self._transcoders = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoders"]
-
-    def prepare(self, livestream):
-        self._livestreams.append(livestream)
-        # mkdirs etc
-
-    def get_endpoint(self, url, stream_format):
-        command = self._transcoders[stream_format]
-
-        if "{pipe}" in command:
-            endpoint = {
-                "stream_format": stream_format,
-                "scheme": "ws",
-                "port": self._port,
-                "path": "/{url}".format(url=url.geturl())}
-
-        elif "{file}" in command:
-            self._stream_file_index += 1
-            file = "/streams/{index}/index.{stream_format}".format(
-                index=str(self._stream_file_index),
-                stream_format=stream_format)
-
-            endpoint = {
-                "stream_format": stream_format,
-                "scheme": "http",
-                "port": GlobalFactory.get_settings()["http"]["port"],
-                "path": file}
-
-        return endpoint
+        return SimpleTranscodingFileServer.LivestreamController(endpoint)
 
     def run(self):
         super().run()
-        asyncio.run(self._run_forever())
+        self._logger.info("Simple Transcoding File Server is ready, HTTP: {bind}:{port}".format(bind=self._bind, port=self._port))
+        asyncio.new_event_loop().run_until_complete(self._run_forever())
 
     async def _run_forever(self):
-        http_server = SimpleFFMpegServer.HTTPServer(self._http_bind, int(self._http_port), self._web_root_dir)
-        await http_server.start()
-        self._logger.info("Simple FFMPEG Server is ready, HTTP: {http_bind}:{http_port}".format(
-            http_bind=self._http_bind,
-            http_port=self._http_port))
+        app = web.Application()
+        # app.add_routes([web.static("/", self._root_dir)])
+        app.add_routes([web.get("/stream", self._on_connect)])
 
-        ws_server = SimpleFFMpegServer.WSServer(self._ws_bind, int(self._ws_port))
-        await ws_server.start()
-        self._logger.info("Simple FFMPEG Server is ready, WS: {ws_bind}:{ws_port}".format(
-            ws_bind=self._ws_bind,
-            ws_port=self._ws_port))
+        runner = web.AppRunner(app)
+        await runner.setup()
 
-        await asyncio.Future()
+        site = web.TCPSite(runner, self._bind, int(self._port))
+        await site.start()
 
-    class HTTPServer:
-        def __init__(self, bind, port, root_dir):
-            self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-            self._bind = bind
-            self._port = port
-            self._root_dir = root_dir
+    async def _on_connect(request):
+        pprint(request)
+        return web.Response(text="Hello, world")
 
-        async def start(self):
-            web_app = web.Application()
-            web_app.add_routes([web.static("/", self._root_dir)])
-            web_server_runner = web.AppRunner(web_app)
-            web_server_site = web.TCPSite(web_server_runner, self._bind, int(self._port))
+    # async def _stderr_logger(self, process):
+    #     logger = GlobalFactory.get_logger().get_child("ffmpeg:{pid}".format(pid=process.pid))
+    #     try:
+    #         while True:
+    #             line = await process.stderr.readline()
+    #             if line:
+    #                 logger.error(line)
+    #             else:
+    #                 break
+    #     except Exception as e:
+    #         self._logger.error(e)
+    #
+    # def prepare(self, url, stream_format):
+    #     self._stream_index += 1
+    #     file = "/streams/{index}/index.{stream_format}".format(
+    #         index=str(self._stream_index),
+    #         stream_format=stream_format)
+    #
+    #     os.makedirs("{root_dir}/streams/{index}".format(
+    #         root_dir=self._root_dir,
+    #         index=str(self._stream_index)),
+    #         exist_ok=True)
+    #
+    #     command = self._transcoding_server.file_transcoders[stream_format]
+    #     asyncio.run_coroutine_threadsafe(coroutine, loop)
+    #     process = self._loop.create_subprocess_exec(
+    #         *command.format(url=url, file=file).split(" "),
+    #         stdout=asyncio.subprocess.DEVNULL,
+    #         stderr=asyncio.subprocess.PIPE)
+    #
+    #     self._loop.create_task(self._stderr_logger(process=process))
+    #
 
-            await web_server_runner.setup()
-            await web_server_site.start()
+
+
 

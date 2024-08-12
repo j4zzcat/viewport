@@ -1,4 +1,4 @@
-version = "1.2.0"
+version = "1.3.0"
 
 [httpd]
 bind = "0.0.0.0"
@@ -7,62 +7,62 @@ port = "8001"
 [protocol.unifi]
 default_transcoder = "fmp4"
 
-[protocol.unifi.reflector.ws]
+[protocol.unifi.server.streaming]
+protocol = "ws"
 bind = "0.0.0.0"
 port = "8002"
 
 [protocol.rtsp]
 default_transcoder = "hls"
 
-[protocol.rtsp.streaming_transcoding_server]
-scheme = "ws"
+[protocol.rtsp.server.streaming]
+protocol = "ws"
 bind = "0.0.0.0"
 port = "8003"
 
-[protocol.rtsp.file_transcoding_server]
-scheme = "http"
+[protocol.rtsp.server.file]
+protocol = "http"
 bind = "0.0.0.0"
 port = "8004"
 
-[protocol.rtsp.transcoders]
-[protocol.rtsp.transcoders.hls]
-server  = "file_transcoding_server"
-command = "ffmpeg"
-args    = """-hide_banner -loglevel error -nostats \
+[protocol.rtsp.transcoder.hls]
+server  = "file"
+program = "ffmpeg"
+options = """-hide_banner -loglevel error -nostats \
              -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
              -f hls \
              -hls_time 5 -hls_list_size 3 -hls_flags delete_segments"""
 
-[protocol.rtsp.transcoders.mpegts]
-server  = "streaming_transcoding_server"
-command = "ffmpeg"
-args    = """-hide_banner -loglevel error -nostats \
+[protocol.rtsp.transcoder.mpegts]
+server  = "streaming"
+program = "ffmpeg"
+options = """-hide_banner -loglevel error -nostats \
              -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
              -f mpegts"""
 
-[protocol.rtsp.transcoders.flv]
-server  = "streaming_transcoding_server"
-command = "ffmpeg"
-args    = """-hide_banner -loglevel error -nostats \
+[protocol.rtsp.transcoder.flv]
+server  = "streaming"
+program = "ffmpeg"
+options = """-hide_banner -loglevel error -nostats \
              -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
              -f flv"""
 
-[protocol.rtsp.transcoders.fmp4_1]
-server  = "streaming_transcoding_server"
-command = "ffmpeg"
-args    = """-hide_banner -loglevel error -nostats \
+[protocol.rtsp.transcoder.fmp4_1]
+server  = "streaming"
+program = "ffmpeg"
+options = """-hide_banner -loglevel error -nostats \
              -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an
              -f mp4 \
              -movflags frag_keyframe+empty_moov+default_base_moof"""
 
-[protocol.rtsp.transcoders.fmp4_2]
-server  = "streaming_transcoding_server"
-command = "ffmpeg"
-args   =  """-hide_banner -loglevel error -nostats \
+[protocol.rtsp.transcoder.fmp4_2]
+server  = "streaming"
+program = "ffmpeg"
+options =  """-hide_banner -loglevel error -nostats \
              -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -rtsp_transport tcp \
              -fflags nobuffer -buffer_size 100000k \
@@ -71,10 +71,10 @@ args   =  """-hide_banner -loglevel error -nostats \
              -f mp4 \
              -movflags frag_keyframe+empty_moov+default_base_moof"""
 
-[protocol.rtsp.transcoders.fmp4_3]
-server  = "streaming_transcoding_server"
-command = "ffmpeg"
-args    = """-hide_banner -loglevel error -nostats \
+[protocol.rtsp.transcoder.fmp4_3]
+server  = "streaming"
+program = "ffmpeg"
+options = """-hide_banner -loglevel error -nostats \
              -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -rtsp_transport tcp \
              -fflags nobuffer -max_delay 5000000 \

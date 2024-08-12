@@ -6,14 +6,14 @@ class GridLayout:
         self.rows = rows
         self.columns = columns
 
-    def render(self, player_urls):
+    def render(self, livestream_endpoints):
         env = Environment(
             loader=PackageLoader("backend.ui", "templates"),
             autoescape=select_autoescape()
         )
 
         template = env.get_template("grid.html")
-        return template.render(layout=self, player_urls=player_urls)
+        return template.render(layout=self, livestream_endpoints=livestream_endpoints)
 
     def to1fr(self, n):
         return "".join(["1fr " for i in range(n)])

@@ -42,8 +42,8 @@
 </body>
 <script>
     const videoStreamUrls = [
-        {% for url in player_urls %}
-          [ "{{ url[0] }}", "{{ url[1]['scheme'] }}://" + window.location.hostname + ":{{ url[1]['port'] }}{{ url[1]['path'] }}" ],
+        {% for livestream in livestream_endpoints %}
+          [ "{{ livestream['format'] }}", "{{ livestream['scheme'] }}://" + window.location.hostname + ":{{ livestream['port'] }}{{ livestream['path'] }}" ],
         {% endfor %}
     ];
 
