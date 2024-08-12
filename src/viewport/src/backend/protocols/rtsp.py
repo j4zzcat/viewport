@@ -17,9 +17,6 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._transcoding_controller = None
 
-    def initialize(self):
-        super().initialize()
-
     def run(self):
         super().run()
         self._transcoding_controller = GlobalFactory.new_transcoding_controller()
@@ -249,20 +246,18 @@ class SimpleTranscodingFileServer(SimpleCommandServer.BaseCommand):
     def run(self):
         super().run()
         self._logger.info("Simple Transcoding File Server is ready, HTTP: {bind}:{port}".format(bind=self._bind, port=self._port))
-        asyncio.new_event_loop().run_until_complete(self._run_forever())
+        asyncio.run(self._run_forever())
 
     async def _run_forever(self):
-        app = web.Application()
-        # app.add_routes([web.static("/", self._root_dir)])
-        app.add_routes([web.get("/stream", self._on_connect)])
-
-        runner = web.AppRunner(app)
+        server = web.Server(self._on_connect)
+        runner = web.ServerRunner(server)
         await runner.setup()
-
         site = web.TCPSite(runner, self._bind, int(self._port))
         await site.start()
 
-    async def _on_connect(request):
+        await asyncio.sleep(100*3600)
+
+    async def _on_connect(self, request):
         pprint(request)
         return web.Response(text="Hello, world")
 

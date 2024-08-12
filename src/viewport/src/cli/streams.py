@@ -14,14 +14,12 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         self._layout = layout
         self._urls = urls
 
-    def initialize(self):
-        super().initialize()
-
-        self._layout = self._parse_layout(self._layout)
-        self._urls = self._parse_urls(self._urls)
-
     def run(self):
         super().run()
+
+        # Parse URLs and Layout
+        self._layout = self._parse_layout(self._layout)
+        self._urls = self._parse_urls(self._urls)
 
         # Iterate over the unique protocols and start the necessary infrastructure
         # to serve them. For unifi, this is the Reflector Server, for rtsp(s) this is

@@ -126,12 +126,12 @@ class SimpleCommandServer:
 
     def _run(self, command):
         try:
-            try:
-                self._logger.debug("Initializing command: '{command}'".format(command=command))
-                command.initialize()
-            except Exception as e:
-                self._logger.error("Exception while initializing command: '{command}', error: 'e'".format(command=command, e=e))
-                raise e
+            # try:
+            #     self._logger.debug("Initializing command: '{command}'".format(command=command))
+            #     command.initialize()
+            # except Exception as e:
+            #     self._logger.error("Exception while initializing command: '{command}', error: 'e'".format(command=command, e=e))
+            #     raise e
 
             try:
                 self._logger.debug("Running command: '{command}'".format(command=command))
