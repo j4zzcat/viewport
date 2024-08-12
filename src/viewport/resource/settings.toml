@@ -5,7 +5,6 @@ bind = "0.0.0.0"
 port = "8001"
 
 [protocol.unifi]
-[protocol.unifi.reflector]
 default_transcoder = "fmp4"
 
 [protocol.unifi.reflector.ws]
@@ -13,79 +12,75 @@ bind = "0.0.0.0"
 port = "8002"
 
 [protocol.rtsp]
-[protocol.rtsp.reflector]
 default_transcoder = "hls"
 
-[protocol.rtsp.reflector.ws]
+[protocol.rtsp.streaming_transcoding_server]
+scheme = "ws"
 bind = "0.0.0.0"
 port = "8003"
 
-[protocol.rtsp.reflector.http]
+[protocol.rtsp.file_transcoding_server]
+scheme = "http"
 bind = "0.0.0.0"
 port = "8004"
 
 [protocol.rtsp.transcoders]
-hls = """ffmpeg \
-  -i {input} \
-  -hide_banner -loglevel error -nostats \
-  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
-  -vcodec copy \
-  -an \
-  -f hls \
-  -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
-  {file}"""
+[protocol.rtsp.transcoders.hls]
+server  = "file_transcoding_server"
+command = "ffmpeg"
+args    = """-hide_banner -loglevel error -nostats \
+             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -vcodec copy -an \
+             -f hls \
+             -hls_time 5 -hls_list_size 3 -hls_flags delete_segments"""
 
-mpegts = """ffmpeg \
-  -i {input} \
-  -hide_banner -loglevel error -nostats \
-  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
-  -vcodec copy \
-  -an \
-  -f mpegts \
-  {stdout}"""
+[protocol.rtsp.transcoders.mpegts]
+server  = "streaming_transcoding_server"
+command = "ffmpeg"
+args    = """-hide_banner -loglevel error -nostats \
+             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -vcodec copy -an \
+             -f mpegts"""
 
-flv = """ffmpeg \
-  -i {input} \
-  -hide_banner -loglevel error -nostats \
-  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
-  -vcodec copy \
-  -an \
-  -f flv \
-  {stdout}"""
+[protocol.rtsp.transcoders.flv]
+server  = "streaming_transcoding_server"
+command = "ffmpeg"
+args    = """-hide_banner -loglevel error -nostats \
+             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -vcodec copy -an \
+             -f flv"""
 
-fmp4_1 = """ffmpeg \
-  -i {input} \
-  -hide_banner -loglevel error -nostats \
-  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
-  -vcodec copy \
-  -an \
-  -f mp4 \
-  -movflags frag_keyframe+empty_moov+default_base_moof \
-  {stdout}"""
+[protocol.rtsp.transcoders.fmp4_1]
+server  = "streaming_transcoding_server"
+command = "ffmpeg"
+args    = """-hide_banner -loglevel error -nostats \
+             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -vcodec copy -an
+             -f mp4 \
+             -movflags frag_keyframe+empty_moov+default_base_moof"""
 
-fmp4_2 = """ffmpeg \
-  -i {input} \
-  -hide_banner -loglevel error -nostats \
-  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
-  -fflags nobuffer -rtsp_transport tcp \
-  -buffer_size 100000k -analyzeduration 1000000 -probesize 1000000 \
-  -vcodec copy \
-  -an \
-  -f mp4 \
-  -movflags frag_keyframe+empty_moov+default_base_moof \
-  {stdout}"""
+[protocol.rtsp.transcoders.fmp4_2]
+server  = "streaming_transcoding_server"
+command = "ffmpeg"
+args   =  """-hide_banner -loglevel error -nostats \
+             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -rtsp_transport tcp \
+             -fflags nobuffer -buffer_size 100000k \
+             -analyzeduration 1000000 -probesize 1000000 \
+             -vcodec copy -an \
+             -f mp4 \
+             -movflags frag_keyframe+empty_moov+default_base_moof"""
 
-fmp4_3 = """ffmpeg \
-  -i {input} \
-  -hide_banner -loglevel error -nostats \
-  -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
-  -fflags nobuffer -rtsp_transport tcp \
-  -max_delay 5000000 \
-  -analyzeduration 1000000 -probesize 1000000 \
-  -vcodec copy \
-  -an \
-  -f mp4 \
-  -movflags frag_keyframe+empty_moov+default_base_moof \
-  {stdout}"""
+[protocol.rtsp.transcoders.fmp4_3]
+server  = "streaming_transcoding_server"
+command = "ffmpeg"
+args    = """-hide_banner -loglevel error -nostats \
+             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -rtsp_transport tcp \
+             -fflags nobuffer -max_delay 5000000 \
+             -analyzeduration 1000000 -probesize 1000000 \
+             -vcodec copy -an \
+             -f mp4 \
+             -movflags frag_keyframe+empty_moov+default_base_moof"""
 
 

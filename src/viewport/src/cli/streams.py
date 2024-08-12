@@ -39,7 +39,7 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         # may be returned.
         player_urls = []
         for url in self._urls:
-            livestreams = protocol_controllers[url.scheme].create_livestream_controller(url)
+            livestreams = protocol_controllers[url.scheme].new_livestream_controller(url)
             player_urls += [livestream.get_url() for livestream in livestreams]
             [livestream.start() for livestream in livestreams]
 

@@ -43,7 +43,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
             self._reflector_controller)
         return self
 
-    def create_livestream_controller(self, url):
+    def new_livestream_controller(self, url):
         url = urllib.parse(url) if isinstance(url, str) else url
         host = url.netloc.split('@')[1]
 
