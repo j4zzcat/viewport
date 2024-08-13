@@ -16,7 +16,7 @@
 # This software. If not, see <https://www.gnu.org/licenses/>.
 #
 
-from backend.cmdsrv import SimpleCommandServer
+from backend.cmdsrv import Command
 
 
 class AbstractLivestreamController:
@@ -35,7 +35,7 @@ class AbstractLivestreamController:
         pass
 
 
-class AbstractProtocolController(SimpleCommandServer.BaseCommand):
+class AbstractProtocolController(Command):
     def new_livestream_controller(self, url) -> [AbstractLivestreamController]:
         pass
 

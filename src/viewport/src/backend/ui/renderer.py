@@ -3,11 +3,11 @@ import os
 import shutil
 import subprocess
 
-from backend.cmdsrv import SimpleCommandServer
+from backend.cmdsrv import Command
 from context import GlobalFactory
 
 
-class SimpleUIRenderer(SimpleCommandServer.BaseCommand):
+class SimpleUIRenderer(Command):
     def __init__(self, layout, livestream_endpoints, directory):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._layout = layout
@@ -15,8 +15,6 @@ class SimpleUIRenderer(SimpleCommandServer.BaseCommand):
         self._output_dir = directory
 
     def run(self):
-        super().run()
-
         self._logger.debug("Rendering UI with layout: '{layout}' to '{dir}'".format(
             layout=self._layout.__class__.__name__,
             dir=self._output_dir))

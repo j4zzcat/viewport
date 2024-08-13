@@ -3,11 +3,11 @@ from urllib.parse import urlparse
 
 from context import GlobalFactory
 from backend.ui.grid import GridLayout
-from backend.cmdsrv import SimpleCommandServer
+from backend.cmdsrv import Command
 from backend.error import ApplicationException
 
 
-class StreamsCliCommand(SimpleCommandServer.BaseCommand):
+class StreamsCliCommand(Command):
     def __init__(self, layout, urls):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
 
@@ -15,8 +15,6 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         self._urls = urls
 
     def run(self):
-        super().run()
-
         # Parse URLs and Layout
         self._layout = self._parse_layout(self._layout)
         self._urls = self._parse_urls(self._urls)
@@ -26,9 +24,9 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
         # the SRS Media Server.
         protocol_controllers = {}
         for protocol in {url.scheme for url in self._urls}:
-            protocol_controllers[protocol] = GlobalFactory.get_command_server().run_synchronously(
-                eval("GlobalFactory.get_{protocol}_protocol_controller()".format(
-                    protocol=protocol)))
+            protocol_controllers[protocol] = eval(
+                "GlobalFactory.get_{protocol}_protocol_controller().run()".format(
+                    protocol=protocol))
 
         # Iterate over the URLs in the order received.
         # Create the livestream controller for each url. Depending on the input url,
@@ -45,10 +43,9 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
             data_dir=GlobalFactory.get_dirs()["data_dir"])
         os.makedirs(html_dir, exist_ok=True)
 
-        GlobalFactory.get_command_server().run_synchronously(
-            GlobalFactory.new_ui_renderer(self._layout, player_endpoints, html_dir))
+        GlobalFactory.new_ui_renderer(self._layout, player_endpoints, html_dir).run()
 
-        GlobalFactory.get_command_server().run_asynchronously(
+        GlobalFactory.get_command_server().submit(
             GlobalFactory.get_web_server(html_dir))
 
         # Leave MainThread free for signal handling

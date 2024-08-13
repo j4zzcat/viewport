@@ -73,10 +73,9 @@ def main():
         logger.debug("Processing 'streams' command")
 
         try:
-            GlobalFactory.get_command_server().run_synchronously(
-                GlobalFactory.new_streams_cli_command(
-                    layout=args['--layout'],
-                    urls=args['<url>']))
+            GlobalFactory.new_streams_cli_command(
+                layout=args['--layout'],
+                urls=args['<url>']).run()
 
         except ApplicationException as e:
             print("Fatal error, stopping. Exit code: 127")

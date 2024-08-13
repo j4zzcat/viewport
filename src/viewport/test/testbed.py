@@ -1,52 +1,103 @@
-import sys
-
-sys.path.append("/Users/snd/Development/Projects/j4zzcat/viewport/src/viewport/src")
-
 import asyncio
-
 from aiohttp import web
-
-from backend.cmdsrv import SimpleCommandServer
-
-
-async def handle(request):
-    return web.Response(text="Hello, World!")
-
-async def start_server():
-    app = web.Application()
-    # app.router.add_get('/', handle)
-    # Ensure the static route is configured correctly
-    app.router.add_static('/files/', path="/tmp/viewport/transcoding_file_server/files")
-
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, '127.0.0.1', 8004)
-    print('Serving on http://127.0.0.1:8004')
-    await site.start()
-
-    while True:
-        await asyncio.sleep(3600)  # Keep the server running
-
-def run_server():
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(start_server())
-
-class Command(SimpleCommandServer.BaseCommand):
-    def run(self):
-        run_server()
+import concurrent.futures
 
 
+class Command:
+    def run(self) -> any:
+        if hasattr(self, "_logger"):
+            self._logger.debug("Running")
 
-cs = SimpleCommandServer()
-cs.run_asynchronously(Command())
+    def done(self):
+        if hasattr(self, "_logger"):
+            self._logger.debug("Done")
 
-# tpe = ThreadPoolExecutor(max_workers=20, thread_name_prefix='TPE')
-# tpe.submit(run_server)
 
-# Ensure the main script doesn't exit immediately
-try:
-    while True:
-        pass
-except KeyboardInterrupt:
-    print("Server is shutting down...")
+class AsyncCommand:
+    async def run(self, loop) -> any:
+        if hasattr(self, "_logger"):
+            self._logger.debug("Running")
+
+    async def done(self):
+        if hasattr(self, "_logger"):
+            self._logger.debug("Done")
+
+
+class AiohttpServerCommand(AsyncCommand):
+    def __init__(self, host='localhost', port=5050, route='/static', directory='/tmp/viewport'):
+        self.host = host
+        self.port = port
+        self.route = route
+        self.directory = directory
+
+    async def run(self, loop):
+        await self._run_forever()
+
+    async def _run_forever(self):
+        app = web.Application()
+        app.router.add_get('/', self._handle)
+        app.router.add_static(self.route, path=self.directory, show_index=True)
+
+        runner = web.AppRunner(app)
+        await runner.setup()
+        site = web.TCPSite(runner, self.host, self.port)
+        await site.start()
+        print(f"Server started at http://{self.host}:{self.port} serving {self.directory}")
+
+        # Run the event loop forever
+        try:
+            await asyncio.Event().wait()
+        except asyncio.CancelledError:
+            print("Server is shutting down...")
+
+    async def _handle(self, request):
+        return web.Response(text="Hello, Aiohttp!")
+
+
+
+
+class CommandServer:
+    def __init__(self):
+        self._tpe = concurrent.futures.ThreadPoolExecutor(max_workers=5, thread_name_prefix='TPE')
+
+    def submit(self, command, runner="thread") -> concurrent.futures.Future:
+        if runner == "thread":
+            return self._tpe.submit(self._run_command, command)
+
+    def _run_command(self, command) -> any:
+        if isinstance(command, AsyncCommand):
+            # Create an asyncio event loop for the command
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                result = loop.run_until_complete(command.run(loop))
+            finally:
+                command.done()
+                loop.close()
+            return result
+        elif isinstance(command, Command):
+            return command.run()
+
+    def shutdown(self):
+        self._tpe.shutdown(wait=True)
+
+def main():
+    server = CommandServer()
+
+    try:
+        # Start the aiohttp server command
+        future = server.submit(AiohttpServerCommand(
+            host='localhost',
+            port=5050,
+            route='/static',
+            directory='/tmp/viewport'
+        ))
+
+        # Wait for the server to be properly initialized (optional)
+        future.result()
+
+    finally:
+        server.shutdown()
+
+if __name__ == "__main__":
+    main()

@@ -4,11 +4,11 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 import functools
 import socketserver
 
-from backend.cmdsrv import SimpleCommandServer
+from backend.cmdsrv import Command
 from context import GlobalFactory
 
 
-class SimpleWebServer(SimpleCommandServer.BaseCommand):
+class SimpleWebServer(Command):
     class DefaultHandler(SimpleHTTPRequestHandler):
         def log_message(self, fmt, *args):
             if not hasattr(self, "_logger"):
