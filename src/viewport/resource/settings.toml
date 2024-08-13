@@ -29,16 +29,17 @@ port = "8004"
 server  = "file"
 program = "ffmpeg"
 options = """-hide_banner -loglevel error -nostats \
-             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
              -f hls \
-             -hls_time 5 -hls_list_size 3 -hls_flags delete_segments"""
+             -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
+             {output_file}"""
 
 [protocol.rtsp.transcoder.mpegts]
 server  = "streaming"
 program = "ffmpeg"
 options = """-hide_banner -loglevel error -nostats \
-             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
              -f mpegts"""
 
@@ -46,7 +47,7 @@ options = """-hide_banner -loglevel error -nostats \
 server  = "streaming"
 program = "ffmpeg"
 options = """-hide_banner -loglevel error -nostats \
-             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
              -f flv"""
 
@@ -54,7 +55,7 @@ options = """-hide_banner -loglevel error -nostats \
 server  = "streaming"
 program = "ffmpeg"
 options = """-hide_banner -loglevel error -nostats \
-             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an
              -f mp4 \
              -movflags frag_keyframe+empty_moov+default_base_moof"""
@@ -63,7 +64,7 @@ options = """-hide_banner -loglevel error -nostats \
 server  = "streaming"
 program = "ffmpeg"
 options =  """-hide_banner -loglevel error -nostats \
-             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -rtsp_transport tcp \
              -fflags nobuffer -buffer_size 100000k \
              -analyzeduration 1000000 -probesize 1000000 \
@@ -75,7 +76,7 @@ options =  """-hide_banner -loglevel error -nostats \
 server  = "streaming"
 program = "ffmpeg"
 options = """-hide_banner -loglevel error -nostats \
-             -re -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -rtsp_transport tcp \
              -fflags nobuffer -max_delay 5000000 \
              -analyzeduration 1000000 -probesize 1000000 \

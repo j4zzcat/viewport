@@ -36,7 +36,7 @@ class GlobalFactory:
             if os.path.isdir(os.environ["RAM_FS"]):
                 data_dir = "{ram_fs}/viewport".format(ram_fs=os.environ["RAM_FS"])
         else:
-            data_dir = "/tmp/viewport"
+            data_dir = "{home}/.viewport".format(home=os.environ["HOME"])
 
         os.makedirs(data_dir, exist_ok=True)
         properties["dirs"]["data_dir"] = os.path.abspath(data_dir)
@@ -126,15 +126,15 @@ class GlobalFactory:
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingController))
         return SimpleTranscodingController()
 
-    def new_transcoding_file_server(self, transcoders, bind, port):
-        from backend.protocols.rtsp import SimpleTranscodingFileServer
-        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingFileServer))
-        return SimpleTranscodingFileServer(transcoders, bind, port)
-
     def new_transcoding_streaming_server(self, transcoders, bind, port):
         from backend.protocols.rtsp import SimpleTranscodingStreamingServer
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingStreamingServer))
         return SimpleTranscodingStreamingServer(transcoders, bind, port)
+
+    def new_transcoding_file_server(self, transcoders, bind, port):
+        from backend.protocols.rtsp import SimpleTranscodingFileServer
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingFileServer))
+        return SimpleTranscodingFileServer(transcoders, bind, port)
 
     def new_ui_renderer(self, layout, player_urls, directory):
         from backend.ui.renderer import SimpleUIRenderer

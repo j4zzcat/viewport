@@ -41,7 +41,7 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
             [livestream.start() for livestream in livestreams]
 
         # Render the web page
-        html_dir = "{data_dir}/html".format(
+        html_dir = "{data_dir}/web_server".format(
             data_dir=GlobalFactory.get_dirs()["data_dir"])
         os.makedirs(html_dir, exist_ok=True)
 
