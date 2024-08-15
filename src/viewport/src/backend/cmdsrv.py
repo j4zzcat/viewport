@@ -18,9 +18,11 @@
 
 import asyncio
 import concurrent.futures
+from threading import Thread
 
 from backend.error import ApplicationException
 from abc import ABC, abstractmethod
+
 
 class Command(ABC):
     @abstractmethod
@@ -30,43 +32,23 @@ class Command(ABC):
     def done(self):
         pass
 
-class AsyncCommand(ABC):
-    @abstractmethod
-    async def run(self, loop):
-        pass
-
-    async def done(self):
-        pass
-
 
 class SimpleCommandServer:
     def __init__(self):
         self._tpe = concurrent.futures.ThreadPoolExecutor(
             max_workers=10,
             thread_name_prefix='TPE')
+        self._ppe = concurrent.futures.ProcessPoolExecutor(max_workers=5)
+        pass
 
-    def submit(self, command, runner="thread") -> concurrent.futures.Future:
-        if runner == "thread":
-            return self._tpe.submit(self._run_command, command)
-        else:
-            raise ApplicationException("Invalid runner")
+    def submit(self, command, runner="thread"):
+        return self._tpe.submit(self._run_command, command)
 
     def _run_command(self, command) -> any:
-        if isinstance(command, AsyncCommand):
-            # Create an asyncio event loop for the command
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            try:
-                return loop.run_until_complete(command.run(loop))
-            finally:
-                command.done()
-                loop.close()
-
-        elif isinstance(command, Command):
-            try:
-                return command.run()
-            finally:
-                command.done()
+        try:
+            return command.run()
+        finally:
+            command.done()
 
     def shutdown(self):
         self._tpe.shutdown(wait=True)

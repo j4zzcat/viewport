@@ -22,7 +22,7 @@ port = "8003"
 
 [protocol.rtsp.server.file]
 protocol = "http"
-bind = "0.0.0.0"
+bind = "127.0.0.1"
 port = "8004"
 
 [protocol.rtsp.transcoder.hls]
