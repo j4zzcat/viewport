@@ -1,7 +1,5 @@
 import asyncio
 import subprocess
-import time
-from asyncio import InvalidStateError, futures
 from concurrent.futures import ThreadPoolExecutor
 
 from backend.error import ApplicationException
@@ -14,6 +12,7 @@ class ProcessManager:
     PROCESS_START_TIMEOUT_MS = 3000
 
     class Controller:
+        # Extra keywords accepted on top of those of popen
         KEYWORDS = [("stdout_text", False), ("stderr_text", False), ("monitor", False)]
 
         def __init__(self, pm, task_runner, *args, **kwargs):
@@ -94,7 +93,11 @@ class ProcessManager:
 
             return kwargs, extra_kwargs_found
 
-        async def _mirror_stream(self, name, stream, read_fn, read_fn_args, callback, eof, error):
+        # Asynchronously mirrors a stream by repeatedly calling a read function and executing a callback
+        # upon receiving data. Handles errors and end-of-file notifications gracefully. The function
+        # operates in an infinite loop until the read_fn indicates there is no more data. Any exceptions
+        # raised during execution are logged, and the error callback is invoked if provided.
+        async def _mirror_stream(self, name, read_fn, read_fn_args, callback, eof, error):
             try:
                 while True:
                     result = await read_fn(*read_fn_args)
@@ -103,19 +106,20 @@ class ProcessManager:
 
                     callback(result)
             except Exception as e:
-                self._logger.error(e)
+                logger = self._logger.getChild("_mirror_stream")
+                logger.error(e)
                 if error is not None:
                     error(e)
 
-            self._logger.debug("Stream '{name}' reached EOF".format(name=name))
+            self._logger.warn("Stream '{name}' reached EOF".format(name=name))
             if eof is not None:
-                eof(stream)
+                eof(name)
 
         async def _mirror_binary_stream(self, name, stream, callback, eof, error):
-            await self._mirror_stream(name, stream, stream.read, [1], callback, eof, error)
+            await self._mirror_stream(name, stream.read, [1], callback, eof, error)
 
         async def _mirror_text_stream(self, name, stream, callback, eof, error):
-            await self._mirror_stream(name, stream, stream.readLine, [], callback, eof, error)
+            await self._mirror_stream(name, stream.readline, [], callback, eof, error)
 
     class TaskRunner:
         def __init__(self, id):

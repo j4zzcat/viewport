@@ -16,7 +16,7 @@ pc = pm.new_process_controller(
     # stderr_text=True,
     monitor=True)
 
-pc.on("stdout", sys.stdout.buffer.write, print)
+pc.on("stdout", sys.stdout.buffer.write)
 # pc.on("stderr", sys.stdout.buffer.write, print)
 # pc.on("done", lambda p: print(p.return_code))
 
