@@ -46,10 +46,9 @@ class ProcessManager:
                 raise ApplicationException("Failed to start process, '{e}".format(e=e))
 
             self._logger.debug("Waiting for process to start")
-            self._process = utils.busy_wait(
+            self._process = utils.future_busy_wait(
                 future,
-                ProcessManager.PROCESS_START_TIMEOUT_MS,
-                ApplicationException("Timeout waiting for process to start"))
+                ProcessManager.PROCESS_START_TIMEOUT_MS)
 
             if self._process.returncode != 0:
                 raise ApplicationException("Process failed to start")
@@ -127,14 +126,10 @@ class ProcessManager:
         # Running on the caller's thread
         def new_task(self, task):
             self._logger.debug("New task: {task}".format(task=task))
-            waiting = 0
-            while self.loop is None:
-                self._logger.debug("Waiting for ThreadRunner '{id}' to start".format(id=self.id))
-                time.sleep(0.1)
-                # time.sleep(ProcessManager.BUSY_LOOP_SLEEP_TIME_S)
-                # waiting += ProcessManager.BUSY_LOOP_SLEEP_TIME_S
-                # if waiting > ProcessManager.THREAD_START_TIMEOUT_S:
-                #     raise ApplicationException("Timeout waiting for ThreadRunner to start")
+
+            utils.condition_busy_wait(
+                lambda: self.loop is not None,
+                timeout_ms=ProcessManager.THREAD_START_TIMEOUT_MS)
 
             return asyncio.run_coroutine_threadsafe(self._with_log(task), self.loop)
 

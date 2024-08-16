@@ -12,7 +12,7 @@ pc = pm.new_process_controller(
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
     # text=False,
-    # stdout_text=True,
+    stdout_text=True,
     # stderr_text=True,
     monitor=True)
 
