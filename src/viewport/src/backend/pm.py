@@ -7,12 +7,25 @@ from context import GlobalFactory
 import backend.utils as utils
 
 
+#
+# Manages the lifecycle and execution of processes and their associated task runners. The
+# ProcessManager class is responsible for initializing and managing task runners, creating new
+# process controllers, and overseeing the execution of subprocesses. It utilizes a
+# ThreadPoolExecutor to run task runner event loops in separate threads and assigns task runners
+# to process controllers in a round-robin fashion.
+#
 class ProcessManager:
     THREAD_START_TIMEOUT_MS = 2000
     PROCESS_START_TIMEOUT_MS = 3000
 
+    #
+    # Handles the lifecycle and control of individual processes. The Controller class is
+    # responsible for starting, stopping, and handling the output of a subprocess. It allows for
+    # the registration of coros callbacks to handle the subprocess's stdout and stderr streams,
+    # liveness monitoring and more. The coros themselves run on the eventloop of a TaskRunner.
+    #
     class Controller:
-        # Extra keywords accepted on top of those of popen
+        # Extra keywords accepted on top of those of Popen
         KEYWORDS = [("stdout_text", False), ("stderr_text", False), ("monitor", False)]
 
         def __init__(self, pm, task_runner, *args, **kwargs):
@@ -20,7 +33,7 @@ class ProcessManager:
             self._pm = pm
             self._task_runner = task_runner
             self._popen_args = args
-            self._popen_kwargs, self._kwargs = self._split_kwargs(kwargs, self.KEYWORDS)
+            self._popen_kwargs, self._kwargs = utils.split_kwargs(kwargs, self.KEYWORDS)
 
             self._process = None
             self._callbacks = {}
@@ -76,27 +89,13 @@ class ProcessManager:
         def stop(self):
             pass
 
-        # The _split_kwargs function separates specified keywords from the original dictionary
-        # of keyword arguments and assigns them default values if not present. It returns the
-        # modified kwargs dictionary and a new dictionary with the separated keywords and their
-        # corresponding values.
-        def _split_kwargs(self, kwargs, extra_kwargs):
-            extra_kwargs_found = {}
-            for kw, default_value in extra_kwargs:
-                if kw in kwargs:
-                    value = kwargs[kw]
-                    del kwargs[kw]
-                else:
-                    value = default_value
-
-                extra_kwargs_found[kw] = value
-
-            return kwargs, extra_kwargs_found
-
-        # Asynchronously mirrors a stream by repeatedly calling a read function and executing a callback
-        # upon receiving data. Handles errors and end-of-file notifications gracefully. The function
-        # operates in an infinite loop until the read_fn indicates there is no more data. Any exceptions
-        # raised during execution are logged, and the error callback is invoked if provided.
+        #
+        # Asynchronously mirrors a stream by repeatedly calling a read function and executing a
+        # callback upon receiving data. Handles errors and end-of-file notifications gracefully.
+        # The function operates in an infinite loop until the read_fn indicates there is no more
+        # data. Any exceptions raised during execution are logged, and the error callback is
+        # invoked if provided.
+        #
         async def _mirror_stream(self, name, read_fn, read_fn_args, callback, eof, error):
             try:
                 while True:
@@ -111,7 +110,7 @@ class ProcessManager:
                 if error is not None:
                     error(e)
 
-            self._logger.warn("Stream '{name}' reached EOF".format(name=name))
+            self._logger.warning("Stream '{name}' reached EOF".format(name=name))
             if eof is not None:
                 eof(name)
 
@@ -121,6 +120,12 @@ class ProcessManager:
         async def _mirror_text_stream(self, name, stream, callback, eof, error):
             await self._mirror_stream(name, stream.readline, [], callback, eof, error)
 
+    #
+    # Manages the execution of asynchronous tasks in a dedicated event loop. The TaskRunner class
+    # is responsible for creating and managing an asyncio event loop in a separate thread. It
+    # allows for submitting new asynchronous tasks to be run on this event loop, as well as
+    # cancelling existing tasks. Each TaskRunner instance is identified by a unique identifier.
+    #
     class TaskRunner:
         def __init__(self, id):
             self.id = id
@@ -140,6 +145,7 @@ class ProcessManager:
         def cancel_task(self, task):
             return asyncio.run_coroutine_threadsafe(self._with_log(task.cancel()), self.loop)
 
+        # Running on the task's thread
         def run(self):
             self._logger.debug("Starting loop")
 
@@ -147,7 +153,7 @@ class ProcessManager:
             asyncio.set_event_loop(self.loop)
             self.loop.run_forever()
 
-        # Running on the tasks thread on the loop
+        # Running on the task's thread on the loop as a coro
         async def _with_log(self, task):
             self._logger.debug("Starting {task}".format(task=task))
             return await asyncio.create_task(task)
@@ -175,15 +181,6 @@ class ProcessManager:
 
         return controller
 
-    # def _start_process(self, command):
-    #     return asyncio.run_coroutine_threadsafe(self._start_process(command))
-    #
-    # async def _start_process(self, command):
-    #     proc = await asyncio.create_subprocess_exec(
-    #         *command,
-    #         stdout=asyncio.subprocess.PIPE,
-    #         stderr=asyncio.subprocess.PIPE
-    #     )
 
 
 # class ProcessManagerAI:

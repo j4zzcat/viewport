@@ -5,6 +5,25 @@ from context import GlobalFactory
 
 utils_logger = GlobalFactory.get_logger().get_child("Utils")
 
+
+# The split_kwargs function separates specified keywords from the original dictionary
+# of keyword arguments and assigns them default values if not present. It returns the
+# modified kwargs dictionary and a new dictionary with the separated keywords and their
+# corresponding values.
+def split_kwargs(kwargs, extra_kwargs):
+    extra_kwargs_found = {}
+    for kw, default_value in extra_kwargs:
+        if kw in kwargs:
+            value = kwargs[kw]
+            del kwargs[kw]
+        else:
+            value = default_value
+
+        extra_kwargs_found[kw] = value
+
+    return kwargs, extra_kwargs_found
+
+
 future_busy_wait_logger = utils_logger.getChild("future_busy_wait")
 def future_busy_wait(future, timeout_ms):
     sleep_ms = 200
