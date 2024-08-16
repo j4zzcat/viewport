@@ -12,13 +12,13 @@ pc = pm.new_process_controller(
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
     # text=False,
-    stdout_text=True,
+    # stdout_text=True,
     # stderr_text=True,
     monitor=True)
 
 pc.on("stdout", sys.stdout.buffer.write, print)
-pc.on("stderr", sys.stdout.buffer.write, print)
-pc.on("done", lambda p: print(p.return_code))
+# pc.on("stderr", sys.stdout.buffer.write, print)
+# pc.on("done", lambda p: print(p.return_code))
 
 pc.start()
 

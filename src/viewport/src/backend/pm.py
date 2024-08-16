@@ -1,14 +1,18 @@
 import asyncio
 import subprocess
 import time
-from asyncio import InvalidStateError
+from asyncio import InvalidStateError, futures
 from concurrent.futures import ThreadPoolExecutor
 
 from backend.error import ApplicationException
 from context import GlobalFactory
+import backend.utils as utils
 
 
 class ProcessManager:
+    THREAD_START_TIMEOUT_MS = 2000
+    PROCESS_START_TIMEOUT_MS = 3000
+
     class Controller:
         KEYWORDS = [("stdout_text", False), ("stderr_text", False), ("monitor", False)]
 
@@ -39,16 +43,16 @@ class ProcessManager:
                 future = self._task_runner.new_task(
                     asyncio.create_subprocess_exec(*self._popen_args, **self._popen_kwargs))
             except OSError as e:
-                raise ApplicationException(e)
+                raise ApplicationException("Failed to start process, '{e}".format(e=e))
 
-            # Wait for the process to start
-            while True:
-                time.sleep(0.1)
-                try:
-                    self._process = future.result()
-                    break
-                except InvalidStateError:
-                    pass
+            self._logger.debug("Waiting for process to start")
+            self._process = utils.busy_wait(
+                future,
+                ProcessManager.PROCESS_START_TIMEOUT_MS,
+                ApplicationException("Timeout waiting for process to start"))
+
+            if self._process.returncode != 0:
+                raise ApplicationException("Process failed to start")
 
             self._logger = GlobalFactory.get_logger().get_child("{clazz}:{pid}".format(clazz=__class__.__name__, pid=self._process.pid))
             self._logger.debug("Process started, pid={pid}".format(pid=self._process.pid))
@@ -62,11 +66,11 @@ class ProcessManager:
                         fn = self._mirror_binary_stream
 
                     self._task_runner.new_task(fn(
-                        stream,
-                        eval("self._process.{stream}".format(stream=stream)),
-                        callback,
-                        None,
-                        error))
+                        name=stream,
+                        stream=eval("self._process.{stream}".format(stream=stream)),
+                        callback=callback,
+                        eof=None,
+                        error=error))
 
             # monitor
             # done
@@ -120,12 +124,17 @@ class ProcessManager:
             self._logger = GlobalFactory.get_logger().get_child("{clazz}:{id}".format(clazz=__class__.__name__, id=self.id))
             self.loop = None
 
-        # Running on the callers thread
+        # Running on the caller's thread
         def new_task(self, task):
             self._logger.debug("New task: {task}".format(task=task))
+            waiting = 0
             while self.loop is None:
-                self._logger.debug("Waiting for loop")
+                self._logger.debug("Waiting for ThreadRunner '{id}' to start".format(id=self.id))
                 time.sleep(0.1)
+                # time.sleep(ProcessManager.BUSY_LOOP_SLEEP_TIME_S)
+                # waiting += ProcessManager.BUSY_LOOP_SLEEP_TIME_S
+                # if waiting > ProcessManager.THREAD_START_TIMEOUT_S:
+                #     raise ApplicationException("Timeout waiting for ThreadRunner to start")
 
             return asyncio.run_coroutine_threadsafe(self._with_log(task), self.loop)
 
