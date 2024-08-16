@@ -11,13 +11,13 @@ pc = pm.new_process_controller(
     "/bin/bash", "-c", "echo hello >/dev/stdout; echo goodbye >/dev/stderr",
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE,
-    text=False,
+    # text=False,
     stdout_text=True,
-    stderr_text=True,
+    # stderr_text=True,
     monitor=True)
 
 pc.on("stdout", sys.stdout.buffer.write, print)
-pc.on("stderr", print, print)
+pc.on("stderr", sys.stdout.buffer.write, print)
 pc.on("done", lambda p: print(p.return_code))
 
 pc.start()

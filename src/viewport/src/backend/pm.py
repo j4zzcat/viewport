@@ -3,8 +3,6 @@ import subprocess
 import time
 from asyncio import InvalidStateError
 from concurrent.futures import ThreadPoolExecutor
-from subprocess import Popen
-from threading import Thread
 
 from backend.error import ApplicationException
 from context import GlobalFactory
@@ -15,6 +13,7 @@ class ProcessManager:
         KEYWORDS = [("stdout_text", False), ("stderr_text", False), ("monitor", False)]
 
         def __init__(self, pm, task_runner, *args, **kwargs):
+            self._logger = GlobalFactory.get_logger().get_child(__class__.__name__)
             self._pm = pm
             self._task_runner = task_runner
             self._popen_args = args
@@ -35,19 +34,24 @@ class ProcessManager:
             self._callbacks[event] = (callback, error)
 
         def start(self):
+            self._logger.debug("Starting process")
             try:
                 future = self._task_runner.new_task(
                     asyncio.create_subprocess_exec(*self._popen_args, **self._popen_kwargs))
             except OSError as e:
                 raise ApplicationException(e)
 
+            # Wait for the process to start
             while True:
-                time.sleep(0.2)
+                time.sleep(0.1)
                 try:
                     self._process = future.result()
                     break
                 except InvalidStateError:
                     pass
+
+            self._logger = GlobalFactory.get_logger().get_child("{clazz}:{pid}".format(clazz=__class__.__name__, pid=self._process.pid))
+            self._logger.debug("Process started, pid={pid}".format(pid=self._process.pid))
 
             for stream in ["stdout", "stderr"]:
                 if stream in self._callbacks:
@@ -58,8 +62,10 @@ class ProcessManager:
                         fn = self._mirror_binary_stream
 
                     self._task_runner.new_task(fn(
+                        stream,
                         eval("self._process.{stream}".format(stream=stream)),
                         callback,
+                        None,
                         error))
 
             # monitor
@@ -85,29 +91,28 @@ class ProcessManager:
 
             return kwargs, extra_kwargs_found
 
-        async def _mirror_binary_stream(self, stream, callback, error):
+        async def _mirror_stream(self, name, stream, read_fn, read_fn_args, callback, eof, error):
             try:
                 while True:
-                    b = await stream.read(1)
-                    callback(b)
+                    result = await read_fn(*read_fn_args)
+                    if not result:
+                        break
+
+                    callback(result)
             except Exception as e:
-                if hasattr(self, "_logger"):
-                    self._logger.error(e)
-
-                if error is not None:
-                        error(e)
-
-        async def _mirror_text_stream(self, stream, callback, error):
-            try:
-                while True:
-                    line = await stream.readline()
-                    callback(line)
-            except Exception as e:
-                if hasattr(self, "_logger"):
-                    self._logger.error(e)
-
+                self._logger.error(e)
                 if error is not None:
                     error(e)
+
+            self._logger.debug("Stream '{name}' reached EOF".format(name=name))
+            if eof is not None:
+                eof(stream)
+
+        async def _mirror_binary_stream(self, name, stream, callback, eof, error):
+            await self._mirror_stream(name, stream, stream.read, [1], callback, eof, error)
+
+        async def _mirror_text_stream(self, name, stream, callback, eof, error):
+            await self._mirror_stream(name, stream, stream.readLine, [], callback, eof, error)
 
     class TaskRunner:
         def __init__(self, id):
@@ -118,6 +123,10 @@ class ProcessManager:
         # Running on the callers thread
         def new_task(self, task):
             self._logger.debug("New task: {task}".format(task=task))
+            while self.loop is None:
+                self._logger.debug("Waiting for loop")
+                time.sleep(0.1)
+
             return asyncio.run_coroutine_threadsafe(self._with_log(task), self.loop)
 
         def cancel_task(self, task):
