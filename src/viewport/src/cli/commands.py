@@ -7,7 +7,7 @@ from backend.cmdsrv import Command
 from backend.error import ApplicationException
 
 
-class StreamsCliCommand(Command):
+class Streams(Command):
     def __init__(self, layout, urls):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
 
@@ -20,21 +20,24 @@ class StreamsCliCommand(Command):
         self._urls = self._parse_urls(self._urls)
 
         # Iterate over the unique protocols and start the necessary infrastructure
-        # to serve them. For unifi, this is the Reflector Server, for rtsp(s) this is
-        # the SRS Media Server.
+        # to serve them. For unifi, this is the UnifiReflector Server, for rtsp(s) this
+        # is the aiohttp web server and additional components based on the target
+        # transcoded format.
         protocol_controllers = {}
         for protocol in {url.scheme for url in self._urls}:
             protocol_controllers[protocol] = eval(
-                "GlobalFactory.get_{protocol}_protocol_controller().run()".format(
+                "GlobalFactory.get_{protocol}_protocol_controller()".format(
                     protocol=protocol))
 
-        # Iterate over the URLs in the order received.
-        # Create the livestream controller for each url. Depending on the input url,
-        # such as in the case of 'unifi://u:p@host/_all', several livestream instances
-        # may be returned.
+            protocol_controllers[protocol].run()
+
+        # Iterate over the URLs in the order received. Create the livestream controller
+        # for each url. Depending on the input url, (such as in the case of 'unifi://u:p@host/_all'),
+        # more than one livestream instance may be returned. Save the endpoint of each
+        # livestream for the next step.
         player_endpoints = []
         for url in self._urls:
-            livestreams = protocol_controllers[url.scheme].new_livestream_controller(url)
+            livestreams = protocol_controllers[url.scheme].new_livestream(url)
             player_endpoints += [livestream.get_endpoint() for livestream in livestreams]
             [livestream.start() for livestream in livestreams]
 

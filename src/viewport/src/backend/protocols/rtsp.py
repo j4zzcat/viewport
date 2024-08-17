@@ -23,7 +23,7 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
 
         return self
 
-    def new_livestream_controller(self, url: str):
+    def new_livestream(self, url: str):
         if isinstance(url, ParseResult):
             url = url.geturl()
         self._logger.debug("Creating a Livestream Controller for '{url}'".format(url=url))
@@ -36,7 +36,7 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
         else:
             transcoder = None
 
-        livestream = self._transcoding_controller.new_livestream_controller(url, transcoder)
+        livestream = self._transcoding_controller.new_livestream(url, transcoder)
 
         return [livestream]
 
@@ -80,7 +80,7 @@ class SimpleTranscodingController(Command):
         else:
             raise ApplicationException("Transcoder '{transcoder}' is not supported".format(transcoder=transcoder))
 
-        return transcoding_server.new_livestream_controller(input_url, transcoder)
+        return transcoding_server.new_livestream(input_url, transcoder)
 
 
 class SimpleTranscodingStreamingServer(Command):

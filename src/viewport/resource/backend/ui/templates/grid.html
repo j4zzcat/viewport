@@ -43,12 +43,12 @@
 <script>
     const videoStreamUrls = [
         {% for livestream in livestream_endpoints %}
-          [ "{{ livestream['format'] }}", "{{ livestream['scheme'] }}://" + window.location.hostname + ":{{ livestream['port'] }}{{ livestream['path'] }}" ],
+          [ "{{ livestream['stream_format'] }}", "{{ livestream['scheme'] }}://" + window.location.hostname + ":{{ livestream['port'] }}/{{ livestream['path'] }}" ],
         {% endfor %}
     ];
 
     const placeholderElement = document.getElementById("video-streams-placeholder");
-    videoStreamUrls.forEach((type_url, index) => {
+    videoStreamUrls.forEach((item, index) => {
         let divElement = document.createElement("div");
         let videoElement = document.createElement("video");
 
@@ -64,10 +64,15 @@
         const jitter = Math.floor(Math.random() * videoStreamUrls.length * .75 * 1000)
         setTimeout(() =>
             {
-                format = type_url[0]
-                videoUrl = type_url[1]
-                if(["flv", "mpegts"].indexOf(format) >= 0) {
-                    // RTSP/FLV/MPEGTS
+                const stream_format = item[0]
+                const stream_url = item[1]
+
+                if(["unifi"].indexOf(stream_format) >= 0)
+                    const videoPlayer = new viewport.SimplePlayer(
+                        `video-${index}`,
+                        stream_url);
+
+                else if(["flv", "mpegts"].indexOf(stream_format) >= 0) {
                     var flvPlayer = mpegts.createPlayer({
                         isLive: true,
                         type: format,
@@ -76,12 +81,6 @@
                     flvPlayer.attachMediaElement(videoElement);
                     flvPlayer.load();
                     flvPlayer.play();
-
-                } else {
-                    // Unifi
-                    const videoPlayer = new viewport.SimplePlayer(
-                        `video-${index}`,
-                        videoUrl);
                 }
             },
             jitter);

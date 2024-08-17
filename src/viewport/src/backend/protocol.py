@@ -16,28 +16,50 @@
 # This software. If not, see <https://www.gnu.org/licenses/>.
 #
 
-from backend.cmdsrv import Command
+from abc import ABC, abstractmethod
 
 
-class AbstractLivestreamController:
+class AbstractLivestreamController(ABC):
 
-    # Returns a tuple of {stream_format, scheme, port, path} that allows the viewport
-    # web page to get and decode the video stream, i.e., by first selecting the correct
-    # player for the stream_format, and then playing the stream from
-    # scheme://{js:window.location.hostname}:port/path.
+    #
+    # Returns a tuple of {original_url, stream_format, scheme, port, path} that allows
+    # the viewport web page to get and decode the video stream, i.e., by first selecting
+    # the correct player for the stream_format, and then playing the stream from
+    # scheme://<js:window.location.hostname>:port/path.
+    #
+    @abstractmethod
     def get_endpoint(self) -> str:
         pass
+
+    @abstractmethod
+    def start(self):
+        pass
+
+    @abstractmethod
+    def stop(self):
+        pass
+
+
+class AbstractProtocolController(ABC):
+    @abstractmethod
+    def run(self):
+        pass
+
+    @abstractmethod
+    def new_livestream(self, url) -> [AbstractLivestreamController]:
+        pass
+
+
+class SimpleLivestreamController(AbstractLivestreamController):
+    def __init__(self, endpoint):
+        self._endpoint = endpoint
+
+    def get_endpoint(self):
+        return self._endpoint
 
     def start(self):
         pass
 
     def stop(self):
         pass
-
-
-class AbstractProtocolController(Command):
-    def new_livestream_controller(self, url) -> [AbstractLivestreamController]:
-        pass
-
-
 

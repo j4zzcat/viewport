@@ -1,17 +1,18 @@
 import logging
 import subprocess
 import sys
+import time
 from multiprocessing import freeze_support
 
 from backend.cmdsrv import Command
-from backend.pm import ProcessManager
+from backend.procsrv import SimpleProcessServer
 from context import GlobalFactory
 
 def main():
 
     GlobalFactory.get_logger().set_level(logging.DEBUG)
 
-    pm = ProcessManager()
+    pm = SimpleProcessServer()
     # pc1 = pm.new_process(
     #     "/bin/bash", "-c", "echo hello >/dev/stdout; echo goodbye >/dev/stderr",
     #     stdout=subprocess.PIPE,
@@ -27,6 +28,7 @@ def main():
 
     class Dummy(Command):
         def run(self):
+            time.sleep(100)
             print("dummy")
 
     pc2 = pm.new_process(

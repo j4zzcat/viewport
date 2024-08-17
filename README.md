@@ -100,4 +100,10 @@ docker buildx build -t viewport:latest -f build/Dockerfile .
 * Investigate why is that RTPS(S) streams paused when focus is taken away.
 * Explore ways to optimize the RTSP(S) transcoding.
 
-
+```
+main -> StreamsCli --> UnifiProtocol --new process--> UnifiReflector (Node)
+                   --> RTSPProtocol  --new process--> File Web Server 
+                                     --new process--> ffmpeg 
+                                     --new process--> ffmpeg
+                   --> WebServer 
+```

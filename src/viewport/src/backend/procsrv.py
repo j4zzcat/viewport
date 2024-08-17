@@ -19,11 +19,11 @@ import backend.utils as utils
 # event loops in separate threads and assigns task runners to process controllers in a round-robin
 # fashion.
 #
-class ProcessManager:
+class SimpleProcessServer:
     THREAD_START_TIMEOUT_MS = 2000
     PROCESS_START_TIMEOUT_MS = 3000
     MAX_TPE_SIZE = 2
-    MAX_PPE_SIZE = 4
+    MAX_PPE_SIZE = 1
 
     class CommandController:
         KEYWORDS = [
@@ -42,43 +42,43 @@ class ProcessManager:
             self._callbacks = {}
 
         def start(self):
-            stdout_queue, stderr_queue = queue.Queue(), queue.Queue()
-            self._ppe.submit(self._start(self._command, stdout_queue, stderr_queue))
+            stdout_queue = asyncio.Queue()
+
+            self._task_runner.new_task(
+                self._mirror_stream("stdout", stdout_queue.get, [], print, None, None))
 
             # self._task_runner.new_task(
-            #     self._mirror_stream("stdout", stdout_queue.get, [], print, None, None))
-            #
-            # self._task_runner.new_task(
             #     self._mirror_stream("stderr", stderr_queue.get, [], print, None, None))
+            future = self._ppe.submit(self._start(self._command, stdout_queue, None))
+            print(future)
+
 
         # Running on the MainThread of a new process
         def _start(self, command, stdout_queue, stderr_queue):
             # Create pipes for stdout and stderr
             stdout_pipe_fd, stdout_write_fd = os.pipe()
-            stderr_pipe_fd, stderr_write_fd = os.pipe()
+            # stderr_pipe_fd, stderr_write_fd = os.pipe()
 
             # Redirect stdout and stderr to pipes
             os.dup2(stdout_write_fd, sys.stdout.fileno())
-            os.dup2(stderr_write_fd, sys.stderr.fileno())
+            # os.dup2(stderr_write_fd, sys.stderr.fileno())
 
             # Close the write ends now as we've duplicated them
             os.close(stdout_write_fd)
-            os.close(stderr_write_fd)
+            # os.close(stderr_write_fd)
 
             tpe = ThreadPoolExecutor(max_workers=1)
-            task_runner = ProcessManager.TaskRunner()
+            task_runner = SimpleProcessServer.TaskRunner()
             tpe.submit(task_runner.run)
             task_runner.new_task(self._mirror_stream_to_queue("stdout", stdout_pipe_fd, stdout_queue ))
-            task_runner.new_task(self._mirror_stream_to_queue("stderr", stderr_pipe_fd, stderr_queue ))
-
-            print("Hello world!")
+            # task_runner.new_task(self._mirror_stream_to_queue("stderr", stderr_pipe_fd, stderr_queue ))
 
             command.run()
 
         async def _mirror_stream_to_queue(self, name, pipe, queue):
             with os.fdopen(pipe) as f:
                 for line in iter(f.readline, ""):
-                    queue.put(line)
+                    await queue.put(line)
 
         async def _mirror_stream(self, name, read_fn, read_fn_args, callback, eof, error):
             try:
@@ -111,7 +111,7 @@ class ProcessManager:
         KEYWORDS = [("stdout_text", False), ("stderr_text", False), ("monitor", False)]
 
         def __init__(self, task_runner, *args, **kwargs):
-            self._logger = GlobalFactory.get_logger().get_child(__class__.__name__)
+            self._logger = GlobalFactory.get_logger().get_child("SimpleProcessServer.{clazz}".format(clazz=__class__.__name__))
             self._task_runner = task_runner
             self._popen_args = args
             self._popen_kwargs, self._kwargs = utils.split_kwargs(kwargs, self.KEYWORDS)
@@ -141,10 +141,7 @@ class ProcessManager:
             self._logger.debug("Waiting for process to start")
             self._process = utils.future_busy_wait(
                 future,
-                ProcessManager.PROCESS_START_TIMEOUT_MS)
-
-            if self._process.returncode != 0:
-                raise ApplicationException("Process failed to start")
+                SimpleProcessServer.PROCESS_START_TIMEOUT_MS)
 
             self._logger = GlobalFactory.get_logger().get_child("{clazz}:{pid}".format(clazz=__class__.__name__, pid=self._process.pid))
             self._logger.debug("Process started, pid={pid}".format(pid=self._process.pid))
@@ -210,7 +207,7 @@ class ProcessManager:
     class TaskRunner:
         def __init__(self, id=0):
             self.id = id
-            self._logger = GlobalFactory.get_logger().get_child("{clazz}:{id}".format(clazz=__class__.__name__, id=self.id))
+            self._logger = GlobalFactory.get_logger().get_child("SimpleProcessServer.{clazz}:{id}".format(clazz=__class__.__name__, id=self.id))
             self.loop = None
 
         # Running on the caller's thread
@@ -219,7 +216,7 @@ class ProcessManager:
 
             utils.condition_busy_wait(
                 lambda: self.loop is not None,
-                timeout_ms=ProcessManager.THREAD_START_TIMEOUT_MS)
+                timeout_ms=SimpleProcessServer.THREAD_START_TIMEOUT_MS)
 
             return asyncio.run_coroutine_threadsafe(self._with_log(task), self.loop)
 
@@ -244,7 +241,7 @@ class ProcessManager:
 
         self._task_runners = []
         for index in range(self.MAX_TPE_SIZE):
-            task_runner = ProcessManager.TaskRunner(id=index)
+            task_runner = SimpleProcessServer.TaskRunner(id=index)
             future = self._tpe.submit(task_runner.run)
             self._task_runners.append({"instance": task_runner, "future": future})
 
@@ -257,10 +254,10 @@ class ProcessManager:
         task_runner = self._task_runners[self._next_task_runner % len(self._task_runners)]["instance"]
         self._next_task_runner += 1
 
-        if isinstance(args[0], Command):
-            controller = ProcessManager.CommandController(self._ppe, task_runner, *args, **kwargs)
-        else:
-            controller = ProcessManager.Controller(task_runner, *args, **kwargs)
+        # if isinstance(args[0], Command):
+        #     controller = SimpleProcessServer.CommandController(self._ppe, task_runner, *args, **kwargs)
+        # else:
+        controller = SimpleProcessServer.Controller(task_runner, *args, **kwargs)
 
         self._controllers[controller] = {}
         self._controllers[controller]["task_runner"] = task_runner

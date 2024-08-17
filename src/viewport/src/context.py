@@ -82,15 +82,15 @@ class GlobalFactory:
 
         return self._command_server
 
-    def new_process_group(self, name, descriptors, restart=True, stdout=True):
-        from backend.cmdsrv import SimpleCommandServer
-        self._logger.debug("Creating {clazz} instance".format(clazz=SimpleCommandServer.ProcessGroup))
-        return SimpleCommandServer.ProcessGroup(name, descriptors, restart, stdout)
+    def get_process_server(self):
+        from backend.procsrv import SimpleProcessServer
+        self._logger.debug("Creating {clazz} instance".format(clazz=SimpleProcessServer))
+        return SimpleProcessServer()
 
     def new_streams_cli_command(self, layout, urls):
-        from cli.streams import StreamsCliCommand
-        self._logger.debug("Creating new {clazz} instance".format(clazz=StreamsCliCommand))
-        return StreamsCliCommand(layout, urls)
+        from cli.commands import Streams
+        self._logger.debug("Creating new {clazz} instance".format(clazz=Streams))
+        return Streams(layout, urls)
 
     def get_unifi_protocol_controller(self):
         if not self._unifi_protocol_controller:

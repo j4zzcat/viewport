@@ -1,49 +1,44 @@
 import os
 import subprocess
 import urllib
-
 import requests
 import json
 
 from context import GlobalFactory
-from backend.cmdsrv import SimpleCommandServer
+from backend.cmdsrv import SimpleCommandServer, Command
 from backend.error import ApplicationException
-from backend.protocol import AbstractProtocolController, AbstractLivestreamController
+from backend.protocol import AbstractProtocolController, AbstractLivestreamController, SimpleLivestreamController
 
 
 class SimpleUnifiProtocolController(AbstractProtocolController):
-    class LivestreamController(AbstractLivestreamController):
-        def __init__(self, reflector_controller, url):
-            self._reflector_controller = reflector_controller
-            self._url = url
-
-        def get_type(self) -> str:
-            return "unifi"
-
-        def get_url(self):
-            return {
-                "scheme": "ws",
-                "port": self._reflector_controller._port,
-                "path": "/unifi://{url}".format(url=self._url)
-            }
-
     def __init__(self):
         super().__init__()
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._reflector_controller = None
+        self._reflector_process_controller = None
         self._apis = {}
 
-    def initialize(self):
-        super().initialize()
-
     def run(self):
-        super().run()
-        self._reflector_controller = GlobalFactory.new_unifi_reflector_controller()
-        GlobalFactory.get_command_server().run_asynchronously(
-            self._reflector_controller)
-        return self
+        self._reflector_process_controller = self._start_reflector_process()
 
-    def new_livestream_controller(self, url):
+    def _start_reflector_process(self):
+        controller = GlobalFactory.get_process_server().new_process(
+            "node",
+                "--no-warnings",
+                "--import", "tsx",
+                "reflector.ts",
+                    GlobalFactory.get_settings()["protocol"]["unifi"]["server"]["streaming"]["bind"],
+                    GlobalFactory.get_settings()["protocol"]["unifi"]["server"]["streaming"]["port"],
+            cwd="{reflector_root}/src".format(reflector_root=GlobalFactory.get_dirs()["reflector_root"]),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            stdout_text=True,
+            monitor=True)
+
+        controller.on("stdout", print)
+        controller.start()
+        return controller
+
+    def new_livestream(self, url):
         url = urllib.parse(url) if isinstance(url, str) else url
         host = url.netloc.split('@')[1]
 
@@ -57,16 +52,19 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
 
         if path == "_all":
             # handle unifi://u:p@host/_all
-
             for camera in self._apis[key].bootstrap["cameras"]:
-                livestreams.append(SimpleUnifiProtocolController.LivestreamController(
-                    self._reflector_controller,
-                    "{netloc}/{camera_id}".format(
+                livestreams.append(SimpleLivestreamController({
+                    "original_url": url,
+                    "stream_format": "unifi",
+                    "scheme": "ws",
+                    "port": GlobalFactory.get_settings()["protocol"]["unifi"]["server"]["streaming"]["port"],
+                    "path": "{netloc}/{camera_id}".format(
                         netloc=url.netloc,
-                        camera_id=camera["id"])))
+                        camera_id=camera["id"])
+                }))
+
         else:
             # handle unifi://u:p@host/camera name 1,...
-
             for camera_name in path.split(","):
                 camera = self._apis[key].get_camera_by_name(camera_name)
                 if camera is None:
@@ -74,16 +72,20 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
                         camera_name=camera_name, host=self._apis[key].host))
 
                 camera = self._apis[key].get_camera_by_name(camera_name)
-                livestreams.append(SimpleUnifiProtocolController.LivestreamController(
-                    self._reflector_controller,
-                    "{netloc}/{camera_id}".format(
+                livestreams.append(SimpleLivestreamController({
+                    "original_url": url,
+                    "stream_format": "unifi",
+                    "scheme": "ws",
+                    "port": GlobalFactory.get_settings()["protocol"]["unifi"]["server"]["streaming"]["port"],
+                    "path": "{netloc}/{camera_id}".format(
                         netloc=url.netloc,
-                        camera_id=camera["id"])))
+                        camera_id=camera["id"])
+                }))
 
         return livestreams
 
 
-class SimpleReflectorController(SimpleCommandServer.BaseCommand):
+class SimpleReflectorController(Command):
     def __init__(self):
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
         self._reflector_process = None

@@ -1,9 +1,16 @@
 import logging
+import os
 
 
 class SimpleLogger:
-    DETAILED_FORMATTER = logging.Formatter(
-        fmt="[%(asctime)s.%(msecs)-3d] (%(threadName)-10s) %(levelname)-7s %(name)-34s %(message)s",
+    class CustomFormatter(logging.Formatter):
+        def format(self, record):
+            # Add the process ID to the log message
+            record.process_id = os.getpid()
+            return super().format(record)
+
+    DETAILED_FORMATTER = CustomFormatter(
+        fmt="[%(asctime)s.%(msecs)-3d] (%(process_id)s:%(threadName)-10s) %(levelname)-7s %(name)-34s %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S")
 
     DEFAULT_FORMATTER = logging.Formatter(
