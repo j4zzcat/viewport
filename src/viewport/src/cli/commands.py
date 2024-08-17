@@ -19,10 +19,8 @@ class Streams(Command):
         self._layout = self._parse_layout(self._layout)
         self._urls = self._parse_urls(self._urls)
 
-        # Iterate over the unique protocols and start the necessary infrastructure
-        # to serve them. For unifi, this is the UnifiReflector Server, for rtsp(s) this
-        # is the aiohttp web server and additional components based on the target
-        # transcoded format.
+        # From the urls, create a set of the unique protocols needed. Iterate over the
+        # protocols and start the necessary infrastructure of each.
         protocol_controllers = {}
         for protocol in {url.scheme for url in self._urls}:
             protocol_controllers[protocol] = eval(

@@ -14,13 +14,14 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
     def __init__(self):
         super().__init__()
         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._reflector_process_controller = None
+        self._reflector_controller = None
+        self._reflector_logger = None
         self._apis = {}
 
     def run(self):
-        self._reflector_process_controller = self._start_reflector_process()
+        self._reflector_controller = self._reflector_start()
 
-    def _start_reflector_process(self):
+    def _reflector_start(self):
         controller = GlobalFactory.get_process_server().new_process(
             "node",
                 "--no-warnings",
@@ -34,15 +35,36 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
             stdout_text=True,
             monitor=True)
 
-        controller.on("stdout", print)
+        controller.on("stdout", self._reflector_log)
         controller.start()
         return controller
+
+    def _reflector_log(self, line):
+        try:
+            parsed_line = json.loads(line)
+        except json.decoder.JSONDecodeError as e:
+            line = line.decode("utf-8")
+            if line.startswith("UNVR"):
+                parsed_line = {"level": "debug", "message": line.strip()}
+            else:
+                raise ApplicationException(f"Failed to parse JSON, offending line: {line}")
+
+        if "context" in parsed_line:
+            msg = "{message}, context: {context}".format(
+                message=parsed_line["message"],
+                context=parsed_line["context"])
+        else:
+            msg = parsed_line["message"]
+
+        eval("self._logger.{level}(msg, extra={{'override_process':'{pid}', 'xxx':'yyy'}})".format(
+            level=parsed_line["level"],
+            pid=self._reflector_controller._process.pid))
 
     def new_livestream(self, url):
         url = urllib.parse(url) if isinstance(url, str) else url
         host = url.netloc.split('@')[1]
 
-        key = "{username}:{host}".format(username=host, host=host)
+        key = host  # maybe should be username:host?
         if key not in self._apis:
             self._apis[key] = SimpleUnifiProtectApi(url.username, url.password, host)
             self._apis[key].login()
@@ -83,50 +105,6 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
                 }))
 
         return livestreams
-
-
-class SimpleReflectorController(Command):
-    def __init__(self):
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
-        self._reflector_process = None
-        self._reflector_logger = None
-        self.bind = GlobalFactory.get_settings()["protocol"]["unifi"]["reflector"]["bind"]
-        self.port = GlobalFactory.get_settings()["protocol"]["unifi"]["reflector"]["port"]
-
-    def run(self):
-        self._logger.debug("Spawning the SimpleReflector Node process")
-
-        process = GlobalFactory.get_command_server().spwan(
-            args=["node", "--no-warnings", "--import", "tsx", "reflector.ts", self.bind, str(self.port)],
-            cwd="{reflector_root}/src".format(reflector_root=GlobalFactory.get_directories()["reflector_root"]),
-            stdout=subprocess.PIPE,
-            preexec_fn=os.setsid,
-            text=True)
-
-        self._reflector_process = process
-        self._logger.debug("Reflector started, pid: " + str(self._reflector_process.pid))
-
-        self._reflector_logger = GlobalFactory.get_logger().get_child("SimpleReflector:{pid}".format(
-            pid=self._reflector_process.pid))
-
-        for line in self._reflector_process.stdout:
-            try:
-                parsed_line = json.loads(line)
-            except json.decoder.JSONDecodeError as e:
-                if line.startswith("UNVR"):
-                    parsed_line = {"level": "debug", "message": line.strip()}
-                else:
-                    raise ApplicationException("Failed to parse JSON, offending line: {line}".format(line=line))
-
-            msg = (
-                "{message}, context: {context}".format(
-                    message=parsed_line["message"],
-                    context=parsed_line["context"])
-                if "context" in parsed_line
-                else parsed_line["message"]
-            )
-
-            eval("self._reflector_logger.{level}(msg)".format(level=parsed_line["level"]))
 
 
 class SimpleUnifiProtectApi:
