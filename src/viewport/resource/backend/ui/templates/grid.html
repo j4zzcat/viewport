@@ -64,16 +64,16 @@
         const jitter = Math.floor(Math.random() * videoStreamUrls.length * .75 * 1000)
         setTimeout(() =>
             {
-                const stream_format = item[0]
-                const stream_url = item[1]
+                let stream_format = item[0];
+                let stream_url = item[1];
 
-                if(["unifi"].indexOf(stream_format) >= 0)
-                    const videoPlayer = new viewport.SimplePlayer(
+                if(["unifi"].indexOf(stream_format) >= 0) {
+                    let videoPlayer = new viewport.SimplePlayer(
                         `video-${index}`,
                         stream_url);
 
-                else if(["flv", "mpegts"].indexOf(stream_format) >= 0) {
-                    var flvPlayer = mpegts.createPlayer({
+                } else if(["flv", "mpegts"].indexOf(stream_format) >= 0) {
+                    let flvPlayer = mpegts.createPlayer({
                         isLive: true,
                         type: format,
                         url: videoUrl
