@@ -100,11 +100,6 @@ class GlobalFactory:
 
         return self._unifi_protocol_controller
 
-    def new_unifi_reflector_controller(self):
-        from backend.protocols.unifi import SimpleReflectorController
-        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleReflectorController))
-        return SimpleReflectorController()
-
     def new_unifi_protect_api(self, netloc):
         from backend.protocols.unifi import SimpleUnifiProtectApi
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUnifiProtectApi))

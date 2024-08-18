@@ -8,39 +8,33 @@ from backend.cmdsrv import Command
 from backend.procsrv import SimpleProcessServer
 from context import GlobalFactory
 
-def main():
+from colorist import BgColorHSL
 
-    GlobalFactory.get_logger().set_level(logging.DEBUG)
+def print_ansi256_color_gamut():
+    # Print system colors (0-15)
+    print("System colors:")
+    for color_code in range(16):
+        print(f'\033[38;5;{color_code}m {color_code:3} \033[0m', end=' ')
+    print("\n")
 
-    pm = SimpleProcessServer()
-    # pc1 = pm.new_process(
-    #     "/bin/bash", "-c", "echo hello >/dev/stdout; echo goodbye >/dev/stderr",
-    #     stdout=subprocess.PIPE,
-    #     stderr=subprocess.PIPE,
-    #     stdout_text=True,
-    #     stderr_text=True,
-    #     monitor=True)
-    #
-    # pc1.on("stdout", sys.stdout.buffer.write)
-    # pc1.on("stderr", sys.stdout.buffer.write)
-    # # pc.on("done", lambda p: print(p.return_code))
-    # pc1.start()
+    # Print 6x6x6 color cube (16-231)
+    print("Color cube (16-231):")
+    for g in range(6):
+        for r in range(6):
+            for b in range(6):
+                # Convert the RGB coordinates to a single code
+                color_code = 16 + 36 * r + 6 * g + b
+                print(f'\033[38;5;{color_code}m{color_code:3}\033[0m', end=' ')
+            print(" ", end='')  # Slightly wider space between groups
+        print("\n")
+    print("\n")
 
-    class Dummy(Command):
-        def run(self):
-            time.sleep(100)
-            print("dummy")
+    # Print grayscale colors (232-255)
+    print("Grayscale colors:")
+    for color_code in range(232, 256):
+        print(f'\033[38;5;{color_code}m {color_code:3} \033[0m', end=' ')
+        if (color_code - 231) % 8 == 0:
+            print()  # Newline every 8 colors for readability
 
-    pc2 = pm.new_process(
-        Dummy(),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        stdout_text=True,
-        stderr_text=True,
-        monitor=True)
-
-    pc2.start()
-
-if __name__ == '__main__':
-    freeze_support()
-    main()
+if __name__ == "__main__":
+    print_ansi256_color_gamut()

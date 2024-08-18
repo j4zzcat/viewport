@@ -21,8 +21,6 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
         self._transcoding_controller = GlobalFactory.new_transcoding_controller()
         self._transcoding_controller.run()
 
-        return self
-
     def new_livestream(self, url: str):
         if isinstance(url, ParseResult):
             url = url.geturl()

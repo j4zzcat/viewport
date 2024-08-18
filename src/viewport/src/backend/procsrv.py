@@ -202,7 +202,7 @@ class SimpleProcessServer:
     # Manages the execution of asynchronous tasks in a dedicated event loop. The TaskRunner class
     # is responsible for creating and managing an asyncio event loop in a separate thread. It
     # allows for submitting new asynchronous tasks to be run on this event loop, as well as
-    # cancelling existing tasks. Each TaskRunner instance is identified by a unique identifier.
+    # cancelling existing tasks.
     #
     class TaskRunner:
         def __init__(self, id=0):
@@ -237,7 +237,7 @@ class SimpleProcessServer:
             return await asyncio.create_task(task)
 
     def __init__(self):
-        self._tpe = ThreadPoolExecutor(max_workers=self.MAX_TPE_SIZE, thread_name_prefix="PM")
+        self._tpe = ThreadPoolExecutor(max_workers=self.MAX_TPE_SIZE, thread_name_prefix="PS")
 
         self._task_runners = []
         for index in range(self.MAX_TPE_SIZE):

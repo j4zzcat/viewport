@@ -5,9 +5,8 @@ import requests
 import json
 
 from context import GlobalFactory
-from backend.cmdsrv import SimpleCommandServer, Command
 from backend.error import ApplicationException
-from backend.protocol import AbstractProtocolController, AbstractLivestreamController, SimpleLivestreamController
+from backend.protocol import AbstractProtocolController, SimpleLivestreamController
 
 
 class SimpleUnifiProtocolController(AbstractProtocolController):
@@ -56,7 +55,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
         else:
             msg = parsed_line["message"]
 
-        eval("self._logger.{level}(msg, extra={{'override_process':'{pid}', 'xxx':'yyy'}})".format(
+        eval("self._logger.{level}(msg, extra={{'override_process':'{pid}'}})".format(
             level=parsed_line["level"],
             pid=self._reflector_controller._process.pid))
 
