@@ -1,3 +1,4 @@
+import logging
 import os
 from urllib.parse import urlparse
 
@@ -9,7 +10,7 @@ from backend.error import ApplicationException
 
 class Streams(Command):
     def __init__(self, layout, urls):
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self._logger = logging.getLogger(self.__class__.__name__)
 
         self._layout = layout
         self._urls = urls

@@ -1,4 +1,6 @@
+import logging
 import os
+import sys
 import tomllib
 
 from backend.logger import SimpleLogger
@@ -6,9 +8,17 @@ from backend.logger import SimpleLogger
 
 class GlobalFactory:
     def __init__(self):
-        self._root_logger = SimpleLogger()
-        self._root_logger.set_level("INFO")
-        self._logger = self._root_logger.get_child("GlobalFactory")
+        # self._root_logger = SimpleLogger()
+        # self._root_logger.set_level("INFO")
+
+        logging.setLoggerClass(SimpleLogger)
+        logger = logging.getLogger("viewport")
+        logger.addFilter(SimpleLogger.Filter())
+        logger.addHandler(logging.StreamHandler(sys.stdout))
+        logger.setLevel(logging.DEBUG)
+        self._root_logger = logger
+
+        self._logger = self._root_logger.getChild("GlobalFactory")
 
         self._properties = self._initialize_properties()
         self._command_server = None

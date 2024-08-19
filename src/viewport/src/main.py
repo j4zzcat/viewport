@@ -54,7 +54,7 @@ from backend.error import ApplicationException
 
 def main():
     settings = GlobalFactory.get_settings()
-    logger = GlobalFactory.get_logger().get_child("main")
+    logger = logging.getLogger("main")
 
     args = docopt(
         __doc__,
@@ -65,8 +65,8 @@ def main():
         print("Try 'viewport --help' for more information.")
         exit(0)
 
-    if args['--verbose']:
-        GlobalFactory.get_logger().set_level(logging.DEBUG)
+    # if args['--verbose']:
+    #     GlobalFactory.get_logger().set_level(logging.DEBUG)
 
     if args["streams"]:
         logger.info("Hello!")

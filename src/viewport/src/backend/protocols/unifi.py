@@ -1,3 +1,4 @@
+import logging
 import os
 import subprocess
 import urllib
@@ -55,7 +56,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
         else:
             msg = parsed_line["message"]
 
-        eval("self._logger.{level}(msg, extra={{'override_process':'{pid}'}})".format(
+        eval("self._logger.{level}(msg, extra={{'override': {{'process':'{pid}'}}}})".format(
             level=parsed_line["level"],
             pid=self._reflector_controller._process.pid))
 
