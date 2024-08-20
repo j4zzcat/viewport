@@ -60,7 +60,6 @@ class CallbackLivestreamController(AbstractLivestreamController):
         self._stop_callback = stop_callback
 
     def get_endpoint(self):
-        self._logger.debug("Getting live stream endpoint")
         return self._endpoint
 
     def start(self):

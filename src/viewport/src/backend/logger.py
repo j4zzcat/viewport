@@ -6,8 +6,8 @@ class ColoringFormatter(logging.Formatter):
         "fmt": "[%(asctime)s.%(msecs)-3d] (%(process_color)s%(process)-5s\033[0m:%(threadName_color)s%(threadName)-10s\033[0m) %(level_color)s%(levelname)-7s\033[0m %(name)-34s %(message)s",
         "datefmt": "%Y-%m-%d %H:%M:%S"}
 
-    PID_COLORS = [15, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15]
-    TID_COLORS = [13, 12, 11, 10, 8, 7, 6, 5, 4, 3, 2, 15, 14]
+    PID_COLORS = [15, 2, 3, 4, 5, 6, 7, 8, 10, 12, 13, 14, 15]
+    TID_COLORS = [13, 12, 10, 8, 7, 6, 5, 4, 3, 2, 15, 14]
     LEVEL_COLORS = {
         logging.WARNING: 11,
         logging.ERROR: 9}

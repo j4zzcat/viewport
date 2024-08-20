@@ -138,10 +138,10 @@ class GlobalFactory:
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingStreamingServer))
         return SimpleTranscodingStreamingServer(transcoders, bind, port)
 
-    def new_file_transcoding_server(self, transcoders, bind, port):
-        from backend.protocols.rtsp import SimpleTranscodingFileServer
-        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingFileServer))
-        return SimpleTranscodingFileServer(transcoders, bind, port)
+    def new_file_transcoding_server(self):
+        from backend.protocols.rtsp import SimpleFileTranscodingServer
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleFileTranscodingServer))
+        return SimpleFileTranscodingServer()
 
     def new_ui_renderer(self, layout, player_urls, directory):
         from backend.ui.renderer import SimpleUIRenderer
