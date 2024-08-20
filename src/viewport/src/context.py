@@ -3,20 +3,22 @@ import os
 import sys
 import tomllib
 
-from backend.logger import SimpleLogger
+from backend.logger import ColoringFormatter, ChainHandler, PrefixChopperHandler, OverridesHandler, RedactionsHandler
 
 
 class GlobalFactory:
     def __init__(self):
-        # self._root_logger = SimpleLogger()
-        # self._root_logger.set_level("INFO")
+        self._root_logger = logging.getLogger("viewport")  # All loggers will be children of this one
+        sh = logging.StreamHandler(sys.stdout)
+        sh.setFormatter(ColoringFormatter())
+        self._root_logger.addHandler(
+            ChainHandler(
+                PrefixChopperHandler("viewport"),
+                OverridesHandler(),
+                RedactionsHandler(),
+                sh))
 
-        logging.setLoggerClass(SimpleLogger)
-        logger = logging.getLogger("viewport")
-        logger.addFilter(SimpleLogger.Filter())
-        logger.addHandler(logging.StreamHandler(sys.stdout))
-        logger.setLevel(logging.DEBUG)
-        self._root_logger = logger
+        self._root_logger.setLevel(logging.DEBUG)
 
         self._logger = self._root_logger.getChild("GlobalFactory")
 
@@ -97,7 +99,7 @@ class GlobalFactory:
         self._logger.debug("Creating {clazz} instance".format(clazz=SimpleProcessServer))
         return SimpleProcessServer()
 
-    def new_streams_cli_command(self, layout, urls):
+    def new_cli_streams_command(self, layout, urls):
         from cli.commands import Streams
         self._logger.debug("Creating new {clazz} instance".format(clazz=Streams))
         return Streams(layout, urls)
@@ -154,7 +156,7 @@ class GlobalFactory:
 
         return self._web_server
 
-    def next_number(self, counter):
+    def next_int(self, counter):
         if counter not in self._counters:
             self._counters[counter] = 0
 

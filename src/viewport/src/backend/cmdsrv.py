@@ -81,7 +81,7 @@ class SimpleCommandServer:
 # class SimpleCommandServer:
 #
 #     def __init__(self):
-#         self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+#         self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
 #         self._tpe = ThreadPoolExecutor(max_workers=5, thread_name_prefix='TPE')
 #         self._tpe_futures = []
 #

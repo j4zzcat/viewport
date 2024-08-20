@@ -14,7 +14,7 @@ from context import GlobalFactory
 
 class SimpleRTSPProtocolController(AbstractProtocolController):
     def __init__(self):
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
         self._transcoding_controller = None
 
     def run(self):
@@ -41,7 +41,7 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
 
 class SimpleTranscodingController(Command):
     def __init__(self):
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
         self._http_server = None
         self._ws_server = None
         self.file_transcoders = None
@@ -83,7 +83,7 @@ class SimpleTranscodingController(Command):
 
 class SimpleTranscodingStreamingServer(Command):
     def __init__(self, transcoders, bind, port):
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
         self._transcoders = transcoders
         self._bind = bind
         self._port = port
@@ -106,7 +106,7 @@ class SimpleTranscodingStreamingServer(Command):
             "format": transcoder,
             "scheme": "ws",
             "port": self._port,
-            "path": "/stream/{index}".format(index=GlobalFactory.next_number("stream"))
+            "path": "/stream/{index}".format(index=GlobalFactory.next_int("stream"))
         }
 
         self._endpoints[endpoint["path"]] = endpoint
@@ -195,7 +195,7 @@ class SimpleTranscodingStreamingServer(Command):
                 self._logger.error(e)
 
     async def _log_stdout(self, process):
-        logger = GlobalFactory.get_logger().get_child("ffmpeg:{pid}".format(pid=process.pid))
+        logger = GlobalFactory.get_logger().getChild("ffmpeg:{pid}".format(pid=process.pid))
         try:
             while True:
                 line = await process.stderr.readline()
@@ -209,7 +209,7 @@ class SimpleTranscodingStreamingServer(Command):
 
 class SimpleTranscodingFileServer(Command):
     def __init__(self, transcoders, bind, port):
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
         self._transcoders = transcoders
         self._bind = bind
         self._port = port
@@ -236,7 +236,7 @@ class SimpleTranscodingFileServer(Command):
             "format": transcoder,
             "scheme": "http",
             "port": self._port,
-            "path": "/stream/{index}".format(index=GlobalFactory.next_number("stream"))
+            "path": "/stream/{index}".format(index=GlobalFactory.next_int("stream"))
         }
 
         self._endpoints[endpoint["path"]] = endpoint

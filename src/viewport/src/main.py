@@ -42,7 +42,6 @@ Example:
 
   Then open the url 'http://localhost:8001' in Google Chrome web browser.
 """
-import signal
 import sys
 
 from docopt import docopt
@@ -54,7 +53,6 @@ from backend.error import ApplicationException
 
 def main():
     settings = GlobalFactory.get_settings()
-    logger = logging.getLogger("main")
 
     args = docopt(
         __doc__,
@@ -65,19 +63,21 @@ def main():
         print("Try 'viewport --help' for more information.")
         exit(0)
 
-    # if args['--verbose']:
-    #     GlobalFactory.get_logger().set_level(logging.DEBUG)
+    logger = GlobalFactory.get_logger().getChild("main")
+    if args['--verbose']:
+        GlobalFactory.get_logger().setLevel(logging.DEBUG)
 
     if args["streams"]:
         logger.info("Hello!")
         logger.debug("Processing 'streams' command")
 
         try:
-            GlobalFactory.new_streams_cli_command(
+            GlobalFactory.new_cli_streams_command(
                 layout=args['--layout'],
                 urls=args['<url>']).run()
 
-        except ApplicationException as e:
+        except Exception as e:
+            logger.error(e, exc_info=True)
             print("Fatal error, stopping. Exit code: 127")
             exit(127)
 

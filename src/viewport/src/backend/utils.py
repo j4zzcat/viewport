@@ -4,7 +4,7 @@ import time
 
 from context import GlobalFactory
 
-utils_logger = GlobalFactory.get_logger().get_child("Utils")
+utils_logger = GlobalFactory.get_logger().getChild("Utils")
 
 
 # The split_kwargs function separates specified keywords from the original dictionary

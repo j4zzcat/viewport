@@ -12,12 +12,12 @@ class SimpleWebServer(Command):
     class DefaultHandler(SimpleHTTPRequestHandler):
         def log_message(self, fmt, *args):
             if not hasattr(self, "_logger"):
-                self._logger = GlobalFactory.get_logger().get_child("SimpleWebServer")
+                self._logger = GlobalFactory.get_logger().getChild("SimpleWebServer")
 
             self._logger.debug(fmt % args)
 
     def __init__(self, directory, bind=None, port=None):
-        self._logger = GlobalFactory.get_logger().get_child("SimpleWebServer")
+        self._logger = GlobalFactory.get_logger().getChild("SimpleWebServer")
         self._root_dir = directory
         self._bind = bind if bind is not None else GlobalFactory.get_settings()["httpd"]["bind"]
         self._port = port if port is not None else GlobalFactory.get_settings()["httpd"]["port"]

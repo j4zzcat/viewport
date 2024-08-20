@@ -11,8 +11,8 @@ from backend.protocol import AbstractProtocolController, SimpleLivestreamControl
 class SimpleUnifiProtocolController(AbstractProtocolController):
     def __init__(self):
         super().__init__()
-        self._logger = GlobalFactory.get_logger().get_child("UnifiProtocolController")
-        self._reflector_logger = self._logger.get_child("Reflector")
+        self._logger = GlobalFactory.get_logger().getChild("UnifiProtocolController")
+        self._reflector_logger = self._logger.getChild("Reflector")
         self._reflector_controller = None
         self._apis = {}
 
@@ -107,7 +107,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
 
 class SimpleUnifiProtectApi:
     def __init__(self, username, password, host):
-        self._logger = GlobalFactory.get_logger().get_child("{clazz}:{host}".format(
+        self._logger = GlobalFactory.get_logger().getChild("{clazz}:{host}".format(
             clazz=self.__class__.__name__,
             host=host))
         self.host = host

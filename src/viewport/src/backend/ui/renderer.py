@@ -10,7 +10,7 @@ from context import GlobalFactory
 
 class SimpleUIRenderer(Command):
     def __init__(self, layout, livestream_endpoints, directory):
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
         self._layout = layout
         self._livestream_endpoints = livestream_endpoints
         self._output_dir = directory

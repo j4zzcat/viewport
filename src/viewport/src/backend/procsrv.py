@@ -33,7 +33,7 @@ class SimpleProcessServer:
             ("monitor", False)]
 
         def __init__(self, ppe, task_runner, *args, **kwargs):
-            self._logger = GlobalFactory.get_logger().get_child(__class__.__name__)
+            self._logger = GlobalFactory.get_logger().getChild(__class__.__name__)
             self._ppe = ppe
             self._task_runner = task_runner
             self._args = args
@@ -112,7 +112,7 @@ class SimpleProcessServer:
         KEYWORDS = [("stdout_text", False), ("stderr_text", False), ("monitor", False)]
 
         def __init__(self, task_runner, *args, **kwargs):
-            self._logger = GlobalFactory.get_logger().get_child("SimpleProcessServer.{clazz}".format(clazz=__class__.__name__))
+            self._logger = GlobalFactory.get_logger().getChild("SimpleProcessServer.{clazz}".format(clazz=__class__.__name__))
             self._task_runner = task_runner
             self._popen_args = args
             self._popen_kwargs, self._kwargs = utils.split_kwargs(kwargs, self.KEYWORDS)
@@ -144,7 +144,7 @@ class SimpleProcessServer:
                 future,
                 SimpleProcessServer.PROCESS_START_TIMEOUT_MS)
 
-            self._logger = GlobalFactory.get_logger().get_child("{clazz}:{pid}".format(clazz=__class__.__name__, pid=self._process.pid))
+            self._logger = GlobalFactory.get_logger().getChild("{clazz}:{pid}".format(clazz=__class__.__name__, pid=self._process.pid))
             self._logger.debug("Process started, pid={pid}".format(pid=self._process.pid))
 
             for stream in ["stdout", "stderr"]:
@@ -208,7 +208,7 @@ class SimpleProcessServer:
     class TaskRunner:
         def __init__(self, id=0):
             self.id = id
-            self._logger = GlobalFactory.get_logger().get_child("SimpleProcessServer.{clazz}:{id}".format(clazz=__class__.__name__, id=self.id))
+            self._logger = GlobalFactory.get_logger().getChild("SimpleProcessServer.{clazz}:{id}".format(clazz=__class__.__name__, id=self.id))
             self.loop = None
 
         # Running on the caller's thread

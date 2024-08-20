@@ -77,7 +77,7 @@ class Streams(Command):
             try:
                 parsed_url = urlparse(url)
                 if parsed_url.password:
-                    self._logger.add_redaction(parsed_url.password)
+                    self._logger.debug("Adding redaction", extra={"add_redaction": parsed_url.password})
 
                 self._logger.debug("Parsing URL: {url}".format(url=url))
                 scheme = parsed_url.scheme

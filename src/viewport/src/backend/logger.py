@@ -1,15 +1,10 @@
 import logging
 
 
-class SimpleLogger(logging.Logger):
-    FORMATS = {
-        logging.DEBUG: {
-            "fmt": "[%(asctime)s.%(msecs)-3d] (%(process_color)s%(process)s\033[0m:%(threadName_color)s%(threadName)-10s\033[0m) %(level_color)s%(levelname)-7s\033[0m %(name)-34s %(message)s",
-            "datefmt": "%Y-%m-%d %H:%M:%S"},
-
-        "default": {
-            "fmt": "[%(asctime)s] %(levelname)-7s %(message)s",
-            "datefmt": "%Y-%m-%d %H:%M:%S"}}
+class ColoringFormatter(logging.Formatter):
+    FORMAT = {
+        "fmt": "[%(asctime)s.%(msecs)-3d] (%(process_color)s%(process)-5s\033[0m:%(threadName_color)s%(threadName)-10s\033[0m) %(level_color)s%(levelname)-7s\033[0m %(name)-34s %(message)s",
+        "datefmt": "%Y-%m-%d %H:%M:%S"}
 
     PID_COLORS = [15, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15]
     TID_COLORS = [13, 12, 11, 10, 8, 7, 6, 5, 4, 3, 2, 15, 14]
@@ -17,88 +12,81 @@ class SimpleLogger(logging.Logger):
         logging.WARNING: 11,
         logging.ERROR: 9}
 
-    class Formatter(logging.Formatter):
-        def __init__(self, fmt, datefmt):
-            super().__init__(fmt, datefmt)
+    def __init__(self):
+        super().__init__(self.FORMAT["fmt"], self.FORMAT["datefmt"])
+        self._pids = []
+        self._tids = []
 
-        def format(self, record):
-            return super().format(record)
+    def format(self, record):
+        # Handle level coloring
+        if record.levelno in self.LEVEL_COLORS:
+            record.level_color = "\033[38;5;{color}m".format(color=self.LEVEL_COLORS[record.levelno])
+        else:
+            record.level_color = ""
 
-    class Filter(logging.Filter):
-        def filter(self, record):
-            # Chop root logger name
-            record.name = record.name[len(SimpleLogger._root_name) + 1:]
+        # Handle pid coloring
+        if hasattr(record, "process"):
+            if record.process is not None:
+                if record.process not in self._pids:
+                    self._pids.append(record.process)
 
-            # Handle overrides
-            if "override" in record.__dict__:
-                for attr in record.override:
-                    exec(f"record.{attr} = record.override[attr]")
+                color = self.PID_COLORS[self._pids.index(record.process) % len(self.PID_COLORS)]
+                record.process_color = f"\033[38;5;{color}m"
 
-            # Handle redactions
-            for redaction in SimpleLogger._redactions:
-                record.msg = record.msg.replace(redaction, "[REDACTED]")
+        # Handle tid coloring
+        if hasattr(record, "threadName"):
+            if record.threadName is not None:
+                if record.threadName not in self._tids:
+                    self._tids.append(record.threadName)
 
-            # Handle level coloring
-            if record.levelno in SimpleLogger.LEVEL_COLORS:
-                record.level_color = "\033[38;5;{color}m".format(color=SimpleLogger.LEVEL_COLORS[record.levelno])
-            else:
-                record.level_color = ""
+                color = self.TID_COLORS[self._tids.index(record.threadName) % len(self.TID_COLORS)]
+                record.threadName_color = f"\033[38;5;{color}m"
 
-            # Handle pid coloring
-            if hasattr(record, "process"):
-                if record.process is not None:
-                    if record.process not in SimpleLogger._pids:
-                        SimpleLogger._pids.append(record.process)
+        return super().format(record)
 
-                    color = SimpleLogger.PID_COLORS[SimpleLogger._pids.index(record.process) % len(SimpleLogger.PID_COLORS)]
-                    record.process_color = f"\033[38;5;{color}m"
 
-            # Handle tid coloring
-            if hasattr(record, "threadName"):
-                if record.threadName is not None:
-                    if record.threadName not in SimpleLogger._tids:
-                        SimpleLogger._tids.append(record.threadName)
+class PrefixChopperHandler:
+    def __init__(self, prefix):
+        self._prefix = prefix
 
-                    color = SimpleLogger.TID_COLORS[SimpleLogger._tids.index(record.threadName) % len(SimpleLogger.TID_COLORS)]
-                    record.threadName_color = f"\033[38;5;{color}m"
+    def handle(self, record):
+        record.name = record.name[len(self._prefix) + 1:]
+        return record
 
-            return True
 
-    _root_name = None
-    _redactions = []
-    _pids = []
-    _tids = []
+class OverridesHandler:
+    def handle(self, record):
+        if "override" in record.__dict__:
+            for attr in record.override:
+                exec(f"record.{attr} = record.override[attr]")
 
-    def __init__(self, name, level=logging.NOTSET):
-        super().__init__(name, level)
-        if SimpleLogger._root_name is None:
-            SimpleLogger._root_name = name
+        return record
 
+
+class RedactionsHandler:
+    def __init__(self):
+        super().__init__()
         self._redactions = []
 
-    def getChild(self, suffix):
-        child = super().getChild(suffix)
+    def handle(self, record):
+        if "add_redaction" in record.__dict__:
+            if record.add_redaction not in self._redactions:
+                self._redactions.append(record.add_redaction)
 
-        child.handlers = []
-        child.propagate = True
-        child.addFilter(SimpleLogger.Filter())
-        return child
+        for redaction in self._redactions:
+            record.msg = record.msg.replace(redaction, "[REDACTED]")
 
-    def get_child(self, suffix):
-        return self.getChild(suffix)
+        return record
 
-    def setLevel(self, level: int):
-        super().setLevel(level)
-        if isinstance(self.parent, logging.RootLogger):
-            if level in self.FORMATS:
-                formatter = self.FORMATS[level]
-            else:
-                formatter = self.FORMATS["default"]
 
-            self.handlers[0].setFormatter(
-                self.Formatter(
-                    formatter["fmt"],
-                    formatter["datefmt"]))
+class ChainHandler(logging.Handler):
+    def __init__(self, *args):
+        super().__init__()
+        self._handlers = args
 
-    def add_redaction(self, redaction):
-        SimpleLogger._redactions.append(redaction)
+    def handle(self, record):
+        result = record
+        for handler in self._handlers:
+            result = handler.handle(result)
+
+        return result
