@@ -1,5 +1,3 @@
-import logging
-import os
 import subprocess
 import urllib
 import requests
@@ -13,9 +11,9 @@ from backend.protocol import AbstractProtocolController, SimpleLivestreamControl
 class SimpleUnifiProtocolController(AbstractProtocolController):
     def __init__(self):
         super().__init__()
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+        self._logger = GlobalFactory.get_logger().get_child("UnifiProtocolController")
+        self._reflector_logger = self._logger.get_child("Reflector")
         self._reflector_controller = None
-        self._reflector_logger = None
         self._apis = {}
 
     def run(self):
@@ -45,7 +43,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
         except json.decoder.JSONDecodeError as e:
             line = line.decode("utf-8")
             if line.startswith("UNVR"):
-                parsed_line = {"level": "debug", "message": line.strip()}
+                parsed_line = {"level": "warn", "message": line.strip()}
             else:
                 raise ApplicationException(f"Failed to parse JSON, offending line: {line}")
 
@@ -56,7 +54,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
         else:
             msg = parsed_line["message"]
 
-        eval("self._logger.{level}(msg, extra={{'override': {{'process':'{pid}'}}}})".format(
+        eval("self._reflector_logger.{level}(msg, extra={{'override': {{'process':'{pid}', 'threadName': 'MainThread' }} }})".format(
             level=parsed_line["level"],
             pid=self._reflector_controller._process.pid))
 
