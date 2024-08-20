@@ -18,6 +18,8 @@
 
 from abc import ABC, abstractmethod
 
+from context import GlobalFactory
+
 
 class AbstractLivestreamController(ABC):
 
@@ -50,16 +52,24 @@ class AbstractProtocolController(ABC):
         pass
 
 
-class SimpleLivestreamController(AbstractLivestreamController):
-    def __init__(self, endpoint):
+class CallbackLivestreamController(AbstractLivestreamController):
+    def __init__(self, endpoint, start_callback=None, stop_callback=None):
+        self._logger = GlobalFactory.get_logger().getChild(__class__.__name__)
         self._endpoint = endpoint
+        self._start_callback = start_callback
+        self._stop_callback = stop_callback
 
     def get_endpoint(self):
+        self._logger.debug("Getting live stream endpoint")
         return self._endpoint
 
     def start(self):
-        pass
+        self._logger.debug("Starting livestream controller")
+        if self._start_callback:
+            self._start_callback(self)
 
     def stop(self):
-        pass
+        self._logger.debug("Stopping livestream controller")
+        if self._stop_callback:
+            self._stop_callback(self)
 

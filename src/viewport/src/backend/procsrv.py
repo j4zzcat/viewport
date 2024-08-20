@@ -26,81 +26,6 @@ class SimpleProcessServer:
     MAX_TPE_SIZE = 2
     MAX_PPE_SIZE = 1
 
-    class CommandController:
-        KEYWORDS = [
-            ("stdout", subprocess.DEVNULL), ("stdout_text", False),
-            ("stderr", subprocess.DEVNULL), ("stderr_text", False),
-            ("monitor", False)]
-
-        def __init__(self, ppe, task_runner, *args, **kwargs):
-            self._logger = GlobalFactory.get_logger().getChild(__class__.__name__)
-            self._ppe = ppe
-            self._task_runner = task_runner
-            self._args = args
-            self._command = args[0]
-            self._kwargs = kwargs
-
-            self._callbacks = {}
-
-        def start(self):
-            stdout_queue = asyncio.Queue()
-
-            self._task_runner.new_task(
-                self._mirror_stream("stdout", stdout_queue.get, [], print, None, None))
-
-            # self._task_runner.new_task(
-            #     self._mirror_stream("stderr", stderr_queue.get, [], print, None, None))
-            future = self._ppe.submit(self._start(self._command, stdout_queue, None))
-            print(future)
-
-
-        # Running on the MainThread of a new process
-        def _start(self, command, stdout_queue, stderr_queue):
-            # Create pipes for stdout and stderr
-            stdout_pipe_fd, stdout_write_fd = os.pipe()
-            # stderr_pipe_fd, stderr_write_fd = os.pipe()
-
-            # Redirect stdout and stderr to pipes
-            os.dup2(stdout_write_fd, sys.stdout.fileno())
-            # os.dup2(stderr_write_fd, sys.stderr.fileno())
-
-            # Close the write ends now as we've duplicated them
-            os.close(stdout_write_fd)
-            # os.close(stderr_write_fd)
-
-            tpe = ThreadPoolExecutor(max_workers=1)
-            task_runner = SimpleProcessServer.TaskRunner()
-            tpe.submit(task_runner.run)
-            task_runner.new_task(self._mirror_stream_to_queue("stdout", stdout_pipe_fd, stdout_queue ))
-            # task_runner.new_task(self._mirror_stream_to_queue("stderr", stderr_pipe_fd, stderr_queue ))
-
-            command.run()
-
-        async def _mirror_stream_to_queue(self, name, pipe, queue):
-            with os.fdopen(pipe) as f:
-                for line in iter(f.readline, ""):
-                    await queue.put(line)
-
-        async def _mirror_stream(self, name, read_fn, read_fn_args, callback, eof, error):
-            try:
-                while True:
-                    result = await read_fn(*read_fn_args)
-                    if not result:
-                        break
-
-                    callback(result)
-            except Exception as e:
-                logger = self._logger.getChild("_mirror_stream")
-                logger.error(e)
-                if error is not None:
-                    error(e)
-
-            self._logger.warning("Stream '{name}' reached EOF".format(name=name))
-            if eof is not None:
-                eof(name)
-
-
-
     #
     # Handles the lifecycle and control of individual processes. The Controller class is
     # responsible for starting, stopping, and handling the output of a subprocess. It allows for
@@ -255,11 +180,7 @@ class SimpleProcessServer:
         task_runner = self._task_runners[self._next_task_runner % len(self._task_runners)]["instance"]
         self._next_task_runner += 1
 
-        # if isinstance(args[0], Command):
-        #     controller = SimpleProcessServer.CommandController(self._ppe, task_runner, *args, **kwargs)
-        # else:
         controller = SimpleProcessServer.Controller(task_runner, *args, **kwargs)
-
         self._controllers[controller] = {}
         self._controllers[controller]["task_runner"] = task_runner
 

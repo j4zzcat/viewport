@@ -133,12 +133,12 @@ class GlobalFactory:
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingController))
         return SimpleTranscodingController()
 
-    def new_transcoding_streaming_server(self, transcoders, bind, port):
+    def new_streaming_transcoding_server(self, transcoders, bind, port):
         from backend.protocols.rtsp import SimpleTranscodingStreamingServer
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingStreamingServer))
         return SimpleTranscodingStreamingServer(transcoders, bind, port)
 
-    def new_transcoding_file_server(self, transcoders, bind, port):
+    def new_file_transcoding_server(self, transcoders, bind, port):
         from backend.protocols.rtsp import SimpleTranscodingFileServer
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingFileServer))
         return SimpleTranscodingFileServer(transcoders, bind, port)

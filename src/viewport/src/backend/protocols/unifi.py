@@ -5,7 +5,7 @@ import json
 
 from context import GlobalFactory
 from backend.error import ApplicationException
-from backend.protocol import AbstractProtocolController, SimpleLivestreamController
+from backend.protocol import AbstractProtocolController, CallbackLivestreamController
 
 
 class SimpleUnifiProtocolController(AbstractProtocolController):
@@ -73,7 +73,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
         if path == "_all":
             # handle unifi://u:p@host/_all
             for camera in self._apis[key].bootstrap["cameras"]:
-                livestreams.append(SimpleLivestreamController({
+                livestreams.append(CallbackLivestreamController({
                     "original_url": url,
                     "stream_format": "unifi",
                     "scheme": "ws",
@@ -92,7 +92,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
                         camera_name=camera_name, host=self._apis[key].host))
 
                 camera = self._apis[key].get_camera_by_name(camera_name)
-                livestreams.append(SimpleLivestreamController({
+                livestreams.append(CallbackLivestreamController({
                     "original_url": url,
                     "stream_format": "unifi",
                     "scheme": "ws",

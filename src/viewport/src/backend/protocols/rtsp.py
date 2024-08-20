@@ -1,42 +1,141 @@
 import asyncio
 import os
 from concurrent.futures import ThreadPoolExecutor
-from urllib.parse import ParseResult
+from urllib.parse import ParseResult, urlparse
 from sanic import Sanic
 from sanic.response import redirect
 from websockets.server import serve
 
 from backend.cmdsrv import SimpleCommandServer, Command
 from backend.error import ApplicationException
-from backend.protocol import AbstractProtocolController, AbstractLivestreamController
+from backend.protocol import AbstractProtocolController, AbstractLivestreamController, NoOpLivestreamController, \
+    CallbackLivestreamController
 from context import GlobalFactory
 
 
 class SimpleRTSPProtocolController(AbstractProtocolController):
     def __init__(self):
         self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
-        self._transcoding_controller = None
+        self._transcoding_servers = {}
 
     def run(self):
-        self._transcoding_controller = GlobalFactory.new_transcoding_controller()
-        self._transcoding_controller.run()
+        # Lazy start the needed infrastructure based on the requested livestreams
+        pass
 
     def new_livestream(self, url: str):
         if isinstance(url, ParseResult):
             url = url.geturl()
         self._logger.debug("Creating a Livestream Controller for '{url}'".format(url=url))
 
-        # See if the client asked for a specific stream format
+        # See if the client asked for a specific stream format that's supported
         parts = url.rsplit('::', 1)
         if len(parts) > 1:
             url = parts[0]
-            transcoder = parts[-1]
+            stream_format = parts[-1]
+            stream_format = stream_format.lower()
+            if stream_format not in GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"]:
+                raise ApplicationException("Can't transcode from '{scheme}' to '{stream_format}'".format(
+                    scheme=urlparse(url).scheme,
+                    stream_format=stream_format))
         else:
-            transcoder = None
+            stream_format = GlobalFactory.get_settings()["protocol"]["rtsp"]["default_transcoder"]
 
-        livestream = self._transcoding_controller.new_livestream(url, transcoder)
+        # See what infra should be started for this type of streaming format
+        server_type = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"][stream_format]["server"]
+        if server_type not in self._transcoding_servers:
+            self._transcoding_servers[server_type] = eval(
+                f"GlobalFactory.new_{server_type}_transcoding_server()")
 
-        return [livestream]
+            self._transcoding_servers[server_type].run()
+
+        return [self._transcoding_servers[server_type].new_livestream(url, stream_format)]
+
+
+class SimpleFileTranscodingServer(Command):
+    def __init__(self):
+        self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
+        self._bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["file"]["bind"]
+        self._port = GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["file"]["port"]
+
+        self._root_dir = "{data_dir}/file_transcoding_server".format(data_dir=GlobalFactory.get_dirs()["data_dir"])
+        os.makedirs(self._root_dir, exist_ok=True)
+        os.makedirs("{root_dir}/files".format(root_dir=self._root_dir), exist_ok=True)
+
+        self._endpoints = {}
+
+    def new_livestream(self, url, stream_format):
+        endpoint = {
+            "original_url": url,
+            "format": stream_format,
+            "scheme": "http",
+            "port": self._port,
+            "path": "/stream/{index}".format(index=GlobalFactory.next_int("stream"))
+        }
+
+        return CallbackLivestreamController(endpoint, self.start_livestream, self.stop_livestream)
+
+    def start_livestream(self, livestream):
+        endpoint = livestream.get_endpoint()
+        self._endpoints[endpoint["path"]] = endpoint
+
+    def stop_livestream(self, livestream):
+        pass
+    def run(self):
+        self._logger.info("Simple File Transcoding Server is ready, HTTP: {bind}:{port}".format(
+            bind=self._bind,
+            port=self._port))
+
+        app = Sanic("MyStreamApp")
+        files_dir = "{root_dir}/files".format(root_dir=self._root_dir)
+        app.static('/files', files_dir)
+        self._logger.debug("Serving /files/ from {files_dir}".format(files_dir=files_dir))
+
+        app.run(motd=True, port=int(self._port), debug=True, access_log=True)
+        asyncio.sleep(3600)
+
+        @app.route("/stream/<id>")
+        async def _on_connect(request, id):
+            if request.path in self._endpoints:
+                endpoint = self._endpoints[request.path]
+                transcoder = self._transcoders[endpoint["format"]]
+
+                self._logger.debug("Starting '{program}' to transcode '{original_url}' to '{format}'".format(
+                    program=self._transcoders[endpoint["format"]]["program"],
+                    original_url=endpoint["original_url"],
+                    format=endpoint["format"]))
+
+                if transcoder["program"] == "ffmpeg":
+                    output_dir = "{root_dir}/files{path}".format(root_dir=self._root_dir, path=request.path)
+                    os.makedirs(output_dir, exist_ok=True)
+
+                    if endpoint["format"] == "hls":
+                        output_file_name = "index.m3u8"
+                    else:
+                        output_file_name = "index.{format}".format(output_dir=output_dir, format=endpoint["format"])
+
+                    output_file = "{output_dir}/{output_file_name}".format(output_dir=output_dir, output_file_name=output_file_name)
+                    output_path = "/files{request_path}/{output_file_name}".format(request_path=request.path, output_file_name=output_file_name)
+
+                    command = "ffmpeg {options}".format(options=transcoder["options"])
+                    command = command.format(
+                        input_url=endpoint["original_url"],
+                        output_file=output_file)
+                else:
+                    raise ApplicationException("Transcoder program '{program}' is not supported".format(
+                        program=transcoder["program"]))
+
+                process = await asyncio.create_subprocess_exec(
+                    *command.split(" "),
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE)
+
+                return redirect(output_path)
+
+
+
+
+
+
 
 
 class SimpleTranscodingController(Command):
@@ -205,93 +304,5 @@ class SimpleTranscodingStreamingServer(Command):
                     break
         except Exception as e:
             self._logger.error(e)
-
-
-class SimpleTranscodingFileServer(Command):
-    def __init__(self, transcoders, bind, port):
-        self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
-        self._transcoders = transcoders
-        self._bind = bind
-        self._port = port
-
-        self._root_dir = "{data_dir}/transcoding_file_server".format(data_dir=GlobalFactory.get_dirs()["data_dir"])
-        os.makedirs(self._root_dir, exist_ok=True)
-        os.makedirs("{root_dir}/files".format(root_dir=self._root_dir), exist_ok=True)
-
-        self._endpoints = {}
-
-    def can_transcode(self, transcoder):
-        return transcoder in self._transcoders
-
-    class LivestreamController(AbstractLivestreamController):
-        def __init__(self, endpoint):
-            self._endpoint = endpoint
-
-        def get_endpoint(self):
-            return self._endpoint
-
-    def new_livestream_controller(self, input_url, transcoder):
-        endpoint = {
-            "original_url": input_url,
-            "format": transcoder,
-            "scheme": "http",
-            "port": self._port,
-            "path": "/stream/{index}".format(index=GlobalFactory.next_int("stream"))
-        }
-
-        self._endpoints[endpoint["path"]] = endpoint
-
-        return SimpleTranscodingFileServer.LivestreamController(endpoint)
-
-    def run(self):
-        self._logger.info("Simple Transcoding File Server is ready, HTTP: {bind}:{port}".format(
-            bind=self._bind,
-            port=self._port))
-
-        app = Sanic("MyStreamApp")
-        files_dir = "{root_dir}/files".format(root_dir=self._root_dir)
-        app.static('/files', files_dir)
-        self._logger.debug("Serving /files/ from {files_dir}".format(files_dir=files_dir))
-
-        app.run(motd=True, port=int(self._port), debug=True, access_log=True)
-        asyncio.sleep(3600)
-
-        @app.route("/stream/<id>")
-        async def _on_connect(request, id):
-            if request.path in self._endpoints:
-                endpoint = self._endpoints[request.path]
-                transcoder = self._transcoders[endpoint["format"]]
-
-                self._logger.debug("Starting '{program}' to transcode '{original_url}' to '{format}'".format(
-                    program=self._transcoders[endpoint["format"]]["program"],
-                    original_url=endpoint["original_url"],
-                    format=endpoint["format"]))
-
-                if transcoder["program"] == "ffmpeg":
-                    output_dir = "{root_dir}/files{path}".format(root_dir=self._root_dir, path=request.path)
-                    os.makedirs(output_dir, exist_ok=True)
-
-                    if endpoint["format"] == "hls":
-                        output_file_name = "index.m3u8"
-                    else:
-                        output_file_name = "index.{format}".format(output_dir=output_dir, format=endpoint["format"])
-
-                    output_file = "{output_dir}/{output_file_name}".format(output_dir=output_dir, output_file_name=output_file_name)
-                    output_path = "/files{request_path}/{output_file_name}".format(request_path=request.path, output_file_name=output_file_name)
-
-                    command = "ffmpeg {options}".format(options=transcoder["options"])
-                    command = command.format(
-                        input_url=endpoint["original_url"],
-                        output_file=output_file)
-                else:
-                    raise ApplicationException("Transcoder program '{program}' is not supported".format(
-                        program=transcoder["program"]))
-
-                process = await asyncio.create_subprocess_exec(
-                    *command.split(" "),
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE)
-
-                return redirect(output_path)
 
 
