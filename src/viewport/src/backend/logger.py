@@ -1,6 +1,4 @@
 import logging
-import os
-import sys
 
 
 class SimpleLogger(logging.Logger):
@@ -15,7 +13,9 @@ class SimpleLogger(logging.Logger):
 
     PID_COLORS = [15, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15]
     TID_COLORS = [13, 12, 11, 10, 8, 7, 6, 5, 4, 3, 2, 15, 14]
-    LEVEL_COLORS = []
+    LEVEL_COLORS = {
+        logging.WARNING: 11,
+        logging.ERROR: 9}
 
     class Formatter(logging.Formatter):
         def __init__(self, fmt, datefmt):
@@ -39,12 +39,10 @@ class SimpleLogger(logging.Logger):
                 record.msg = record.msg.replace(redaction, "[REDACTED]")
 
             # Handle level coloring
-            if record.levelno == logging.WARNING:
-                record.level_color = "\033[38;5;11m"
-            elif record.levelno == logging.ERROR:
-                record.level_color = "\033[38;5;9m"
+            if record.levelno in SimpleLogger.LEVEL_COLORS:
+                record.level_color = "\033[38;5;{color}m".format(color=SimpleLogger.LEVEL_COLORS[record.levelno])
             else:
-                record.level_color = "\033[38;5;250m"
+                record.level_color = ""
 
             # Handle pid coloring
             if hasattr(record, "process"):
