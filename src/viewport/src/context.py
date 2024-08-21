@@ -47,12 +47,12 @@ class GlobalFactory:
         # Web root dir
         if "RAM_FS" in os.environ:
             if os.path.isdir(os.environ["RAM_FS"]):
-                data_dir = "{ram_fs}/viewport".format(ram_fs=os.environ["RAM_FS"])
+                web_root_dir = "{ram_fs}/viewport".format(ram_fs=os.environ["RAM_FS"])
         else:
-            data_dir = "{home}/.viewport".format(home=os.environ["HOME"])
+            web_root_dir = "{home}/.viewport".format(home=os.environ["HOME"])
 
-        os.makedirs(data_dir, exist_ok=True)
-        properties["dirs"]["data_dir"] = os.path.abspath(data_dir)
+        os.makedirs(web_root_dir, exist_ok=True)
+        properties["dirs"]["web_root_dir"] = os.path.abspath(web_root_dir)
 
         # Settings.toml
         with open("{viewport_root}/resource/settings.toml".format(
@@ -156,11 +156,11 @@ class GlobalFactory:
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUIRenderer))
         return SimpleUIRenderer(layout, player_urls, directory)
 
-    def get_web_server(self, directory, bind=None, port=None):
+    def get_web_server(self, directory):
         if not self._web_server:
             from backend.httpd import SimpleWebServer
             self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleWebServer))
-            self._web_server = SimpleWebServer(directory, bind, port)
+            self._web_server = SimpleWebServer(directory)
 
         return self._web_server
 

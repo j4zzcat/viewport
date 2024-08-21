@@ -65,7 +65,7 @@ class SimpleFileTranscodingServer(Command):
         self._bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["file"]["bind"]
         self._port = GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["file"]["port"]
 
-        self._root_dir = "{data_dir}/file_transcoding_server".format(data_dir=GlobalFactory.get_dirs()["data_dir"])
+        self._root_dir = GlobalFactory.get_dirs()["web_root_dir"]
         os.makedirs(self._root_dir, exist_ok=True)
 
         self._endpoints = {}
@@ -74,7 +74,7 @@ class SimpleFileTranscodingServer(Command):
     def new_livestream(self, url, stream_format):
         endpoint = {
             "original_url": url,
-            "format": stream_format,
+            "stream_format": stream_format,
             "scheme": "http",
             "port": self._port,
             "path": "stream/{index}".format(index=GlobalFactory.next_int("stream"))
@@ -124,7 +124,7 @@ class SimpleFileTranscodingServer(Command):
             client=client,
             endpoint=endpoint))
 
-        transcoder = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"][endpoint["format"]]
+        transcoder = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"][endpoint["stream_format"]]
         program = transcoder["program"]
         program_options = transcoder["options"]
 
@@ -139,11 +139,12 @@ class SimpleFileTranscodingServer(Command):
                     input_url=endpoint["original_url"],
                     output_dir=output_dir)
 
-                match transcoder:
+                match endpoint["stream_format"]:
                     case "hls":
                         response = "{output_dir}/index.m3u8".format(output_dir=output_dir)
                     case _:
-                        self._logger.error("I don't know how to handle '{format}'".format(format=transcoder))
+                        self._logger.error("Can't handle '{format}'".format(format=transcoder))
+                        await  websocket.close()
 
             case _:
                 self._logger.error("Transcoder '{format}' defines an unknown program '{program}'. Check settings.toml.".format(

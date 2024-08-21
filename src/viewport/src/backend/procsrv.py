@@ -94,7 +94,10 @@ class SimpleProcessServer:
 
         def stop(self):
             self._logger.debug("Stopping process '{pid}'".format(pid=self._process.pid))
-            self._process.terminate()
+            try:
+                self._process.terminate()
+            except Exception as e:
+                self._logger.error("Failed to stop process '{pid}, error is '{e}'".format(pid=self._process.pid, e=e))
 
         #
         # Asynchronously mirrors a stream by repeatedly calling a read function and executing a

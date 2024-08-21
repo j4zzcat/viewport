@@ -1,5 +1,6 @@
 import os
 import signal
+import subprocess
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import functools
 import socketserver
@@ -9,24 +10,21 @@ from context import GlobalFactory
 
 
 class SimpleWebServer(Command):
-    class DefaultHandler(SimpleHTTPRequestHandler):
-        def log_message(self, fmt, *args):
-            if not hasattr(self, "_logger"):
-                self._logger = GlobalFactory.get_logger().getChild("SimpleWebServer")
-
-            self._logger.debug(fmt % args)
-
-    def __init__(self, directory, bind=None, port=None):
-        self._logger = GlobalFactory.get_logger().getChild("SimpleWebServer")
-        self._root_dir = directory
-        self._bind = bind if bind is not None else GlobalFactory.get_settings()["httpd"]["bind"]
-        self._port = port if port is not None else GlobalFactory.get_settings()["httpd"]["port"]
-        self._server = None
+    def __init__(self, root_dir):
+        self._root_dir = root_dir
 
     def run(self):
-        handler = functools.partial(SimpleWebServer.DefaultHandler, directory=self._root_dir)
-        self._server = socketserver.TCPServer((self._bind, int(self._port)), handler)
+        process_controller = GlobalFactory.get_process_server().new_process(
+            "npx",
+              "http-server",
+                  "-a", GlobalFactory.get_settings()["httpd"]["bind"],
+                  "-p", GlobalFactory.get_settings()["httpd"]["port"],
+                  self._root_dir,
+            cwd="{reflector_root}/src".format(reflector_root=GlobalFactory.get_dirs()["reflector_root"]),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            stdout_text=True,
+            monitor=True)
 
-        self._logger.info("Simple Web Server is ready, HTTP: {bind}:{port}".format(bind=self._bind, port=self._port))
-
-        self._server.serve_forever()
+        process_controller.on("stdout", print)
+        process_controller.start()

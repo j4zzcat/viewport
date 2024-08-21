@@ -41,14 +41,14 @@ class Streams(Command):
             [livestream.start() for livestream in livestreams]
 
         # Render the web page
-        html_dir = "{data_dir}/web_server".format(
-            data_dir=GlobalFactory.get_dirs()["data_dir"])
-        os.makedirs(html_dir, exist_ok=True)
+        data_dir = GlobalFactory.get_dirs()["web_root_dir"]
 
+        html_dir = f"{data_dir}/html"
+        os.makedirs(html_dir, exist_ok=True)
         GlobalFactory.new_ui_renderer(self._layout, player_endpoints, html_dir).run()
 
-        GlobalFactory.get_command_server().submit(
-            GlobalFactory.get_web_server(html_dir))
+        # Start the web server
+        GlobalFactory.get_web_server(GlobalFactory.get_dirs()["web_root_dir"]).run()
 
         # Leave MainThread free for signal handling
 
