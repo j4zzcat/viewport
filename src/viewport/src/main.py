@@ -52,6 +52,7 @@ from backend.error import ApplicationException
 
 
 def main():
+    GlobalFactory.initialize()
     settings = GlobalFactory.get_settings()
 
     args = docopt(

@@ -1,5 +1,6 @@
 import asyncio
 import os
+import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import ParseResult, urlparse
 from sanic import Sanic
@@ -58,7 +59,6 @@ class SimpleFileTranscodingServer(Command):
 
         self._root_dir = "{data_dir}/file_transcoding_server".format(data_dir=GlobalFactory.get_dirs()["data_dir"])
         os.makedirs(self._root_dir, exist_ok=True)
-        os.makedirs("{root_dir}/files".format(root_dir=self._root_dir), exist_ok=True)
 
         self._endpoints = {}
         self._tpe = ThreadPoolExecutor(max_workers=1, thread_name_prefix="FTS")
@@ -110,15 +110,45 @@ class SimpleFileTranscodingServer(Command):
 
             await websocket.close()
 
-        self._logger.debug("Client '{client}' asks for '{path}'".format(
+        endpoint = self._endpoints[websocket.path]
+        self._logger.debug("Client '{client}' asks for endpoint '{endpoint}'".format(
             client=client,
-            path=websocket.path))
+            endpoint=endpoint))
 
+        transcoder = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"][endpoint["format"]]
+        program = transcoder["program"]
+        program_options = transcoder["options"]
 
+        if program != "ffmpeg":
+            self._logger.error("Transcoder '{format}' defines an unknown program '{program}'. Check settings.toml.".format(
+                format=endpoint["format"],
+                program=program
+            ))
 
+            await websocket.close()
+            return
 
+        output_dir = "{root_dir}{path}".format(
+            root_dir=self._root_dir,
+            path=websocket.path)
+        os.makedirs(output_dir, exist_ok=True)
 
+        program_options = program_options.format(
+            input_url=endpoint["original_url"],
+            output_dir=output_dir)
 
+        controller = GlobalFactory.get_process_server().new_process(
+            program,
+            *program_options,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdout_text=True,
+            stderr_text=True,
+            monitor=True)
+
+        controller.on("stdout", print)
+        controller.on("stderr", print)
+        controller.start()
 
         # self._logger.info("Simple File Transcoding Server is ready, HTTP: {bind}:{port}".format(
         #     bind=self._bind,

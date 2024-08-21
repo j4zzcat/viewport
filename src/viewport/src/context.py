@@ -24,6 +24,7 @@ class GlobalFactory:
 
         self._properties = self._initialize_properties()
         self._command_server = None
+        self._process_server = None
         self._web_server = None
         self._unifi_protocol_controller = None
         self._rtsp_protocol_controller = None
@@ -62,6 +63,10 @@ class GlobalFactory:
 
         return properties
 
+    def initialize(self):
+        self.get_process_server()
+        self.get_command_server()
+
     def get_properties(self, key=None):
         if key is None:
             return self._properties
@@ -95,9 +100,12 @@ class GlobalFactory:
         return self._command_server
 
     def get_process_server(self):
-        from backend.procsrv import SimpleProcessServer
-        self._logger.debug("Creating {clazz} instance".format(clazz=SimpleProcessServer))
-        return SimpleProcessServer()
+        if not self._process_server:
+            from backend.procsrv import SimpleProcessServer
+            self._logger.debug("Creating {clazz} instance".format(clazz=SimpleProcessServer))
+            self._process_server = SimpleProcessServer()
+
+        return self._process_server
 
     def new_cli_streams_command(self, layout, urls):
         from cli.commands import Streams

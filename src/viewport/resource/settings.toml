@@ -33,7 +33,7 @@ options = """-hide_banner -loglevel error -nostats \
              -vcodec copy -an \
              -f hls \
              -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
-             {output_file}"""
+             {output_dir}/index.m3u8"""
 
 [protocol.rtsp.transcoder.mpegts]
 server  = "streaming"
@@ -41,7 +41,8 @@ program = "ffmpeg"
 options = """-hide_banner -loglevel error -nostats \
              -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
-             -f mpegts"""
+             -f mpegts \
+             -"""
 
 [protocol.rtsp.transcoder.flv]
 server  = "streaming"
@@ -49,7 +50,8 @@ program = "ffmpeg"
 options = """-hide_banner -loglevel error -nostats \
              -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
-             -f flv"""
+             -f flv \
+             -"""
 
 [protocol.rtsp.transcoder.fmp4_1]
 server  = "streaming"
@@ -58,7 +60,8 @@ options = """-hide_banner -loglevel error -nostats \
              -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an
              -f mp4 \
-             -movflags frag_keyframe+empty_moov+default_base_moof"""
+             -movflags frag_keyframe+empty_moov+default_base_moof \
+             -"""
 
 [protocol.rtsp.transcoder.fmp4_2]
 server  = "streaming"
@@ -70,7 +73,8 @@ options =  """-hide_banner -loglevel error -nostats \
              -analyzeduration 1000000 -probesize 1000000 \
              -vcodec copy -an \
              -f mp4 \
-             -movflags frag_keyframe+empty_moov+default_base_moof"""
+             -movflags frag_keyframe+empty_moov+default_base_moof \
+             -"""
 
 [protocol.rtsp.transcoder.fmp4_3]
 server  = "streaming"
@@ -82,6 +86,7 @@ options = """-hide_banner -loglevel error -nostats \
              -analyzeduration 1000000 -probesize 1000000 \
              -vcodec copy -an \
              -f mp4 \
-             -movflags frag_keyframe+empty_moov+default_base_moof"""
+             -movflags frag_keyframe+empty_moov+default_base_moof \
+             -"""
 
 

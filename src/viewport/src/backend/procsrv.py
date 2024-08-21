@@ -57,7 +57,9 @@ class SimpleProcessServer:
             self._callbacks[event] = (callback, error)
 
         def start(self):
-            self._logger.debug("Starting process")
+            self._logger.debug("Starting process '{program}' with args '{args}'".format(
+                program=self._popen_args[0],
+                args="".join(self._popen_args[1:])))
             try:
                 future = self._task_runner.new_task(
                     asyncio.create_subprocess_exec(*self._popen_args, **self._popen_kwargs))
@@ -69,7 +71,7 @@ class SimpleProcessServer:
                 future,
                 SimpleProcessServer.PROCESS_START_TIMEOUT_MS)
 
-            self._logger = GlobalFactory.get_logger().getChild("{clazz}:{pid}".format(clazz=__class__.__name__, pid=self._process.pid))
+            self._logger = GlobalFactory.get_logger().getChild(__class__.__name__)
             self._logger.debug("Process started, pid={pid}".format(pid=self._process.pid))
 
             for stream in ["stdout", "stderr"]:
