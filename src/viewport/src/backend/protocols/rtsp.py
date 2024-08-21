@@ -3,11 +3,9 @@ import os
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import ParseResult, urlparse
-from sanic import Sanic
-from sanic.response import redirect
 from websockets.server import serve
 
-from backend.cmdsrv import SimpleCommandServer, Command
+from backend.cmdsrv import Command
 from backend.error import ApplicationException
 from backend.protocol import AbstractProtocolController, AbstractLivestreamController, CallbackLivestreamController
 from context import GlobalFactory
@@ -52,6 +50,16 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
 
 
 class SimpleFileTranscodingServer(Command):
+    class FFMpegLogger:
+        def __init__(self, process_controller):
+            self._logger = GlobalFactory.get_logger().getChild("ffmpeg")
+            self._process_controller = process_controller
+
+        def log(self, line):
+            self._logger.debug(line, extra={"override": {
+                    "process": self._process_controller._process.pid,
+                    "threadName": "Unknown"}})
+
     def __init__(self):
         self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
         self._bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["file"]["bind"]
@@ -69,7 +77,7 @@ class SimpleFileTranscodingServer(Command):
             "format": stream_format,
             "scheme": "http",
             "port": self._port,
-            "path": "/stream/{index}".format(index=GlobalFactory.next_int("stream"))
+            "path": "stream/{index}".format(index=GlobalFactory.next_int("stream"))
         }
 
         return CallbackLivestreamController(endpoint, self.start_livestream, self.stop_livestream)
@@ -102,7 +110,8 @@ class SimpleFileTranscodingServer(Command):
             client_address=websocket.remote_address[0],
             client_port=websocket.remote_address[1])
 
-        if websocket.path not in self._endpoints:
+        path = websocket.path[1:]  # chop leading '/'
+        if path not in self._endpoints:
             self._logger.warning("Client '{client}' requested an unknown livestream path '{path}'".format(
                 client=client,
                 path=websocket.path
@@ -110,7 +119,7 @@ class SimpleFileTranscodingServer(Command):
 
             await websocket.close()
 
-        endpoint = self._endpoints[websocket.path]
+        endpoint = self._endpoints[path]
         self._logger.debug("Client '{client}' asks for endpoint '{endpoint}'".format(
             client=client,
             endpoint=endpoint))
@@ -119,134 +128,52 @@ class SimpleFileTranscodingServer(Command):
         program = transcoder["program"]
         program_options = transcoder["options"]
 
-        if program != "ffmpeg":
-            self._logger.error("Transcoder '{format}' defines an unknown program '{program}'. Check settings.toml.".format(
-                format=endpoint["format"],
-                program=program
-            ))
+        match program:
+            case "ffmpeg":
+                output_dir = "{root_dir}/{path}".format(
+                    root_dir=self._root_dir,
+                    path=path)
+                os.makedirs(output_dir, exist_ok=True)
 
-            await websocket.close()
-            return
+                program_options = program_options.format(
+                    input_url=endpoint["original_url"],
+                    output_dir=output_dir)
 
-        output_dir = "{root_dir}{path}".format(
-            root_dir=self._root_dir,
-            path=websocket.path)
-        os.makedirs(output_dir, exist_ok=True)
+                match transcoder:
+                    case "hls":
+                        response = "{output_dir}/index.m3u8".format(output_dir=output_dir)
+                    case _:
+                        self._logger.error("I don't know how to handle '{format}'".format(format=transcoder))
 
-        program_options = program_options.format(
-            input_url=endpoint["original_url"],
-            output_dir=output_dir)
+            case _:
+                self._logger.error("Transcoder '{format}' defines an unknown program '{program}'. Check settings.toml.".format(
+                    format=endpoint["format"],
+                    program=program))
 
-        controller = GlobalFactory.get_process_server().new_process(
+                await websocket.close()
+                return
+
+        process_controller = GlobalFactory.get_process_server().new_process(
             program,
             *(program_options.split()),
-            stdout=subprocess.PIPE,
+            stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
-            stdout_text=True,
             stderr_text=True,
             monitor=True)
 
-        controller.on("stdout", print)
-        controller.on("stderr", print)
-        controller.start()
-
-        # self._logger.info("Simple File Transcoding Server is ready, HTTP: {bind}:{port}".format(
-        #     bind=self._bind,
-        #     port=self._port))
-        #
-        # app = Sanic("MyStreamApp")
-        # files_dir = "{root_dir}/files".format(root_dir=self._root_dir)
-        # app.static('/files', files_dir)
-        # self._logger.debug("Serving /files/ from {files_dir}".format(files_dir=files_dir))
-        #
-        # app.run(motd=True, port=int(self._port), debug=True, access_log=True)
-        # asyncio.sleep(3600)
-        #
-        # @app.route("/stream/<id>")
-        # async def _on_connect(request, id):
-        #     if request.path in self._endpoints:
-        #         endpoint = self._endpoints[request.path]
-        #         transcoder = self._transcoders[endpoint["format"]]
-        #
-        #         self._logger.debug("Starting '{program}' to transcode '{original_url}' to '{format}'".format(
-        #             program=self._transcoders[endpoint["format"]]["program"],
-        #             original_url=endpoint["original_url"],
-        #             format=endpoint["format"]))
-        #
-        #         if transcoder["program"] == "ffmpeg":
-        #             output_dir = "{root_dir}/files{path}".format(root_dir=self._root_dir, path=request.path)
-        #             os.makedirs(output_dir, exist_ok=True)
-        #
-        #             if endpoint["format"] == "hls":
-        #                 output_file_name = "index.m3u8"
-        #             else:
-        #                 output_file_name = "index.{format}".format(output_dir=output_dir, format=endpoint["format"])
-        #
-        #             output_file = "{output_dir}/{output_file_name}".format(output_dir=output_dir, output_file_name=output_file_name)
-        #             output_path = "/files{request_path}/{output_file_name}".format(request_path=request.path, output_file_name=output_file_name)
-        #
-        #             command = "ffmpeg {options}".format(options=transcoder["options"])
-        #             command = command.format(
-        #                 input_url=endpoint["original_url"],
-        #                 output_file=output_file)
-        #         else:
-        #             raise ApplicationException("Transcoder program '{program}' is not supported".format(
-        #                 program=transcoder["program"]))
-        #
-        #         process = await asyncio.create_subprocess_exec(
-        #             *command.split(" "),
-        #             stdout=asyncio.subprocess.PIPE,
-        #             stderr=asyncio.subprocess.PIPE)
-        #
-        #         return redirect(output_path)
-        #
-
-
-
-
-
-
-
-class SimpleTranscodingController(Command):
-    def __init__(self):
-        self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
-        self._http_server = None
-        self._ws_server = None
-        self.file_transcoders = None
-        self.stdout_transcoders = None
-
-        self._transcoders = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"]
-        self._default_transcoder = GlobalFactory.get_settings()["protocol"]["rtsp"]["default_transcoder"]
-
-        self._transcoding_streaming_server = GlobalFactory.new_transcoding_streaming_server(
-            {key: value for key, value in self._transcoders.items() if value["server"] == "streaming"},
-            GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["streaming"]["bind"],
-            GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["streaming"]["port"])
-
-        self._transcoding_file_server = GlobalFactory.new_transcoding_file_server(
-            {key: value for key, value in self._transcoders.items() if value["server"] == "file"},
-            GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["file"]["bind"],
-            GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["file"]["port"])
-
-    def run(self):
-        GlobalFactory.get_command_server().submit(
-            self._transcoding_streaming_server)
-
-        tpe = ThreadPoolExecutor(max_workers=10,thread_name_prefix="BBB")
-        tpe.submit(self._transcoding_file_server.run)
-
-    def new_livestream_controller(self, input_url, transcoder=None):
-        if transcoder is None:
-            transcoder = self._default_transcoder
-
-        if self._transcoding_file_server.can_transcode(transcoder):
-            transcoding_server = self._transcoding_file_server
-        elif self._transcoding_streaming_server.can_transcode(transcoder):
-            transcoding_server = self._transcoding_streaming_server
+        # Check if a transcoder program is already running for this endpoint, and if so
+        # stop it, i.e., the client reconnected.
+        if "process_controller" in endpoint:
+            process_controller = endpoint["process_controller"]
+            process_controller.stop()
         else:
-            raise ApplicationException("Transcoder '{transcoder}' is not supported".format(transcoder=transcoder))
+            endpoint["process_controller"] = process_controller
 
-        return transcoding_server.new_livestream(input_url, transcoder)
+        process_controller.on("stderr", self.FFMpegLogger(process_controller).log)
+        process_controller.start()
+
+        await websocket.send(response)
+        await websocket.close()
 
 
 class SimpleTranscodingStreamingServer(Command):

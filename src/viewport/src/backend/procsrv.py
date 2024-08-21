@@ -93,7 +93,8 @@ class SimpleProcessServer:
             # done
 
         def stop(self):
-            pass
+            self._logger.debug("Stopping process '{pid}'".format(pid=self._process.pid))
+            self._process.terminate()
 
         #
         # Asynchronously mirrors a stream by repeatedly calling a read function and executing a
