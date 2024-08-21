@@ -139,7 +139,7 @@ class SimpleFileTranscodingServer(Command):
 
         controller = GlobalFactory.get_process_server().new_process(
             program,
-            *program_options,
+            *(program_options.split()),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             stdout_text=True,

@@ -59,7 +59,7 @@ class SimpleProcessServer:
         def start(self):
             self._logger.debug("Starting process '{program}' with args '{args}'".format(
                 program=self._popen_args[0],
-                args="".join(self._popen_args[1:])))
+                args=self._popen_args[1:]))
             try:
                 future = self._task_runner.new_task(
                     asyncio.create_subprocess_exec(*self._popen_args, **self._popen_kwargs))
