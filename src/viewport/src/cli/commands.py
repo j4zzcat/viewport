@@ -31,7 +31,7 @@ class Streams(Command):
             protocol_controllers[protocol].run()
 
         # Iterate over the URLs in the order received. Create the livestream controller
-        # for each url. Depending on the input url, (such as in the case of 'unifi://u:p@host/_all'),
+        # for each url. Depending on the input url, (such as in the case of 'unifi://.../_all'),
         # more than one livestream instance may be returned. Save the endpoint of each
         # livestream for the next step.
         player_endpoints = []
@@ -42,13 +42,12 @@ class Streams(Command):
 
         # Render the web page
         data_dir = GlobalFactory.get_dirs()["web_root_dir"]
-
         html_dir = f"{data_dir}/html"
         os.makedirs(html_dir, exist_ok=True)
         GlobalFactory.new_ui_renderer(self._layout, player_endpoints, html_dir).run()
 
         # Start the web server
-        GlobalFactory.get_web_server(GlobalFactory.get_dirs()["web_root_dir"]).run()
+        GlobalFactory.get_web_server().run()
 
         # Leave MainThread free for signal handling
 

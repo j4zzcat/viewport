@@ -1,13 +1,8 @@
 import asyncio
-import logging
-import os
-import queue
+import atexit
 import subprocess
-import sys
-import time
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 
-from backend.cmdsrv import Command
 from backend.error import ApplicationException
 from context import GlobalFactory
 import backend.utils as utils
@@ -24,7 +19,6 @@ class SimpleProcessServer:
     THREAD_START_TIMEOUT_MS = 2000
     PROCESS_START_TIMEOUT_MS = 3000
     MAX_TPE_SIZE = 2
-    MAX_PPE_SIZE = 1
 
     #
     # Handles the lifecycle and control of individual processes. The Controller class is
@@ -152,8 +146,15 @@ class SimpleProcessServer:
 
             return asyncio.run_coroutine_threadsafe(self._with_log(task), self.loop)
 
+        # Running on the caller's thread
         def cancel_task(self, task):
             return asyncio.run_coroutine_threadsafe(self._with_log(task.cancel()), self.loop)
+
+        # Running on the caller's thread
+        def shutdown(self):
+            self.loop.call_soon_threadsafe(self.loop.stop)
+            # self.loop.stop()
+            # self.loop.close()
 
         # Running on the task's thread
         def run(self):
@@ -169,6 +170,9 @@ class SimpleProcessServer:
             return await asyncio.create_task(task)
 
     def __init__(self):
+        self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
+
+        atexit.register(self.shutdown)
         self._tpe = ThreadPoolExecutor(max_workers=self.MAX_TPE_SIZE, thread_name_prefix="PS")
 
         self._task_runners = []
@@ -177,10 +181,19 @@ class SimpleProcessServer:
             future = self._tpe.submit(task_runner.run)
             self._task_runners.append({"instance": task_runner, "future": future})
 
-        self._ppe = ProcessPoolExecutor(max_workers=self.MAX_PPE_SIZE)
-
         self._controllers = {}
         self._next_task_runner = 0
+
+    def shutdown(self):
+        self._logger.debug("Shutting down")
+
+        for controller in self._controllers:
+            controller.stop()
+
+        for task_runner in self._task_runners:
+            task_runner["instance"].shutdown()
+
+        self._tpe.shutdown(wait=False, cancel_futures=True)
 
     def new_process(self, *args, **kwargs):
         task_runner = self._task_runners[self._next_task_runner % len(self._task_runners)]["instance"]

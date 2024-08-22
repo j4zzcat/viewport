@@ -18,7 +18,7 @@ class GlobalFactory:
                 RedactionsHandler(),
                 sh))
 
-        self._root_logger.setLevel(logging.DEBUG)
+        self._root_logger.setLevel(logging.INFO)
 
         self._logger = self._root_logger.getChild("GlobalFactory")
 
@@ -45,11 +45,12 @@ class GlobalFactory:
         }
 
         # Web root dir
+        web_root_dir = "{home}/.viewport".format(home=os.environ["HOME"])
+
+        # Optimize for Docker container
         if "RAM_FS" in os.environ:
             if os.path.isdir(os.environ["RAM_FS"]):
                 web_root_dir = "{ram_fs}/viewport".format(ram_fs=os.environ["RAM_FS"])
-        else:
-            web_root_dir = "{home}/.viewport".format(home=os.environ["HOME"])
 
         os.makedirs(web_root_dir, exist_ok=True)
         properties["dirs"]["web_root_dir"] = os.path.abspath(web_root_dir)
@@ -65,7 +66,7 @@ class GlobalFactory:
 
     def initialize(self):
         self.get_process_server()
-        self.get_command_server()
+        # self.get_command_server()
 
     def get_properties(self, key=None):
         if key is None:
@@ -91,13 +92,13 @@ class GlobalFactory:
     def get_logger(self):
         return self._root_logger
 
-    def get_command_server(self):
-        if not self._command_server:
-            from backend.cmdsrv import SimpleCommandServer
-            self._logger.debug("Creating {clazz} Singleton".format(clazz=SimpleCommandServer))
-            self._command_server = SimpleCommandServer()
-
-        return self._command_server
+    # def get_command_server(self):
+    #     if not self._command_server:
+    #         from backend.cmdsrv import SimpleCommandServer
+    #         self._logger.debug("Creating {clazz} Singleton".format(clazz=SimpleCommandServer))
+    #         self._command_server = SimpleCommandServer()
+    #
+    #     return self._command_server
 
     def get_process_server(self):
         if not self._process_server:
@@ -156,11 +157,11 @@ class GlobalFactory:
         self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleUIRenderer))
         return SimpleUIRenderer(layout, player_urls, directory)
 
-    def get_web_server(self, directory):
+    def get_web_server(self):
         if not self._web_server:
             from backend.httpd import SimpleWebServer
             self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleWebServer))
-            self._web_server = SimpleWebServer(directory)
+            self._web_server = SimpleWebServer()
 
         return self._web_server
 

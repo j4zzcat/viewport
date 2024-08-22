@@ -75,7 +75,7 @@ class SimpleFileTranscodingServer(Command):
         endpoint = {
             "original_url": url,
             "stream_format": stream_format,
-            "scheme": "http",
+            "scheme": "ws",
             "port": self._port,
             "path": "stream/{index}".format(index=GlobalFactory.next_int("stream"))
         }
@@ -120,9 +120,9 @@ class SimpleFileTranscodingServer(Command):
             await websocket.close()
 
         endpoint = self._endpoints[path]
-        self._logger.debug("Client '{client}' asks for endpoint '{endpoint}'".format(
+        self._logger.info("Client '{client}' asks for '{path}'".format(
             client=client,
-            endpoint=endpoint))
+            path=path))
 
         transcoder = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"][endpoint["stream_format"]]
         program = transcoder["program"]
@@ -141,7 +141,9 @@ class SimpleFileTranscodingServer(Command):
 
                 match endpoint["stream_format"]:
                     case "hls":
-                        response = "{output_dir}/index.m3u8".format(output_dir=output_dir)
+                        response = "http://{{server}}:{port}/{path}/index.m3u8".format(
+                            port=GlobalFactory.get_web_server().port,
+                            path=endpoint["path"])
                     case _:
                         self._logger.error("Can't handle '{format}'".format(format=transcoder))
                         await  websocket.close()
@@ -199,7 +201,7 @@ class SimpleTranscodingStreamingServer(Command):
     def new_livestream_controller(self, input_url, transcoder):
         endpoint = {
             "original_url": input_url,
-            "format": transcoder,
+            "stream_format": transcoder,
             "scheme": "ws",
             "port": self._port,
             "path": "/stream/{index}".format(index=GlobalFactory.next_int("stream"))

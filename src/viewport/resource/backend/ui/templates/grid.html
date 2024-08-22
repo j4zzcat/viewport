@@ -34,6 +34,7 @@
     <script src="bundle.js"></script>
     <!--script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.5.0/flv.min.js"></script-->
     <script src="mpegts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
 </head>
 <body>
 <div id="video-streams-placeholder" class="container">
@@ -76,11 +77,27 @@
                     let flvPlayer = mpegts.createPlayer({
                         isLive: true,
                         type: format,
-                        url: videoUrl
+                        url: stream_url
                     });
                     flvPlayer.attachMediaElement(videoElement);
                     flvPlayer.load();
                     flvPlayer.play();
+
+                } else if(["hls"].indexOf(stream_format) >= 0) {
+                    const ws = new WebSocket(stream_url);
+                    ws.onmessage = (event) => {
+                        actual_stream_url = event.data.replace("{server}", window.location.hostname);
+
+                        ws.close();
+
+                        if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
+                            videoElement.src = actual_stream_url;
+                        } else {
+                            var hls = new Hls();
+                            hls.loadSource(actual_stream_url);
+                            hls.attachMedia(videoElement);
+                        }
+                    };
                 }
             },
             jitter);

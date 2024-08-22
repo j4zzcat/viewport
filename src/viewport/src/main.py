@@ -42,13 +42,10 @@ Example:
 
   Then open the url 'http://localhost:8001' in Google Chrome web browser.
 """
-import sys
-
-from docopt import docopt
 import logging
-
+import sys
+from docopt import docopt
 from context import GlobalFactory
-from backend.error import ApplicationException
 
 
 def main():
@@ -65,8 +62,8 @@ def main():
         exit(0)
 
     logger = GlobalFactory.get_logger().getChild("main")
-    if args['--verbose']:
-        GlobalFactory.get_logger().setLevel(logging.DEBUG)
+    # if args['--verbose']:
+    #     GlobalFactory.get_logger().setLevel(logging.DEBUG)
 
     if args["streams"]:
         logger.info("Hello!")
@@ -76,6 +73,9 @@ def main():
             GlobalFactory.new_cli_streams_command(
                 layout=args['--layout'],
                 urls=args['<url>']).run()
+
+            logger.info("Ready at http://localhost:{port}/html".format(
+                port=GlobalFactory.get_settings()["httpd"]["port"]))
 
         except Exception as e:
             logger.error(e, exc_info=True)
