@@ -22,12 +22,13 @@ port = "8003"
 
 [protocol.rtsp.server.file]
 protocol = "http"
-bind = "127.0.0.1"
+bind = "0.0.0.0"
 port = "8004"
 
-[protocol.rtsp.transcoder.hls]
+[protocol.rtsp.transcoder.hls_1]
 server  = "file"
 program = "ffmpeg"
+format  = "hls"
 options = """-hide_banner -loglevel error -nostats \
              -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
@@ -35,18 +36,32 @@ options = """-hide_banner -loglevel error -nostats \
              -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
              {output_dir}/index.m3u8"""
 
-[protocol.rtsp.transcoder.mpegts]
+[protocol.rtsp.transcoder.hls_2]
+server  = "file"
+program = "ffmpeg"
+format  = "hls"
+options = """-hide_banner -loglevel error -nostats \
+             -re -rtsp_transport tcp -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -vcodec copy -an \
+             -f hls \
+             -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
+             {output_dir}/index.m3u8"""
+
+
+[protocol.rtsp.transcoder.mpegts_1]
 server  = "streaming"
 program = "ffmpeg"
+format  = "mpegts"
 options = """-hide_banner -loglevel error -nostats \
              -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
              -f mpegts \
              -"""
 
-[protocol.rtsp.transcoder.flv]
+[protocol.rtsp.transcoder.flv_1]
 server  = "streaming"
 program = "ffmpeg"
+format  = "flv"
 options = """-hide_banner -loglevel error -nostats \
              -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
@@ -56,6 +71,7 @@ options = """-hide_banner -loglevel error -nostats \
 [protocol.rtsp.transcoder.fmp4_1]
 server  = "streaming"
 program = "ffmpeg"
+format  = "fmp4"
 options = """-hide_banner -loglevel error -nostats \
              -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an
@@ -66,6 +82,7 @@ options = """-hide_banner -loglevel error -nostats \
 [protocol.rtsp.transcoder.fmp4_2]
 server  = "streaming"
 program = "ffmpeg"
+format  = "fmp4"
 options =  """-hide_banner -loglevel error -nostats \
              -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -rtsp_transport tcp \
@@ -79,6 +96,7 @@ options =  """-hide_banner -loglevel error -nostats \
 [protocol.rtsp.transcoder.fmp4_3]
 server  = "streaming"
 program = "ffmpeg"
+format  = "fmp4"
 options = """-hide_banner -loglevel error -nostats \
              -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -rtsp_transport tcp \

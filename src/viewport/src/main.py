@@ -26,19 +26,21 @@ Options:
   -v, --verbose           Be verbose.
   -l, --layout=<layout>   The layout to use. Supported layouts: grid. [Default: grid:3x3]
   <url>                   The URL of a live video stream. Supported protocols: unifi and rtsp(s).
-                          Unifi protocol takes the form of unifi://u:p@host/(_all|camera name,...)
-                          Rtsp(s) protocol takes the form of rtsp(s)://url(::format)
+                          Unifi protocol takes the form of unifi://url/(_all|camera name,...)
+                          Rtsp(s) protocol takes the form of rtsp(s)://url[::format]
+                          Supported formats are defined in settings.toml.
 
 Example:
-  Display Unifi Protect and RTPSP streams, side by side, transcode the RTSP stream to MPEG-TS
-  for lower latency:
+  The following will display Unifi Protect and RTPSP streams, side by side, and transcode one
+  of the RTSP streams to MPEG-TS for lower latency. This assumes that a transcoder named 'mpegts_1'
+  is defined in settings.toml.
 
     $ viewport \\
          streams --layout grid:3x3 \\
              'unifi://username1:password1@192.168.4.10/_all' \\
              'unifi://username2:password2@192.168.12.10/NE Gate,Homestead 2,Pool' \\
              'rtsps://192.168.4.10:7441/DEVTOTALX1X?nightVision=off' \\
-             'rtsp://192.168.106.10:7441/C0FFEE0X1XY::mpegts'
+             'rtsp://192.168.106.10:7441/C0FFEE0X1XY::mpegts_1'
 
   Then open the url 'http://localhost:8001' in Google Chrome web browser.
 """
@@ -49,7 +51,6 @@ from context import GlobalFactory
 
 
 def main():
-    GlobalFactory.initialize()
     settings = GlobalFactory.get_settings()
 
     args = docopt(
@@ -62,8 +63,8 @@ def main():
         exit(0)
 
     logger = GlobalFactory.get_logger().getChild("main")
-    # if args['--verbose']:
-    #     GlobalFactory.get_logger().setLevel(logging.DEBUG)
+    if args['--verbose']:
+        GlobalFactory.get_logger().setLevel(logging.DEBUG)
 
     if args["streams"]:
         logger.info("Hello!")

@@ -25,27 +25,28 @@ class SimpleRTSPProtocolController(AbstractProtocolController):
             url = url.geturl()
         self._logger.debug("Creating a Livestream Controller for '{url}'".format(url=url))
 
-        # See if the client asked for a specific stream format that's supported
+        # See if the client asked for a specific transcoder we know of
         parts = url.rsplit('::', 1)
         if len(parts) > 1:
             url = parts[0]
-            stream_format = parts[-1]
-            stream_format = stream_format.lower()
-            if stream_format not in GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"]:
-                raise ApplicationException("Can't transcode from '{scheme}' to '{stream_format}'".format(
+            transcoder_name = parts[-1].lower()
+            if transcoder_name not in GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"]:
+                raise ApplicationException("Transcoder '{transcoder_name}' not found in settings.toml".format(
                     scheme=urlparse(url).scheme,
-                    stream_format=stream_format))
+                    transcoder_name=transcoder_name))
         else:
-            stream_format = GlobalFactory.get_settings()["protocol"]["rtsp"]["default_transcoder"]
+            transcoder_name = GlobalFactory.get_settings()["protocol"]["rtsp"]["default_transcoder"]
 
-        # See what infra should be started for this type of streaming format
-        server_type = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"][stream_format]["server"]
+        # See what infra should be started for this type of transcoder
+        # and make sure not to start it more than once
+        server_type = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"][transcoder_name]["server"]
         if server_type not in self._transcoding_servers:
             self._transcoding_servers[server_type] = eval(
                 f"GlobalFactory.new_{server_type}_transcoding_server()")
 
             self._transcoding_servers[server_type].run()
 
+        stream_format = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"][transcoder_name]["format"]
         return [self._transcoding_servers[server_type].new_livestream(url, stream_format)]
 
 
@@ -127,6 +128,7 @@ class SimpleFileTranscodingServer(Command):
         transcoder = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"][endpoint["stream_format"]]
         program = transcoder["program"]
         program_options = transcoder["options"]
+        format = transcoder["format"]
 
         match program:
             case "ffmpeg":
@@ -144,6 +146,9 @@ class SimpleFileTranscodingServer(Command):
                         response = "http://{{server}}:{port}/{path}/index.m3u8".format(
                             port=GlobalFactory.get_web_server().port,
                             path=endpoint["path"])
+
+                        response_stall = 10
+
                     case _:
                         self._logger.error("Can't handle '{format}'".format(format=transcoder))
                         await  websocket.close()
@@ -175,6 +180,7 @@ class SimpleFileTranscodingServer(Command):
         process_controller.on("stderr", self.FFMpegLogger(process_controller).log)
         process_controller.start()
 
+        await asyncio.sleep(response_stall)
         await websocket.send(response)
         await websocket.close()
 
