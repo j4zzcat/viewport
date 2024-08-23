@@ -17,7 +17,7 @@ class SimpleWebServer(Command):
             "static-web-server",
                 "-p", self.port,
                 "-d", self.root_dir,
-                "-e", "false",
+                "-w", "{viewport_root}/resource/sws.toml".format(viewport_root=GlobalFactory.get_dirs()["viewport_root"]),
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             monitor=True)

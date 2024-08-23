@@ -182,12 +182,15 @@ class SimpleFileTranscodingServer(Command):
                 client_port=websocket.remote_address[1]))
 
             livestream.process_controller.stop()
-            # shutil.rmtree(livestream.output_dir)
 
         livestream.__dict__["process_controller"] = process_controller
 
         process_controller.on("stderr", self.FFMpegLogger(process_controller).log)
         process_controller.start()
+
+        self._logger.info("Starting livestream for client '{client_address}:{client_port}'".format(
+            client_address=websocket.remote_address[0],
+            client_port=websocket.remote_address[1]))
 
         await is_ready()
         await websocket.send(response)
