@@ -14,20 +14,13 @@ class SimpleWebServer(Command):
 
     def run(self):
         process_controller = GlobalFactory.get_process_server().new_process(
-            "npx",
-              "http-server",
-                  "-a", self.bind,
-                  "-p", self.port,
-                  self.root_dir,
-            cwd="{reflector_root}/src".format(reflector_root=GlobalFactory.get_dirs()["reflector_root"]),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            stdout_text=True,
-            stderr_text=True,
+            "static-web-server",
+                "-p", self.port,
+                "-d", self.root_dir,
+                "-e", "false",
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
             monitor=True)
-
-        process_controller.on("stdout", print)
-        process_controller.on("stderr", print)
 
         process_controller.start()
         self._logger.info("Simple Web Server is ready, HTTP: {bind}:{port}".format(
