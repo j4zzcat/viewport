@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 import sys
 import tomllib
 
@@ -52,6 +53,7 @@ class GlobalFactory:
             if os.path.isdir(os.environ["RAM_FS"]):
                 web_root_dir = "{ram_fs}/viewport".format(ram_fs=os.environ["RAM_FS"])
 
+        shutil.rmtree(web_root_dir)
         os.makedirs(web_root_dir, exist_ok=True)
         properties["dirs"]["web_root_dir"] = os.path.abspath(web_root_dir)
 

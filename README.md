@@ -107,3 +107,6 @@ main -> StreamsCli --> UnifiProtocol --new process--> UnifiReflector (Node)
                                      --new process--> ffmpeg
                    --> WebServer 
 ```
+
+macOS, top only certain process names:
+```top $(pgrep "ffmpeg|python" | xargs -I {} printf "\-pid {} ")```
