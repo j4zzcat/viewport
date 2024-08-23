@@ -151,7 +151,7 @@ class SimpleProcessServer:
             return asyncio.run_coroutine_threadsafe(self._with_log(task.cancel()), self.loop)
 
         # Running on the caller's thread
-        def shutdown(self):
+        def stop(self):
             self.loop.call_soon_threadsafe(self.loop.stop)
             # self.loop.stop()
             # self.loop.close()
@@ -172,7 +172,7 @@ class SimpleProcessServer:
     def __init__(self):
         self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
 
-        atexit.register(self.shutdown)
+        atexit.register(self.stop)
         self._tpe = ThreadPoolExecutor(max_workers=self.MAX_TPE_SIZE, thread_name_prefix="PS")
 
         self._task_runners = []
@@ -184,14 +184,14 @@ class SimpleProcessServer:
         self._controllers = {}
         self._next_task_runner = 0
 
-    def shutdown(self):
+    def stop(self):
         self._logger.debug("Shutting down")
 
         for controller in self._controllers:
             controller.stop()
 
         for task_runner in self._task_runners:
-            task_runner["instance"].shutdown()
+            task_runner["instance"].stop()
 
         self._tpe.shutdown(wait=False, cancel_futures=True)
 
