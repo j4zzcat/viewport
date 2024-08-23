@@ -41,10 +41,10 @@ server  = "file"
 program = "ffmpeg"
 format  = "hls"
 options = """-hide_banner -loglevel error -nostats \
-             -re -rtsp_transport tcp -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
              -f hls \
-             -hls_time 5 -hls_list_size 2 -hls_flags delete_segments \
+             -hls_time 6 -hls_list_size 3 -hls_flags delete_segments \
              {output_dir}/index.m3u8"""
 
 
