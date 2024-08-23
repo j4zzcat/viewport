@@ -95,9 +95,9 @@
                         } else {
                             var hls = new Hls();
                             hls.on(Hls.Events.ERROR, function (event, data) {
-                                console.log(data);
+                                if(data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR)
+                                    hls.recoverMediaError();
                             });
-
                             hls.loadSource(actual_stream_url);
                             hls.attachMedia(videoElement);
                         }
