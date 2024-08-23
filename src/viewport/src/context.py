@@ -139,15 +139,10 @@ class GlobalFactory:
     def get_rtsps_protocol_controller(self):
         return self.get_rtsp_protocol_controller()
 
-    def new_transcoding_controller(self):
-        from backend.protocols.rtsp import SimpleTranscodingController
-        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingController))
-        return SimpleTranscodingController()
-
-    def new_streaming_transcoding_server(self, transcoders, bind, port):
-        from backend.protocols.rtsp import SimpleTranscodingStreamingServer
-        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleTranscodingStreamingServer))
-        return SimpleTranscodingStreamingServer(transcoders, bind, port)
+    def new_streaming_transcoding_server(self):
+        from backend.protocols.rtsp import SimpleStreamingTranscodingServer
+        self._logger.debug("Creating new {clazz} instance".format(clazz=SimpleStreamingTranscodingServer))
+        return SimpleStreamingTranscodingServer()
 
     def new_file_transcoding_server(self):
         from backend.protocols.rtsp import SimpleFileTranscodingServer

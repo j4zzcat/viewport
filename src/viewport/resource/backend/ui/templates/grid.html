@@ -34,8 +34,8 @@
     <script src="bundle.js"></script>
     <!--script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.5.0/flv.min.js"></script-->
     <!--script src="mpegts.js"></script-->
+    <script src="https://cdn.jsdelivr.net/npm/mpegts.js@latest/dist/mpegts.min.js"></script>"
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
-    <!--script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script-->
 </head>
 <body>
 <div id="video-streams-placeholder" class="container">
@@ -77,7 +77,7 @@
                 } else if(["flv", "mpegts"].indexOf(stream_format) >= 0) {
                     let flvPlayer = mpegts.createPlayer({
                         isLive: true,
-                        type: format,
+                        type: stream_format,
                         url: stream_url
                     });
                     flvPlayer.attachMediaElement(videoElement);
