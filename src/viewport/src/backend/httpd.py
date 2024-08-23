@@ -1,9 +1,5 @@
-import os
-import signal
 import subprocess
-from http.server import HTTPServer, SimpleHTTPRequestHandler
-import functools
-import socketserver
+import sys
 
 from backend.cmdsrv import Command
 from context import GlobalFactory
@@ -24,9 +20,14 @@ class SimpleWebServer(Command):
                   "-p", self.port,
                   self.root_dir,
             cwd="{reflector_root}/src".format(reflector_root=GlobalFactory.get_dirs()["reflector_root"]),
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            stdout_text=True,
+            stderr_text=True,
             monitor=True)
+
+        process_controller.on("stdout", print)
+        process_controller.on("stderr", print)
 
         process_controller.start()
         self._logger.info("Simple Web Server is ready, HTTP: {bind}:{port}".format(

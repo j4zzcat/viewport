@@ -17,20 +17,51 @@
 #
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 from context import GlobalFactory
 
 
-class AbstractLivestreamController(ABC):
-
-    #
-    # Returns a tuple of {original_url, stream_format, scheme, port, path} that allows
-    # the viewport web page to get and decode the video stream, i.e., by first selecting
-    # the correct player for the stream_format, and then playing the stream from
-    # scheme://<js:window.location.hostname>:port/path.
-    #
+class AbstractProcessController(ABC):
     @abstractmethod
-    def get_endpoint(self) -> str:
+    def start(self):
+        pass
+
+    @abstractmethod
+    def stop(self):
+        pass
+
+    @abstractmethod
+    def on(self, event, *callbacks):
+        pass
+
+@dataclass
+class Endpoint:
+    stream_format: str
+    scheme: str
+    port: str
+    path: str
+
+
+# Represents and controls a livestream
+class AbstractLivestreamController(ABC):
+    @property
+    @abstractmethod
+    def url(self) -> str:
+        """Returns the url this live stream represents."""
+        pass
+
+    @property
+    @abstractmethod
+    def transcoder(self) -> str | None:
+        """Returns the transcoder name associated with this controller, if any"""
+        pass
+
+    @property
+    @abstractmethod
+    def endpoint(self) -> Endpoint:
+        """Returns the endpoint associated with this controller. Based on the stream_format,
+         the client selects the appropriate video player"""
         pass
 
     @abstractmethod
@@ -42,24 +73,25 @@ class AbstractLivestreamController(ABC):
         pass
 
 
-class AbstractProtocolController(ABC):
-    @abstractmethod
-    def run(self):
-        pass
-
-    @abstractmethod
-    def new_livestream(self, url) -> [AbstractLivestreamController]:
-        pass
-
-
-class CallbackLivestreamController(AbstractLivestreamController):
-    def __init__(self, endpoint, start_callback=None, stop_callback=None):
+class SimpleLivestreamController(AbstractLivestreamController):
+    def __init__(self, url, transcoder, endpoint, start_callback=None, stop_callback=None):
         self._logger = GlobalFactory.get_logger().getChild(__class__.__name__)
+        self._url = url
+        self._transcoder = transcoder
         self._endpoint = endpoint
         self._start_callback = start_callback
         self._stop_callback = stop_callback
 
-    def get_endpoint(self):
+    @property
+    def url(self) -> str:
+        return self._url
+
+    @property
+    def transcoder(self) -> str | None:
+        return self._transcoder
+
+    @property
+    def endpoint(self):
         return self._endpoint
 
     def start(self):
@@ -71,4 +103,15 @@ class CallbackLivestreamController(AbstractLivestreamController):
         self._logger.debug("Stopping livestream controller")
         if self._stop_callback:
             self._stop_callback(self)
+
+
+class AbstractProtocolController(ABC):
+    @abstractmethod
+    def run(self):
+        pass
+
+    @abstractmethod
+    def new_livestream(self, url) -> [AbstractLivestreamController]:
+        pass
+
 

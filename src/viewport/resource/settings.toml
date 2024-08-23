@@ -13,7 +13,7 @@ bind = "0.0.0.0"
 port = "8002"
 
 [protocol.rtsp]
-default_transcoder = "hls"
+default_transcoder = "hls_1"
 
 [protocol.rtsp.server.streaming]
 protocol = "ws"
@@ -44,7 +44,7 @@ options = """-hide_banner -loglevel error -nostats \
              -re -rtsp_transport tcp -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
              -vcodec copy -an \
              -f hls \
-             -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
+             -hls_time 5 -hls_list_size 2 -hls_flags delete_segments \
              {output_dir}/index.m3u8"""
 
 

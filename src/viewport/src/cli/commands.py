@@ -37,7 +37,7 @@ class Streams(Command):
         player_endpoints = []
         for url in self._urls:
             livestreams = protocol_controllers[url.scheme].new_livestream(url)
-            player_endpoints += [livestream.get_endpoint() for livestream in livestreams]
+            player_endpoints += [livestream.endpoint for livestream in livestreams]
             [livestream.start() for livestream in livestreams]
 
         # Render the web page

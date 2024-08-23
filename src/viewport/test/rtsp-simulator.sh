@@ -21,7 +21,14 @@ echo "Waiting for MediaMTX to initialize..."
 sleep 3
 
 echo "Starting ffmpeg in the background..."
-ffmpeg -hide_banner -loglevel error -nostats -re -i "$SCRIPT_DIR/test.mp4" -c copy -f rtsp rtsp://localhost:8554/mystream &
+ffmpeg \
+  -hide_banner \
+  -loglevel error \
+  -nostats \
+  -re -i "$SCRIPT_DIR/test.mp4" \
+  -c copy \
+  -f rtsp -rtsp_transport tcp rtsp://localhost:8554/mystream &
+
 FFMPEG_PID="$$"
 
 echo "RTSP test stream is available at rtsp://localhost:8554/mystream"

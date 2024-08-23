@@ -33,8 +33,9 @@
     </style>
     <script src="bundle.js"></script>
     <!--script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.5.0/flv.min.js"></script-->
-    <script src="mpegts.js"></script>
+    <!--script src="mpegts.js"></script-->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    <!--script src="https://cdn.jsdelivr.net/npm/hls.js@canary"></script-->
 </head>
 <body>
 <div id="video-streams-placeholder" class="container">
@@ -43,8 +44,8 @@
 </body>
 <script>
     const videoStreamUrls = [
-        {% for livestream in livestream_endpoints %}
-          [ "{{ livestream['stream_format'] }}", "{{ livestream['scheme'] }}://" + window.location.hostname + ":{{ livestream['port'] }}/{{ livestream['path'] }}" ],
+        {% for lep in livestream_endpoints %}
+          [ "{{ lep.stream_format }}", "{{ lep.scheme }}://" + window.location.hostname + ":{{ lep.port }}/{{ lep.path }}" ],
         {% endfor %}
     ];
 
@@ -86,14 +87,17 @@
                 } else if(["hls"].indexOf(stream_format) >= 0) {
                     const ws = new WebSocket(stream_url);
                     ws.onmessage = (event) => {
-                        actual_stream_url = event.data.replace("{server}", window.location.hostname);
-
                         ws.close();
+                        const actual_stream_url = event.data.replace("{server}", window.location.hostname);
 
                         if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
                             videoElement.src = actual_stream_url;
                         } else {
                             var hls = new Hls();
+                            hls.on(Hls.Events.ERROR, function (event, data) {
+                                console.log(data);
+                            });
+
                             hls.loadSource(actual_stream_url);
                             hls.attachMedia(videoElement);
                         }
