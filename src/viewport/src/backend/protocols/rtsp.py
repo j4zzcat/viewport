@@ -135,6 +135,7 @@ class SimpleFileTranscodingServer(Command):
             root_dir=self._root_dir,
             path=livestream.endpoint.path)
 
+        self._logger.debug("Making directory '{dir}'".format(dir=livestream.output_dir))
         os.makedirs(livestream.output_dir, exist_ok=True)
 
         program_options = GlobalFactory.get_settings()["protocol"]["rtsp"]["transcoder"][livestream.transcoder]["options"].format(
@@ -147,7 +148,18 @@ class SimpleFileTranscodingServer(Command):
                     port=GlobalFactory.get_web_server().port,
                     path=livestream.endpoint.path)
 
-                response_stall = 10
+                async def wait_for_file():
+                    file = "{output_dir}/index3.ts".format(output_dir=livestream.output_dir)
+                    self._logger.debug("Waiting for file '{file}' to become available".format(file=file))
+
+                    while True:
+                        if os.path.exists(file):
+                            break
+                        await asyncio.sleep(1)
+
+                    self._logger.debug("File '{file}' is available".format(file=file))
+
+                is_ready = wait_for_file
 
             case _:
                 self._logger.error("Can't handle '{format}'".format(format=livestream.endpoint.stream_format))
@@ -170,14 +182,14 @@ class SimpleFileTranscodingServer(Command):
                 client_port=websocket.remote_address[1]))
 
             livestream.process_controller.stop()
-            shutil.rmtree(livestream.output_dir)
+            # shutil.rmtree(livestream.output_dir)
 
         livestream.__dict__["process_controller"] = process_controller
 
         process_controller.on("stderr", self.FFMpegLogger(process_controller).log)
         process_controller.start()
 
-        await asyncio.sleep(response_stall)
+        await is_ready()
         await websocket.send(response)
         await websocket.close()
 
