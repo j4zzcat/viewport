@@ -75,7 +75,7 @@ node-based Unifi Protect [library](https://github.com/hjdhjd/unifi-protect) to r
 Unifi Protect Controller and onto the Viewport Player, over websockets.
 * [Viewport File Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L73) which is a simple transcoding server 
 for the file-based HLS format. The server listens for client requests, starts a `ffmpeg` process to 
-transcode the requested RTSP(S) stream into HLS segments which are then served via a static web server, also started by this server.
+transcode the requested RTSP(S) stream into HLS segments which are then served over HTTP via a static web server.
 * [Viewport Streaming Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L224) which is a simple transcoding server
 for streaming-based formats like MPEG-TS and FLV. The server listens for client requests, starts a `ffmpeg` 
 process to transcode the requested RTSP(S) stream into the specified format, and then continuously copies the stdout 
@@ -97,6 +97,7 @@ docker buildx build -t viewport:latest -f build/Dockerfile .
 * Not working on iOS.
 
 ## Todo for the next version
+* Provide a ready to use image for Raspberry Pi.
 * Better error handling. Should cleanly recover from errors and exit on critical errors.
 * Better unit testing.
 
