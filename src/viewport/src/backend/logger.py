@@ -3,7 +3,7 @@ import logging
 
 class ColoringFormatter(logging.Formatter):
     FORMAT = {
-        "fmt": "[%(asctime)s.%(msecs)-3d] (%(process_color)s%(process)-5s\033[0m:%(threadName_color)s%(threadName)-10s\033[0m) %(level_color)s%(levelname)-7s\033[0m %(name)-34s %(message)s",
+        "fmt": "[%(asctime)s.%(msecs)-3d] (%(process_color)s%(process)-2s\033[0m:%(threadName_color)s%(threadName)-10s\033[0m) %(level_color)s%(levelname)-7s\033[0m %(name)-34s %(message)s",
         "datefmt": "%Y-%m-%d %H:%M:%S"}
 
     PID_COLORS = [15, 2, 3, 4, 5, 6, 7, 8, 10, 12, 13, 14, 15]
