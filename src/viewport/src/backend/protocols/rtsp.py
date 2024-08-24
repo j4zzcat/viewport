@@ -7,6 +7,7 @@ from websockets.server import serve
 
 from backend.error import ApplicationException
 from backend.protocol import AbstractProtocolController, SimpleLivestreamController, Endpoint
+from backend.utils import RWLockDict
 from context import GlobalFactory
 
 
@@ -68,7 +69,7 @@ class SimpleFileTranscodingServer:
         self._root_dir = GlobalFactory.get_dirs()["web_root_dir"]
         os.makedirs(self._root_dir, exist_ok=True)
 
-        self._livestreams = {}
+        self._livestreams = RWLockDict()
         self._tpe = ThreadPoolExecutor(max_workers=1, thread_name_prefix="FTS")
 
     def new_livestream(self, url, transcoder_name, stream_format):
@@ -113,7 +114,7 @@ class SimpleFileTranscodingServer:
             await websocket.close()
 
         livestream = self._livestreams[path]
-        self._logger.info("Client '{client}' asks for '{path}'".format(
+        self._logger.debug("Client '{client}' asks for '{path}'".format(
             client=client,
             path=path))
 
@@ -185,7 +186,8 @@ class SimpleFileTranscodingServer:
         process_controller.on("stderr", self.FFMpegLogger(process_controller).log)
         process_controller.start()
 
-        self._logger.info("Starting livestream for client '{client_address}:{client_port}'".format(
+        self._logger.info("Starting '{stream_format}' livestream for client '{client_address}:{client_port}'".format(
+            stream_format=livestream.endpoint.stream_format,
             client_address=websocket.remote_address[0],
             client_port=websocket.remote_address[1]))
 
@@ -210,7 +212,7 @@ class SimpleStreamingTranscodingServer:
         self._bind = GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["streaming"]["bind"]
         self._port = GlobalFactory.get_settings()["protocol"]["rtsp"]["server"]["streaming"]["port"]
 
-        self._livestreams = {}
+        self._livestreams = RWLockDict()
         self._tpe = ThreadPoolExecutor(max_workers=1, thread_name_prefix="STS")
 
     def new_livestream(self, url, transcoder_name, stream_format):
@@ -255,7 +257,7 @@ class SimpleStreamingTranscodingServer:
             await websocket.close()
 
         livestream = self._livestreams[path]
-        self._logger.info("Client '{client}' asks for '{path}'".format(
+        self._logger.debug("Client '{client}' asks for '{path}'".format(
             client=client,
             path=path))
 
@@ -303,7 +305,7 @@ class SimpleStreamingTranscodingServer:
 
                     await socket.send(result)
             except Exception as e:
-                logger.error(e)
+                logger.warning(e)
 
             self._logger.warning("Stream reached EOF")
 
@@ -318,11 +320,12 @@ class SimpleStreamingTranscodingServer:
 
                     await queue.put(result)
             except Exception as e:
-                logger.error(e)
+                logger.warning(e)
 
             self._logger.warning("Stream reached EOF")
 
-        self._logger.info("Starting livestream for client '{client_address}:{client_port}'".format(
+        self._logger.info("Starting '{stream_format}' livestream for client '{client_address}:{client_port}'".format(
+            stream_format=livestream.endpoint.stream_format,
             client_address=websocket.remote_address[0],
             client_port=websocket.remote_address[1]))
 
