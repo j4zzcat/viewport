@@ -73,10 +73,10 @@ On the server side:
 * [Viewport Reflector](src/reflector) which is a simple livestream reflector server. This server uses the excellent
 node-based Unifi Protect [library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
 Unifi Protect Controller and onto the Viewport Player, over websockets.
-* [Viewport File Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L55) which is a simple transcoding server 
+* [Viewport File Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L73) which is a simple transcoding server 
 for the file-based HLS format. The server listens for client requests, starts a `ffmpeg` process to 
 transcode the requested RTSP(S) stream into HLS segments which are then served via a static web server, also started by this server.
-* [Viewport Streaming Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L206) which is a simple transcoding server
+* [Viewport Streaming Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L224) which is a simple transcoding server
 for streaming-based formats like MPEG-TS and FLV. The server listens for client requests, starts a `ffmpeg` 
 process to transcode the requested RTSP(S) stream into the specified format, and then continuously copies the stdout 
 of the `ffmpeg` to the client's websocket. 
