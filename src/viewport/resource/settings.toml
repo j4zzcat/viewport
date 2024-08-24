@@ -67,6 +67,7 @@ options = """-hide_banner -loglevel error -nostats \
              -f flv \
              -"""
 
+# Experimental
 [protocol.rtsp.transcoder.fmp4_1]
 server  = "streaming"
 program = "ffmpeg"
@@ -78,32 +79,5 @@ options = """-hide_banner -loglevel error -nostats \
              -movflags frag_keyframe+empty_moov+default_base_moof \
              -"""
 
-[protocol.rtsp.transcoder.fmp4_2]
-server  = "streaming"
-program = "ffmpeg"
-format  = "fmp4"
-options =  """-hide_banner -loglevel error -nostats \
-             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
-             -rtsp_transport tcp \
-             -fflags nobuffer -buffer_size 100000k \
-             -analyzeduration 1000000 -probesize 1000000 \
-             -vcodec copy -an \
-             -f mp4 \
-             -movflags frag_keyframe+empty_moov+default_base_moof \
-             -"""
-
-[protocol.rtsp.transcoder.fmp4_3]
-server  = "streaming"
-program = "ffmpeg"
-format  = "fmp4"
-options = """-hide_banner -loglevel error -nostats \
-             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
-             -rtsp_transport tcp \
-             -fflags nobuffer -max_delay 5000000 \
-             -analyzeduration 1000000 -probesize 1000000 \
-             -vcodec copy -an \
-             -f mp4 \
-             -movflags frag_keyframe+empty_moov+default_base_moof \
-             -"""
 
 

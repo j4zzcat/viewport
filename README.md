@@ -40,21 +40,20 @@ docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-m
 ```
 
 ### Yet another example
-By default, RTSP(S) streams are transcoded to HTTP Live Stream (HLS) format 
-(see [settings.toml](src/viewport/resource/settings.toml)). This format provides a reasonable balance between
-CPU consumption and latency. However, in situations where better latency is required, the transcoded format
-can be set individually per RTSP stream. 
+By default, RTSP(S) streams are transcoded to HTTP Live Stream (HLS) format. This format provides a reasonable 
+balance between CPU consumption and latency. In addition, MPEG-TS and FLV are also available and can be specified for any 
+individual stream. Have a look in [settings.toml](src/viewport/resource/settings.toml) to learn more. 
 
-The following will transcode the given RTSPS stream to MPEG-TS which has a lower latency than HLS (and higher CPU
-consumption):
+The following will transcode one stream to MPEG-TS and the other FLV:
 ```bash
 docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-mode=1777 \
-  j4zzcat/viewport:1.2 \ 
+  j4zzcat/viewport:1.3 \ 
       streams \
-        'rtsps://host3/ABCDEFG::mpegts' 
+        'rtsps://host3/ABCDEFG::mpegts_1'  \
+        'rtsps://host4/ZDEEFFS::flv_1'
 ```
 
-Note that UNIFI streams transcoding cannot be changed, as it already provides the lowest latency.
+Note that UNIFI streams transcoding cannot be changed, this only works for RTPS(S) streams.
 
 ## Theory of operation
 _Viewport_ is based on a simple client-server architecture, and is made of several parts:
