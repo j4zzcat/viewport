@@ -1,5 +1,7 @@
 import inspect
+import threading
 import time
+from collections.abc import MutableMapping
 
 from context import GlobalFactory
 
@@ -58,3 +60,144 @@ def condition_busy_wait(condition_fn, timeout_ms):
                 timeout=timeout_ms))
             raise TimeoutError
 
+
+class RWLock:
+    def __init__(self):
+        self._read_ready = threading.Condition(threading.Lock())
+        self._readers = 0
+
+    def acquire_read(self):
+        with self._read_ready:
+            self._readers += 1
+
+    def release_read(self):
+        with self._read_ready:
+            self._readers -= 1
+            if self._readers == 0:
+                self._read_ready.notify_all()
+
+    def acquire_write(self):
+        self._read_ready.acquire()
+        while self._readers > 0:
+            self._read_ready.wait()
+
+    def release_write(self):
+        self._read_ready.release()
+
+
+class RWLockDict(MutableMapping):
+    def __init__(self, *args, **kwargs):
+        self._dict = dict(*args, **kwargs)
+        self._rwlock = RWLock()
+
+    def __getitem__(self, key):
+        self._rwlock.acquire_read()
+        try:
+            return self._dict[key]
+        finally:
+            self._rwlock.release_read()
+
+    def __setitem__(self, key, value):
+        self._rwlock.acquire_write()
+        try:
+            self._dict[key] = value
+        finally:
+            self._rwlock.release_write()
+
+    def __delitem__(self, key):
+        self._rwlock.acquire_write()
+        try:
+            del self._dict[key]
+        finally:
+            self._rwlock.release_write()
+
+    def __iter__(self):
+        self._rwlock.acquire_read()
+        try:
+            return iter(self._dict.copy())
+        finally:
+            self._rwlock.release_read()
+
+    def __len__(self):
+        self._rwlock.acquire_read()
+        try:
+            return len(self._dict)
+        finally:
+            self._rwlock.release_read()
+
+    def __contains__(self, key):
+        self._rwlock.acquire_read()
+        try:
+            return key in self._dict
+        finally:
+            self._rwlock.release_read()
+
+    def __repr__(self):
+        self._rwlock.acquire_read()
+        try:
+            return repr(self._dict)
+        finally:
+            self._rwlock.release_read()
+
+    def get(self, key, default=None):
+        self._rwlock.acquire_read()
+        try:
+            return self._dict.get(key, default)
+        finally:
+            self._rwlock.release_read()
+
+    def setdefault(self, key, default=None):
+        self._rwlock.acquire_write()
+        try:
+            return self._dict.setdefault(key, default)
+        finally:
+            self._rwlock.release_write()
+
+    def pop(self, key, default=None):
+        self._rwlock.acquire_write()
+        try:
+            return self._dict.pop(key, default)
+        finally:
+            self._rwlock.release_write()
+
+    def popitem(self):
+        self._rwlock.acquire_write()
+        try:
+            return self._dict.popitem()
+        finally:
+            self._rwlock.release_write()
+
+    def clear(self):
+        self._rwlock.acquire_write()
+        try:
+            self._dict.clear()
+        finally:
+            self._rwlock.release_write()
+
+    def update(self, other=(), /, **kwds):
+        self._rwlock.acquire_write()
+        try:
+            self._dict.update(other, **kwds)
+        finally:
+            self._rwlock.release_write()
+
+    def keys(self):
+        self._rwlock.acquire_read()
+        try:
+            return self._dict.keys()
+        finally:
+            self._rwlock.release_read()
+
+    def items(self):
+        self._rwlock.acquire_read()
+        try:
+            return self._dict.items()
+        finally:
+            self._rwlock.release_read()
+
+    def values(self):
+        self._rwlock.acquire_read()
+        try:
+            return self._dict.values()
+        finally:
+            self._rwlock.release_read()
