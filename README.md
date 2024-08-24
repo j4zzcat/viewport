@@ -100,8 +100,3 @@ docker buildx build -t viewport:latest -f build/Dockerfile .
 * Better error handling. Should cleanly recover from errors and exit on critical errors.
 * Better unit testing.
 
-
-macOS, top viewport components
-```
-top -o +pid $(pgrep "ffmpeg|node|static-web-server|Python" | xargs -I {} printf "\-pid {} ")
-```
