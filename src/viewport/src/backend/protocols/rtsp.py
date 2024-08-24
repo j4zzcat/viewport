@@ -3,6 +3,8 @@ import os
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import ParseResult, urlparse
+
+import websockets
 from websockets.server import serve
 
 from backend.error import ApplicationException
@@ -192,8 +194,13 @@ class SimpleFileTranscodingServer:
             client_port=websocket.remote_address[1]))
 
         await is_ready()
-        await websocket.send(response)
-        await websocket.close()
+        try:
+            await websocket.send(response)
+            await websocket.close()
+        except websockets.exceptions.ConnectionClosedOK:
+            self._logger.warning("Client '{client_address}:{client_port}' disconnected".format(
+                client_address=websocket.remote_address[0],
+                client_port=websocket.remote_address[1]))
 
 
 class SimpleStreamingTranscodingServer:
@@ -251,8 +258,7 @@ class SimpleStreamingTranscodingServer:
         if path not in self._livestreams:
             self._logger.warning("Client '{client}' requested an unknown livestream path '{path}'".format(
                 client=client,
-                path=websocket.path
-            ))
+                path=websocket.path))
 
             await websocket.close()
 
@@ -305,9 +311,9 @@ class SimpleStreamingTranscodingServer:
 
                     await socket.send(result)
             except Exception as e:
-                logger.warning(e)
+                logger.warning(str(e))
 
-            self._logger.warning("Stream reached EOF")
+            logger.warning("Stream reached EOF")
 
         async def _mirror_stream_to_queue(stream, queue):
             logger = self._logger.getChild("_mirror_stream_to_queue")
@@ -320,9 +326,9 @@ class SimpleStreamingTranscodingServer:
 
                     await queue.put(result)
             except Exception as e:
-                logger.warning(e)
+                logger.warning(str(e))
 
-            self._logger.warning("Stream reached EOF")
+            logger.warning("Stream reached EOF")
 
         self._logger.info("Starting '{stream_format}' livestream for client '{client_address}:{client_port}'".format(
             stream_format=livestream.endpoint.stream_format,
