@@ -5,7 +5,7 @@ import json
 
 from context import GlobalFactory
 from backend.error import ApplicationException
-from backend.protocol import AbstractProtocolController, CallbackLivestreamController
+from backend.protocol import AbstractProtocolController, SimpleLivestreamController, Endpoint
 
 
 class SimpleUnifiProtocolController(AbstractProtocolController):
@@ -73,16 +73,15 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
         if path == "_all":
             # handle unifi://u:p@host/_all
             for camera in self._apis[key].bootstrap["cameras"]:
-                livestreams.append(CallbackLivestreamController({
-                    "original_url": url,
-                    "stream_format": "unifi",
-                    "scheme": "ws",
-                    "port": GlobalFactory.get_settings()["protocol"]["unifi"]["server"]["streaming"]["port"],
-                    "path": "{netloc}/{camera_id}".format(
+                endpoint = Endpoint(
+                    stream_format="unifi",
+                    scheme="ws",
+                    port=GlobalFactory.get_settings()["protocol"]["unifi"]["server"]["streaming"]["port"],
+                    path="{netloc}/{camera_id}".format(
                         netloc=url.netloc,
-                        camera_id=camera["id"])
-                }))
+                        camera_id=camera["id"]))
 
+                livestreams.append(SimpleLivestreamController(url, "unifi", endpoint))
         else:
             # handle unifi://u:p@host/camera name 1,...
             for camera_name in path.split(","):
@@ -92,15 +91,14 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
                         camera_name=camera_name, host=self._apis[key].host))
 
                 camera = self._apis[key].get_camera_by_name(camera_name)
-                livestreams.append(CallbackLivestreamController({
-                    "original_url": url,
-                    "stream_format": "unifi",
-                    "scheme": "ws",
-                    "port": GlobalFactory.get_settings()["protocol"]["unifi"]["server"]["streaming"]["port"],
-                    "path": "{netloc}/{camera_id}".format(
+                endpoint = Endpoint(
+                    stream_format="unifi",
+                    scheme="ws",
+                    port=GlobalFactory.get_settings()["protocol"]["unifi"]["server"]["streaming"]["port"],
+                    path="{netloc}/{camera_id}".format(
                         netloc=url.netloc,
-                        camera_id=camera["id"])
-                }))
+                        camera_id=camera["id"]))
+                livestreams.append(SimpleLivestreamController(url, "unifi", endpoint))
 
         return livestreams
 

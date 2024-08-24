@@ -74,7 +74,8 @@ class RedactionsHandler:
                 self._redactions.append(record.add_redaction)
 
         for redaction in self._redactions:
-            record.msg = record.msg.replace(redaction, "[REDACTED]")
+            if record.msg:
+                record.msg = record.msg.replace(redaction, "[REDACTED]")
 
         return record
 

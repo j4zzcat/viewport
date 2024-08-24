@@ -1,15 +1,12 @@
 import asyncio
 import os
-import shutil
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import ParseResult, urlparse
 from websockets.server import serve
 
-from backend.cmdsrv import Command
 from backend.error import ApplicationException
-from backend.protocol import AbstractProtocolController, AbstractLivestreamController, SimpleLivestreamController, \
-    Endpoint
+from backend.protocol import AbstractProtocolController, SimpleLivestreamController, Endpoint
 from context import GlobalFactory
 
 
