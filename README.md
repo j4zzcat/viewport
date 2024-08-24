@@ -30,7 +30,7 @@ of the Unifi Protect Controller. Once _Viewport_ starts, use Google Chrome to na
 Display cameras from several controllers and RTPS sources on a 4x4 grid:
 ```bash
 docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-mode=1777 \
-  viewport:1.2 \ 
+  j4zzcat/viewport:1.2 \ 
       streams \
         --layout grid:4x4 \
         'unifi://username1:password1@host1/_all' \
@@ -49,7 +49,7 @@ The following will transcode the given RTSPS stream to MPEG-TS which has a lower
 consumption):
 ```bash
 docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-mode=1777 \
-  viewport:1.2 \ 
+  j4zzcat/viewport:1.2 \ 
       streams \
         'rtsps://host3/ABCDEFG::mpegts' 
 ```

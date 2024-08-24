@@ -1,11 +1,10 @@
 import subprocess
 import sys
 
-from backend.cmdsrv import Command
 from context import GlobalFactory
 
 
-class SimpleWebServer(Command):
+class SimpleWebServer:
     def __init__(self):
         self._logger = GlobalFactory.get_logger().getChild(__class__.__name__)
         self.root_dir = GlobalFactory.get_dirs()["web_root_dir"]

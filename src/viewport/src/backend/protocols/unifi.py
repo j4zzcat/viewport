@@ -12,7 +12,7 @@ class SimpleUnifiProtocolController(AbstractProtocolController):
     def __init__(self):
         super().__init__()
         self._logger = GlobalFactory.get_logger().getChild("UnifiProtocolController")
-        self._reflector_logger = self._logger.getChild("Reflector")
+        self._reflector_logger = GlobalFactory.get_logger().getChild("SimpleUnifiReflector")
         self._reflector_controller = None
         self._apis = {}
 

@@ -53,7 +53,7 @@ class GlobalFactory:
             if os.path.isdir(os.environ["RAM_FS"]):
                 web_root_dir = "{ram_fs}/viewport".format(ram_fs=os.environ["RAM_FS"])
 
-        shutil.rmtree(web_root_dir)
+        shutil.rmtree(web_root_dir, ignore_errors=True)
         os.makedirs(web_root_dir, exist_ok=True)
         properties["dirs"]["web_root_dir"] = os.path.abspath(web_root_dir)
 
@@ -93,14 +93,6 @@ class GlobalFactory:
 
     def get_logger(self):
         return self._root_logger
-
-    # def get_command_server(self):
-    #     if not self._command_server:
-    #         from backend.cmdsrv import SimpleCommandServer
-    #         self._logger.debug("Creating {clazz} Singleton".format(clazz=SimpleCommandServer))
-    #         self._command_server = SimpleCommandServer()
-    #
-    #     return self._command_server
 
     def get_process_server(self):
         if not self._process_server:

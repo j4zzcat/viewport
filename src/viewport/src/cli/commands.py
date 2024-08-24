@@ -4,11 +4,10 @@ from urllib.parse import urlparse
 
 from context import GlobalFactory
 from backend.ui.grid import GridLayout
-from backend.cmdsrv import Command
 from backend.error import ApplicationException
 
 
-class Streams(Command):
+class Streams:
     def __init__(self, layout, urls):
         self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
 

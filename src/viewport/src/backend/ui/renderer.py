@@ -4,11 +4,10 @@ import os
 import shutil
 import subprocess
 
-from backend.cmdsrv import Command
 from context import GlobalFactory
 
 
-class SimpleUIRenderer(Command):
+class SimpleUIRenderer:
     def __init__(self, layout, livestream_endpoints, directory):
         self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
         self._layout = layout

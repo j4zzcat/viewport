@@ -79,8 +79,8 @@ def main():
                 port=GlobalFactory.get_settings()["httpd"]["port"]))
 
         except Exception as e:
-            logger.error(e, exc_info=True)
-            print("Fatal error, stopping. Exit code: 127")
+            logger.critical(e, exc_info=True)
+            print("Critical error, stopping. Exit code: 127")
             exit(127)
 
 
