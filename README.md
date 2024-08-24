@@ -64,7 +64,7 @@ On the client side:
 * [Viewport Player](src/player) which is a simple livestream video player written in TypeScript. This player
 uses Media Source Extension API to play the H.264 fMP4 livestream video from the Unifi Protect Controller through 
 the Viewport Reflector Server.
-* [FLV/MPEG-TS Player](https://github.com/bilibili/flv.js/tree/master) which plays the FLV or MPEG-TS streams.
+* [FLV/MPEG-TS Player](https://github.com/xqq/mpegts.js) which plays the FLV or MPEG-TS streams.
 * [HLS Player](https://github.com/video-dev/hls.js/) which plays the HLS streams.
 * [index.html](src/viewport/resource/backend/ui/templates) which is a simple web page that is rendered once by the server and binds all the other views together. 
 
@@ -73,8 +73,13 @@ On the server side:
 * [Viewport Reflector](src/reflector) which is a simple livestream reflector server. This server uses the excellent
 node-based Unifi Protect [library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
 Unifi Protect Controller and onto the Viewport Player, over Web Sockets.
-* [Viewport FFMpeg Server](src/viewport/src/backend/protocols/rtsp.py#L57) which is a simple transcoding server that uses FFMPEG to transcode the specified
-RTSP(S) streams into FLV and sends it the FLV Player over Web Sockets.
+* [Viewport File Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L55) which is a simple transcoding server 
+for the HLS format, which is file-based. The server listens for client requests for streams, starts a `ffmpeg` process to 
+transcode the RTSP(S) into HLS segments which are then served via a static web server, also started by this server.
+* [Viewport Streaming Transcoding Server](src/viewport/src/backend/protocol/rtsp.py#L206) which is a simple transcoding server
+for streaming-based formats like FLV and MPEG-TS. The server listens for client requests for streams, starts a `ffmpeg` 
+process to transcode the RTSP(S) stream into the specified format, and continously copies the stdout of `ffmpeg` to the 
+client's websocket. 
 * [Viewport](src/viewport) which provides CLI and orchestrates the execution of all the parts. Run the program 
 with the `--verbose` option to see the entire flow.
 
