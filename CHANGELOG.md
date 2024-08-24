@@ -2,6 +2,7 @@
 [Release 1.3](https://github.com/j4zzcat/viewport/tree/release/1.3), Aug 25, 2024 
 * RTPS(S) streams can be transcoded to HLS, MPEG-TS and FLV
 * Google Chrome, Apple Safari and Firefox are supported 
+* All HTTP serving is done with the excellent [Static Web Server](https://github.com/static-web-server/static-web-server) 
 * Better structure, error handling, performance and bug fixes
 
 
