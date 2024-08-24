@@ -24,7 +24,7 @@ docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-m
     streams 'unifi://username:password@host/_all'
 ```
 Replace _username_ and _password_ with those used above, replace _host_ with the hostname or ip address
-of the Unifi Protect Controller. Once _Viewport_ starts, use Google Chrome to navigate to [http://localhost:8001](http://localhost:8001).
+of the Unifi Protect Controller. Once _Viewport_ starts, use a web browser to navigate to [http://localhost:8001](http://localhost:8001).
 
 ### Another example
 Display cameras from several controllers and RTPS(S) sources on a 4x4 grid:
@@ -64,10 +64,9 @@ On the client side:
 * [Viewport Player](src/player) which is a simple livestream video player written in TypeScript. This player
 uses Media Source Extension API to play the H.264 fMP4 livestream video from the Unifi Protect Controller through 
 the Viewport Reflector Server.
-* [FLV Player](https://github.com/bilibili/flv.js/tree/master) which plays the FLV streams transcoded by the
-FFMpegServer from RTSP(S). 
-* [index.html](src/viewport/resource/backend/ui/templates) which is a simple web page that is rendered once by the server and 
-binds all the views together. 
+* [FLV/MPEG-TS Player](https://github.com/bilibili/flv.js/tree/master) which plays the FLV or MPEG-TS streams.
+* [HLS Player](https://github.com/video-dev/hls.js/) which plays the HLS streams.
+* [index.html](src/viewport/resource/backend/ui/templates) which is a simple web page that is rendered once by the server and binds all the other views together. 
 
 
 On the server side:
