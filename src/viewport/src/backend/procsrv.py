@@ -110,7 +110,7 @@ class SimpleProcessServer:
                     callback(result)
             except Exception as e:
                 logger = self._logger.getChild("_mirror_stream")
-                logger.error(e)
+                logger.error(str(e))
                 if error is not None:
                     error(e)
 
