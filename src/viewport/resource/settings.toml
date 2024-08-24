@@ -1,17 +1,83 @@
-version = "1.2.0"
+version = "1.3.0"
 
 [httpd]
 bind = "0.0.0.0"
 port = "8001"
 
 [protocol.unifi]
-[protocol.unifi.reflector]
+default_transcoder = "unifi"
+
+[protocol.unifi.server.streaming]
+protocol = "ws"
 bind = "0.0.0.0"
 port = "8002"
 
 [protocol.rtsp]
-[protocol.rtsp.ffmpeg_server]
+default_transcoder = "hls_1"
+
+[protocol.rtsp.server.streaming]
+protocol = "ws"
 bind = "0.0.0.0"
 port = "8003"
+
+[protocol.rtsp.server.file]
+protocol = "ws"
+bind = "0.0.0.0"
+port = "8004"
+
+[protocol.rtsp.transcoder.hls_1]
+server  = "file"
+program = "ffmpeg"
+format  = "hls"
+options = """-hide_banner -loglevel error -nostats \
+             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -vcodec copy -an \
+             -f hls \
+             -hls_time 6 -hls_list_size 3 -hls_flags delete_segments \
+             {output_dir}/index.m3u8"""
+
+[protocol.rtsp.transcoder.hls_2]
+server  = "file"
+program = "ffmpeg"
+format  = "hls"
+options = """-hide_banner -loglevel error -nostats \
+             -re -rtsp_transport tcp -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -vcodec copy -an \
+             -f hls \
+             -hls_time 5 -hls_list_size 3 -hls_flags delete_segments \
+             {output_dir}/index.m3u8"""
+
+[protocol.rtsp.transcoder.mpegts_1]
+server  = "streaming"
+program = "ffmpeg"
+format  = "mpegts"
+options = """-hide_banner -loglevel error -nostats \
+             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -vcodec copy -an \
+             -f mpegts \
+             -"""
+
+[protocol.rtsp.transcoder.flv_1]
+server  = "streaming"
+program = "ffmpeg"
+format  = "flv"
+options = """-hide_banner -loglevel error -nostats \
+             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -vcodec copy -an \
+             -f flv \
+             -"""
+
+# Experimental
+[protocol.rtsp.transcoder.fmp4_1]
+server  = "streaming"
+program = "ffmpeg"
+format  = "fmp4"
+options = """-hide_banner -loglevel error -nostats \
+             -re -i {input_url} -err_detect ignore_err -flags +bitexact -tune zerolatency \
+             -vcodec copy -an
+             -f mp4 \
+             -movflags frag_keyframe+empty_moov+default_base_moof \
+             -"""
+
 
 

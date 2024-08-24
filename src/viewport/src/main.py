@@ -19,41 +19,39 @@
 """Viewport - Display livestream videos in a simple, unattended web page.
 
 Usage:
-  viewport [-v] streams [--layout=<layout>] [--output-dir=<dir>] <url>...
+  viewport [-v] streams [--layout=<layout>] <url>...
   viewport [--version] [--help]
 
 Options:
   -v, --verbose           Be verbose.
   -l, --layout=<layout>   The layout to use. Supported layouts: grid. [Default: grid:3x3]
-  -o, --output-dir=<dir>  The output directory where web-related files will be created. [Default: .]
   <url>                   The URL of a live video stream. Supported protocols: unifi and rtsp(s).
-                          Unifi protocol takes the form of unifi://u:p@host/(_all|camera name,...)
+                          Unifi protocol takes the form of unifi://url/(_all|camera name,...)
+                          Rtsp(s) protocol takes the form of rtsp(s)://url[::format]
+                          Supported formats are defined in settings.toml.
 
 Example:
-  Display Unifi Protect and RTPSP streams, side by side:
+  The following will display Unifi Protect and RTPSP streams, side by side, and transcode one
+  of the RTSP streams to MPEG-TS for lower latency. This assumes that a transcoder named 'mpegts_1'
+  is defined in settings.toml.
 
     $ viewport \\
          streams --layout grid:3x3 \\
              'unifi://username1:password1@192.168.4.10/_all' \\
              'unifi://username2:password2@192.168.12.10/NE Gate,Homestead 2,Pool' \\
              'rtsps://192.168.4.10:7441/DEVTOTALX1X?nightVision=off' \\
-             'rtsp://192.168.106.10:7441/C0FFEE0X1XY'
+             'rtsp://192.168.106.10:7441/C0FFEE0X1XY::mpegts_1'
 
   Then open the url 'http://localhost:8001' in Google Chrome web browser.
 """
-import signal
-import sys
-
-from docopt import docopt
 import logging
-
+import sys
+from docopt import docopt
 from context import GlobalFactory
-from backend.error import ApplicationException
 
 
 def main():
     settings = GlobalFactory.get_settings()
-    logger = GlobalFactory.get_logger().get_child("main")
 
     args = docopt(
         __doc__,
@@ -64,22 +62,25 @@ def main():
         print("Try 'viewport --help' for more information.")
         exit(0)
 
+    logger = GlobalFactory.get_logger().getChild("main")
     if args['--verbose']:
-        GlobalFactory.get_logger().set_level(logging.DEBUG)
+        GlobalFactory.get_logger().setLevel(logging.DEBUG)
 
     if args["streams"]:
         logger.info("Hello!")
         logger.debug("Processing 'streams' command")
 
         try:
-            GlobalFactory.get_command_server().run_synchronously(
-                GlobalFactory.new_streams_cli_command(
-                    layout=args['--layout'],
-                    urls=args['<url>'],
-                    output_dir=args["--output-dir"]))
+            GlobalFactory.new_cli_streams_command(
+                layout=args['--layout'],
+                urls=args['<url>']).run()
 
-        except ApplicationException as e:
-            print("Fatal error, stopping. Exit code: 127")
+            logger.info("Ready at http://localhost:{port}/html".format(
+                port=GlobalFactory.get_settings()["httpd"]["port"]))
+
+        except Exception as e:
+            logger.critical(e, exc_info=True)
+            print("Critical error, stopping. Exit code: 127")
             exit(127)
 
 

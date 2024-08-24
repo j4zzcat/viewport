@@ -1,0 +1,6 @@
+[[advanced.headers]]
+source = "/stream/*"
+[advanced.headers.headers]
+Cache-Control = "no-cache, no-store, must-revalidate"
+Pragma = "no-cache"
+Expires = "0"

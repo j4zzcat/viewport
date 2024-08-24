@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="/html/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/html/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/html/favicon-16x16.png">
+    <link rel="manifest" href="/html/site.webmanifest">
 
     <title>Kiosk</title>
     <style>
@@ -32,7 +32,10 @@
         }
     </style>
     <script src="bundle.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.5.0/flv.min.js"></script>
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.5.0/flv.min.js"></script-->
+    <!--script src="mpegts.js"></script-->
+    <script src="https://cdn.jsdelivr.net/npm/mpegts.js@latest/dist/mpegts.min.js"></script>"
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
 </head>
 <body>
 <div id="video-streams-placeholder" class="container">
@@ -41,13 +44,13 @@
 </body>
 <script>
     const videoStreamUrls = [
-        {% for url in player_urls %}
-          [ "{{ url[0] }}", "{{ url[1]['scheme'] }}://" + window.location.hostname + ":{{ url[1]['port'] }}{{ url[1]['path'] }}" ],
+        {% for lep in livestream_endpoints %}
+          [ "{{ lep.stream_format }}", "{{ lep.scheme }}://" + window.location.hostname + ":{{ lep.port }}/{{ lep.path }}" ],
         {% endfor %}
     ];
 
     const placeholderElement = document.getElementById("video-streams-placeholder");
-    videoStreamUrls.forEach((type_url, index) => {
+    videoStreamUrls.forEach((item, index) => {
         let divElement = document.createElement("div");
         let videoElement = document.createElement("video");
 
@@ -63,27 +66,55 @@
         const jitter = Math.floor(Math.random() * videoStreamUrls.length * .75 * 1000)
         setTimeout(() =>
             {
-                playerType = type_url[0]
-                videoUrl = type_url[1]
-                if(playerType == "flv") {
-                    // RTSP/FLV
-                    var flvPlayer = flvjs.createPlayer({
+                let stream_format = item[0];
+                let stream_url = item[1];
+
+                if(["unifi"].indexOf(stream_format) >= 0) {
+                    let videoPlayer = new viewport.SimplePlayer(
+                        `video-${index}`,
+                        stream_url);
+
+                } else if(["flv", "mpegts"].indexOf(stream_format) >= 0) {
+                    let flvPlayer = mpegts.createPlayer({
                         isLive: true,
-                        type: "flv",
-                        url: videoUrl
+                        type: stream_format,
+                        url: stream_url
                     });
                     flvPlayer.attachMediaElement(videoElement);
                     flvPlayer.load();
                     flvPlayer.play();
 
-                } else {
-                    // Unifi
-                    const videoPlayer = new viewport.SimplePlayer(
-                        `video-${index}`,
-                        videoUrl);
+                } else if(["hls"].indexOf(stream_format) >= 0) {
+                    const ws = new WebSocket(stream_url);
+                    ws.onmessage = (event) => {
+                        ws.close();
+                        const actual_stream_url = event.data.replace("{server}", window.location.hostname);
+
+                        if (videoElement.canPlayType("application/vnd.apple.mpegurl")) {
+                            videoElement.src = actual_stream_url;
+                        } else {
+                            var hls = new Hls();
+                            hls.on(Hls.Events.ERROR, function (event, data) {
+                                if(data.details === Hls.ErrorDetails.BUFFER_STALLED_ERROR)
+                                    hls.recoverMediaError();
+                            });
+                            hls.loadSource(actual_stream_url);
+                            hls.attachMedia(videoElement);
+                        }
+                    };
                 }
             },
             jitter);
     })
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const container = document.querySelector('.container');
+        const rect = container.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+
+        console.log('Width: ' + width + 'px, Height: ' + height + 'px');
+    });
 </script>
 </html>

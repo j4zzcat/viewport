@@ -1,53 +1,69 @@
+#
+# This file is part of Viewport.
+# By Sharon Dagan <https://github.com/j4zzcat>, Copyright (C) 2024.
+#
+# Viewport is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your option)
+# any later version.
+#
+# This software is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# This software. If not, see <https://www.gnu.org/licenses/>.
+#
+
+import os
 from urllib.parse import urlparse
 
 from context import GlobalFactory
 from backend.ui.grid import GridLayout
-from backend.cmdsrv import SimpleCommandServer
 from backend.error import ApplicationException
 
 
-class StreamsCliCommand(SimpleCommandServer.BaseCommand):
-    def __init__(self, layout, urls, output_dir):
-        self._logger = GlobalFactory.get_logger().get_child(self.__class__.__name__)
+class Streams:
+    def __init__(self, layout, urls):
+        self._logger = GlobalFactory.get_logger().getChild(self.__class__.__name__)
 
         self._layout = layout
         self._urls = urls
-        self._output_dir = output_dir
 
-    def initialize(self):
-        super().initialize()
-
+    def run(self):
+        # Parse URLs and Layout
         self._layout = self._parse_layout(self._layout)
         self._urls = self._parse_urls(self._urls)
 
-    def run(self):
-        super().run()
-
-        # Iterate over the unique protocols and start the necessary infrastructure
-        # to serve them. For unifi, this is the Reflector Server, for rtsp(s) this is
-        # the SRS Media Server.
+        # From the urls, create a set of the unique protocols needed. Iterate over the
+        # protocols and start the necessary infrastructure of each.
         protocol_controllers = {}
         for protocol in {url.scheme for url in self._urls}:
-            protocol_controllers[protocol] = GlobalFactory.get_command_server().run_synchronously(
-                eval("GlobalFactory.get_{protocol}_protocol_controller()".format(protocol=protocol)))
+            protocol_controllers[protocol] = eval(
+                "GlobalFactory.get_{protocol}_protocol_controller()".format(
+                    protocol=protocol))
 
-        # Iterate over the URLs in the order received.
-        # Create the livestream controller for each url. Depending on the input url,
-        # such as in the case of 'unifi://u:p@host/_all', several livestream instances
-        # may be returned.
-        player_urls = []
+            protocol_controllers[protocol].run()
+
+        # Iterate over the URLs in the order received. Create the livestream controller
+        # for each url. Depending on the input url, (such as in the case of 'unifi://.../_all'),
+        # more than one livestream instance may be returned. Save the endpoint of each
+        # livestream for the next step.
+        player_endpoints = []
         for url in self._urls:
-            livestreams = protocol_controllers[url.scheme].create_livestream_controller(url)
-            player_urls += [(livestream.get_type(), livestream.get_url()) for livestream in livestreams]
+            livestreams = protocol_controllers[url.scheme].new_livestream(url)
+            player_endpoints += [livestream.endpoint for livestream in livestreams]
             [livestream.start() for livestream in livestreams]
 
         # Render the web page
-        GlobalFactory.get_command_server().run_synchronously(
-            GlobalFactory.new_ui_renderer(self._layout, player_urls, self._output_dir))
+        data_dir = GlobalFactory.get_dirs()["web_root_dir"]
+        html_dir = f"{data_dir}/html"
+        os.makedirs(html_dir, exist_ok=True)
+        GlobalFactory.new_ui_renderer(self._layout, player_endpoints, html_dir).run()
 
-        GlobalFactory.get_command_server().run_asynchronously(
-            GlobalFactory.new_web_server(self._output_dir)
-        )
+        # Start the web server
+        GlobalFactory.get_web_server().run()
 
         # Leave MainThread free for signal handling
 
@@ -76,7 +92,7 @@ class StreamsCliCommand(SimpleCommandServer.BaseCommand):
             try:
                 parsed_url = urlparse(url)
                 if parsed_url.password:
-                    self._logger.add_redaction(parsed_url.password)
+                    self._logger.debug("Adding redaction", extra={"add_redaction": parsed_url.password})
 
                 self._logger.debug("Parsing URL: {url}".format(url=url))
                 scheme = parsed_url.scheme

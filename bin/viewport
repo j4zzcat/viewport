@@ -1,35 +1,40 @@
 #! /bin/bash
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+#
+# This file is part of Viewport.
+# By Sharon Dagan <https://github.com/j4zzcat>, Copyright (C) 2024.
+#
+# Viewport is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your option)
+# any later version.
+#
+# This software is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# This software. If not, see <https://www.gnu.org/licenses/>.
+#
+
+SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 ROOT_DIR="$SCRIPT_DIR/.."
 
-if [ -f /.dockerenv ]; then
-  export PYTHONUNBUFFERED=1
-  export PYTHONWARNINGS="ignore:Unverified HTTPS request"
-  python3 -c '
+if [ -f "/.dockerenv" ]; then
+  export RAM_FS=$(awk </proc/mounts '{print $2}' | grep -vE '/sys|/dev|/proc|/etc|/$')
+else
+  export RAM_FS=
+  source "$ROOT_DIR"/src/viewport/.venv/bin/activate
+fi
+
+export PYTHONUNBUFFERED=1
+export PYTHONWARNINGS="ignore:Unverified HTTPS request"
+python3 -c '
 import sys
 sys.path.pop(0)
 sys.path.append("'"$ROOT_DIR"'/src/viewport/src")
 sys.path.append("'"$ROOT_DIR"'/src/viewport/resource")
 from main import main
 main()' $@
-else
-  # If DOCKERIZE env is set, then the script is called again this time running
-  # inside docker, and mapping the source dirs of the project into the docker
-  # container. This trick is only good for development.
-  if [ -n "$DOCKERIZE" ]; then
-    docker run \
-      -it --rm \
-      --network host \
-      -v "$ROOT_DIR/bin":/opt/viewport/bin \
-      -v "$ROOT_DIR/src/viewport/src":/opt/viewport/src/viewport/src \
-      -v "$ROOT_DIR/src/viewport/resource":/opt/viewport/src/viewport/resource \
-      -v "$ROOT_DIR/src/reflector/src":/opt/viewport/src/reflector/src \
-      -v "$ROOT_DIR/src/player/src":/opt/viewport/src/player/src \
-      viewport:latest \
-      $@
-  else
-    echo "Can't run outside docker"
-    exit 127
-  fi
-fi
+

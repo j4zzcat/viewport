@@ -1,11 +1,8 @@
 import unittest
-from unittest.mock import MagicMock, patch
 from urllib.parse import urlparse
 
-from app.command.streams import StreamsCommand
-from app.executer import SimpleExecuter
-from app.unifi.protect import SimpleUnifiProtectApi
-from app.backend import GlobalFactory
+from backend.protocols.unifi import SimpleUnifiProtectApi
+from cli.commands import StreamsCliCommand
 
 
 class StreamsCommandTestCase(unittest.TestCase):
@@ -17,7 +14,7 @@ class StreamsCommandTestCase(unittest.TestCase):
             {"name": "c 3", "id": "id3"},
         ]}
 
-        sc = StreamsCommand(None, None)
+        sc = StreamsCliCommand(None, None)
         self.assertEqual(
             sc._get_player_url_for_unifi_protocol(urlparse("unifi://u1:p1@host1/_all"), sua),
      ["u1:p1@host1/id1",

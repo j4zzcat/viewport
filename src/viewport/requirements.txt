@@ -7,4 +7,3 @@ MarkupSafe==2.1.5
 requests==2.32.3
 urllib3==2.2.2
 websockets==12.0
-

@@ -120,9 +120,9 @@ export class SimplePlayer {
                  * and mp4a.40.2 for audio.
                  */
                 if(event.data) {
-                    this._mimeCodecs = `video/mp4; codecs="${event.data}"`
+                    this._mimeCodecs = `video/mp4; codecs="${event.data}"`;
                 } else {
-                    this._mimeCodecs = "video/mp4;"
+                    this._mimeCodecs = "video/mp4; codecs=\"avc1.4d4032\"";
                 }
 
                 this._logger.info(`mimeCodecs: ${this._mimeCodecs}`);
