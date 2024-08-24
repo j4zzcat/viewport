@@ -72,14 +72,14 @@ the Viewport Reflector Server.
 On the server side:
 * [Viewport Reflector](src/reflector) which is a simple livestream reflector server. This server uses the excellent
 node-based Unifi Protect [library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
-Unifi Protect Controller and onto the Viewport Player, over Web Sockets.
+Unifi Protect Controller and onto the Viewport Player, over websockets.
 * [Viewport File Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L55) which is a simple transcoding server 
-for the HLS format, which is file-based. The server listens for client requests for streams, starts a `ffmpeg` process to 
-transcode the RTSP(S) into HLS segments which are then served via a static web server, also started by this server.
+for the file-based HLS format. The server listens for client requests, starts a `ffmpeg` process to 
+transcode the requested RTSP(S) stream into HLS segments which are then served via a static web server, also started by this server.
 * [Viewport Streaming Transcoding Server](src/viewport/src/backend/protocol/rtsp.py#L206) which is a simple transcoding server
-for streaming-based formats like FLV and MPEG-TS. The server listens for client requests for streams, starts a `ffmpeg` 
-process to transcode the RTSP(S) stream into the specified format, and continously copies the stdout of `ffmpeg` to the 
-client's websocket. 
+for streaming-based formats like MPEG-TS and FLV. The server listens for client requests, starts a `ffmpeg` 
+process to transcode the requested RTSP(S) stream into the specified format, and then continuously copies the stdout 
+of the `ffmpeg` to the client's websocket. 
 * [Viewport](src/viewport) which provides CLI and orchestrates the execution of all the parts. Run the program 
 with the `--verbose` option to see the entire flow.
 
@@ -94,23 +94,12 @@ docker buildx build -t viewport:latest -f build/Dockerfile .
 
 
 ## Known issues
-* Somewhat working on Safari and Firefox.
 * Not working on iOS.
 
-## Todo
-* Better error handling. Should exit cleanly on fatal.
+## Todo for the next version
+* Better error handling. Should cleanly recover from errors and exit on critical errors.
 * Better unit testing.
-* Migrate away from FLV player to [mpegts.js](https://github.com/xqq/mpegts.js)
-* Investigate why is that RTPS(S) streams paused when focus is taken away.
-* Explore ways to optimize the RTSP(S) transcoding.
 
-```
-main -> StreamsCli --> UnifiProtocol --new process--> UnifiReflector (Node)
-                   --> RTSPProtocol  --new process--> File Web Server 
-                                     --new process--> ffmpeg 
-                                     --new process--> ffmpeg
-                   --> WebServer 
-```
 
 macOS, top viewport components
 ```

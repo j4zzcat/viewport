@@ -27,3 +27,5 @@ for pid in $(sort <"$top_log_file" | awk '{print $1}' | uniq); do
 done
 
 
+# Monitor the program components
+# top -o +pid $(pgrep "ffmpeg|node|static-web-server|Python" | xargs -I {} printf "\-pid {} ")
