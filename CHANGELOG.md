@@ -13,7 +13,7 @@
 
 [Release 1.1](https://github.com/j4zzcat/viewport/tree/release/1.1), Jul 31, 2024
 * Moved from bash to Python
-* Removed RTSP(S) support
+* Introduced the Unifi Reflector
 * Better structure, error handling, performance and bug fixes
 
 

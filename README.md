@@ -24,7 +24,7 @@ docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-m
     streams 'unifi://username:password@host/_all'
 ```
 Replace _username_ and _password_ with those used above, replace _host_ with the hostname or ip address
-of the Unifi Protect Controller. Once _Viewport_ starts, use a web browser to navigate to [http://localhost:8001](http://localhost:8001).
+of the Unifi Protect Controller. Once _Viewport_ starts, head over to [http://localhost:8001](http://localhost:8001).
 
 ### Another example
 Display cameras from several controllers and RTPS(S) sources on a 4x4 grid:
