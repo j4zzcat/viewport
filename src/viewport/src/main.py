@@ -42,7 +42,7 @@ Example:
              'rtsps://192.168.4.10:7441/DEVTOTALX1X?nightVision=off' \\
              'rtsp://192.168.106.10:7441/C0FFEE0X1XY::mpegts_1'
 
-  Then open the url 'http://localhost:8001' in Google Chrome web browser.
+  Then open the url 'http://localhost:8001' in a web browser.
 """
 import logging
 import sys
@@ -86,4 +86,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
