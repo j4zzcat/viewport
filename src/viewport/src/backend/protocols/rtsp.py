@@ -132,6 +132,7 @@ class SimpleFileTranscodingServer:
             ))
 
             await websocket.close()
+            return
 
         livestream = self._livestreams[path]
         self._logger.debug("Client '{client}' asks for '{path}'".format(
