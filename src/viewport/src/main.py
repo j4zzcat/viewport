@@ -75,7 +75,7 @@ def main():
                 layout=args['--layout'],
                 urls=args['<url>']).run()
 
-            logger.info("Ready at http://localhost:{port}/html".format(
+            logger.info("Ready at http://localhost:{port}".format(
                 port=GlobalFactory.get_settings()["httpd"]["port"]))
 
         except Exception as e:

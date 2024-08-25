@@ -40,9 +40,15 @@ class SimpleUIRenderer:
             rendered_file.write(
                 self._layout.render(self._livestream_endpoints))
 
-        # Copy the player bundle to output_dir
-        self._logger.debug("Copying player bundle to output directory")
+        # Copy the redirect file
+        shutil.copy(
+            "{viewport_root}/resource/backend/ui/templates/redirect.html".format(
+                viewport_root=GlobalFactory.get_dirs()["viewport_root"]),
+            "{web_root_dir}/index.html".format(
+                web_root_dir=GlobalFactory.get_dirs()["web_root_dir"]))
 
+        # Build and copy the player bundle to output_dir
+        self._logger.debug("Copying player bundle to output directory")
         os.environ["DIST_DIR"] = self._output_dir
         subprocess.run(["npx", "webpack"],
             cwd=GlobalFactory.get_dirs()["player_root"],

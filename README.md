@@ -96,8 +96,4 @@ docker buildx build -t viewport:latest -f build/Dockerfile .
 ## Known issues
 * Not working on iOS.
 
-## Todo for the next version
-* Provide a ready to use image for Raspberry Pi.
-* Better error handling. Should cleanly recover from errors and exit on critical errors.
-* Better unit testing.
 
