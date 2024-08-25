@@ -5,7 +5,7 @@
 ## Error handling
 [ ] Better error handling. Should cleanly recover from errors and exit on critical errors
 
-## Testing
+## Testing plan
 [ ] Unknown host given in the url
 [ ] Host not responding in time
 [ ] ffmpeg fails to start
