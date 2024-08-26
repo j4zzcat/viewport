@@ -55,34 +55,42 @@ docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-m
 ```
 
 
+## Theory of Operation
 
-## Theory of operation
-_Viewport_ is based on a simple client-server architecture, and is made of several parts:
+Viewport operates based on a simple client-server architecture, consisting of several key components:
+
+On the client side, there are multiple players and an interface:
+
+* The [Viewport Player](src/player) is a straightforward livestream video player written in TypeScript. 
+This player utilizes the Media Source Extension API to play H.264 fragmented MP4 livestream video from the 
+Unifi Protect Controller via the Viewport Reflector Server.
+
+* The [FLV/MPEG-TS Player](https://github.com/xqq/mpegts.js) plays FLV or MPEG-TS streams.
+
+* The [HLS Player](https://github.com/video-dev/hls.js/) handles playback of HLS streams.
+
+* The [index.html](src/viewport/resource/backend/ui/templates) is a simple web page that is rendered once by the server
+and integrates all the various views.
 
 
-On the client side:
-* [Viewport Player](src/player) which is a simple livestream video player written in TypeScript. This player
-uses Media Source Extension API to play the H.264 fMP4 livestream video from the Unifi Protect Controller through 
-the Viewport Reflector Server.
-* [FLV/MPEG-TS Player](https://github.com/xqq/mpegts.js) which plays the FLV or MPEG-TS streams.
-* [HLS Player](https://github.com/video-dev/hls.js/) which plays the HLS streams.
-* [index.html](src/viewport/resource/backend/ui/templates) which is a simple web page that is rendered once by the server and binds all the other views together. 
+On the server side, the architecture includes:
 
+* The [Viewport Reflector](src/reflector) is a basic livestream reflector server. It employs the node-based Unifi Protect
+library to redirect the livestream from a Unifi Protect Controller to the Viewport Player over websockets.
 
-On the server side:
-* [Viewport Reflector](src/reflector) which is a simple livestream reflector server. This server uses the excellent
-node-based Unifi Protect [library](https://github.com/hjdhjd/unifi-protect) to reflect the livestream off of a
-Unifi Protect Controller and onto the Viewport Player, over websockets.
-* [Viewport File Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L73) which is a simple transcoding server 
-for the file-based HLS format. The server listens for client requests, starts a `ffmpeg` process to 
-transcode the requested RTSP(S) stream into HLS segments which are then served over HTTP via a static web server.
-* [Viewport Streaming Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L224) which is a simple transcoding server
-for streaming-based formats like MPEG-TS and FLV. The server listens for client requests, starts a `ffmpeg` 
-process to transcode the requested RTSP(S) stream into the specified format, and then continuously copies the stdout 
-of the `ffmpeg` to the client's websocket. 
-* [Viewport](src/viewport) which provides CLI and orchestrates the execution of all the parts. Run the program 
-with the `--verbose` option to see the entire flow.
+* The [Viewport File Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L73) is designed specifically for the
+file-based HLS (HTTP Live Streaming) format. HLS, developed by Apple, segments a video stream into small HTTP-based file
+segments. Upon receiving a request, the server starts an ffmpeg process to transcode the specified RTSP(S) stream into
+HLS format. This process generates a series of MPEG-TS segments along with a master .m3u8 playlist file, which are then
+served over HTTP to the client.
 
+* The [Viewport Streaming Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L224) is a simple server for 
+transcoding streaming-based formats such as MPEG-TS and FLV. When a client request is made, the server initiates an 
+ffmpeg process to transcode the specified RTSP(S) stream into the desired format. The transcoded output is then streamed
+continuously to the client's websocket.
+
+* The core [Viewport](src/viewport) provides a CLI and orchestrates the execution of all these components. Running the program
+with the --verbose option will display the entire operational flow.
 
 
 ## Build
