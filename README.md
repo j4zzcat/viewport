@@ -63,32 +63,27 @@ On the client side, there are multiple players and an interface:
 
 * The [Viewport Player](src/player) is a straightforward livestream video player written in TypeScript. 
 This player utilizes the Media Source Extension API to play H.264 fragmented MP4 livestream video from the 
-Unifi Protect Controller via the Viewport Reflector Server.
-
+Unifi Protect Controller via the Viewport Reflector Server, over WebSockets.
 * The [FLV/MPEG-TS Player](https://github.com/xqq/mpegts.js) plays FLV or MPEG-TS streams.
-
 * The [HLS Player](https://github.com/video-dev/hls.js/) handles playback of HLS streams.
-
 * The [index.html](src/viewport/resource/backend/ui/templates) is a simple web page that is rendered once by the server
 and integrates all the various views.
 
 
 On the server side, the architecture includes:
 
-* The [Viewport Reflector](src/reflector) is a basic livestream reflector server. It employs the node-based Unifi Protect
-library to redirect the livestream from a Unifi Protect Controller to the Viewport Player over websockets.
-
+* The [Viewport Reflector](src/reflector) is a basic livestream reflector server. It employs the excellent node-based 
+[Unifi Protect library](https://github.com/hjdhjd/unifi-protect) by [@hjdhjd](https://github.com/hjdhjd) to redirect 
+the livestream from a Unifi Protect Controller to the Viewport Player over websockets.
 * The [Viewport File Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L73) is designed specifically for the
 file-based HLS (HTTP Live Streaming) format. HLS, developed by Apple, segments a video stream into small HTTP-based file
 segments. Upon receiving a request, the server starts an ffmpeg process to transcode the specified RTSP(S) stream into
 HLS format. This process generates a series of MPEG-TS segments along with a master .m3u8 playlist file, which are then
 served over HTTP to the client.
-
 * The [Viewport Streaming Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L224) is a simple server for 
 transcoding streaming-based formats such as MPEG-TS and FLV. When a client request is made, the server initiates an 
 ffmpeg process to transcode the specified RTSP(S) stream into the desired format. The transcoded output is then streamed
 continuously to the client's websocket.
-
 * The core [Viewport](src/viewport) provides a CLI and orchestrates the execution of all these components. Running the program
 with the --verbose option will display the entire operational flow.
 
