@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-trap 'docker stop $CONTAINER_ID; kill -9 $FFMPEG_PID' SIGINT
+trap 'docker stop $CONTAINER_ID; kill -9 $FFMPEG_PID1 $FFMPEG_PID2' SIGINT
 
 SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
@@ -25,13 +25,26 @@ ffmpeg \
   -hide_banner \
   -loglevel error \
   -nostats \
-  -re -i "$SCRIPT_DIR/test.mp4" \
+  -stream_loop 3 \
+  -re -i "$SCRIPT_DIR/test1.mov" \
   -c copy \
-  -f rtsp -rtsp_transport tcp rtsp://localhost:8554/mystream &
+  -f rtsp -rtsp_transport tcp rtsp://localhost:8554/1 &
 
-FFMPEG_PID="$$"
+FFMPEG_PID1="$$"
 
-echo "RTSP test stream is available at rtsp://localhost:8554/mystream"
+ffmpeg \
+  -hide_banner \
+  -loglevel error \
+  -nostats \
+  -stream_loop 3 \
+  -re -i "$SCRIPT_DIR/test2.mov" \
+  -c copy \
+  -f rtsp -rtsp_transport tcp rtsp://localhost:8554/2 &
+
+FFMPEG_PID2="$$"
+
+
+echo "RTSP test stream is available at rtsp://localhost:8554/N"
 while true; do
   sleep 3600
 done
