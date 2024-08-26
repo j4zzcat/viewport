@@ -72,7 +72,7 @@ and integrates all the various views.
 
 On the server side, the architecture includes:
 
-* The [Viewport Reflector](src/reflector) is a basic livestream reflector server. It employs the excellent node-based 
+* The [Viewport Reflector](src/reflector) is a simple livestream reflector server. It employs the excellent node-based 
 [Unifi Protect library](https://github.com/hjdhjd/unifi-protect) by [@hjdhjd](https://github.com/hjdhjd) to redirect 
 the livestream from a Unifi Protect Controller to the Viewport Player over websockets.
 * The [Viewport File Transcoding Server](src/viewport/src/backend/protocols/rtsp.py#L73) is designed specifically for the
