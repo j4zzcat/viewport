@@ -1,0 +1,130 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #fff; /* Change background to white */
+}
+
+.video-grid {
+    display: grid;
+    gap: 2px; /* Gap between video cells */
+    margin: 2px; /* Outer margin around the grid container */
+    width: calc(100vw - 4px); /* Subtract the applied margin from the width */
+    height: calc(100vh - 4px); /* Subtract the applied margin from the height */
+
+    /* Define an internal grid framework of 64x36 */
+    grid-template-columns: repeat(64, 1fr);
+    grid-template-rows: repeat(36, 1fr);
+}
+
+.video-cell {
+    position: relative;
+    overflow: hidden;
+    color: white; /* Ensure text inside the video cells is visible */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Maintain the 16:9 aspect ratio for video cells */
+.video-cell::before {
+    content: "";
+    display: block;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+}
+
+.video-cell video, .video-cell iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Define the sizes of the different video cells */
+.large {
+    grid-column: span 32;
+    grid-row: span 18;
+}
+
+.medium {
+    grid-column: span 16;
+    grid-row: span 9;
+}
+
+/* Smoother blue-based color palette for the cells */
+.video-cell:nth-child(1) {
+    background-color: #b3cde0; /* Light Blue */
+}
+
+.video-cell:nth-child(2) {
+    background-color: #6497b1; /* Medium Blue */
+}
+
+.video-cell:nth-child(3) {
+    background-color: #005b96; /* Dark Blue */
+}
+
+.video-cell:nth-child(4) {
+    background-color: #88c2e0; /* Sky Blue */
+}
+
+.video-cell:nth-child(5) {
+    background-color: #1e81b0; /* Steel Blue */
+}
+
+.video-cell:nth-child(6) {
+    background-color: #2a4d69; /* Prussian Blue */
+}
+
+.video-cell:nth-child(7) {
+    background-color: #3b7dd8; /* Dodger Blue */
+}
+
+.video-cell:nth-child(8) {
+    background-color: #6699cc; /* Blue Gray */
+}
+
+.video-cell:nth-child(9) {
+    background-color: #b0c4de; /* Light Steel Blue */
+}
+
+.video-cell:nth-child(10) {
+    background-color: #4682b4; /* Steel Blue */
+}
+
+.video-cell:nth-child(11) {
+    background-color: #5f9ea0; /* Cadet Blue */
+}
+
+.video-cell:nth-child(12) {
+    background-color: #7ec8e3; /* Aero Blue */
+}
+
+.video-cell:nth-child(13) {
+    background-color: #003865; /* Deep Blue */
+}
+
+.video-cell:nth-child(14) {
+    background-color: #204b6f; /* Oxford Blue */
+}
+
+.video-cell:nth-child(15) {
+    background-color: #44729b; /* Air Superiority Blue */
+}
+
+.video-cell:nth-child(16) {
+    background-color: #004c99; /* Sapphire Blue */
+}
+
+/* Add more colors as needed */

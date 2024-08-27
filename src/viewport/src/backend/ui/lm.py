@@ -19,10 +19,9 @@
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 
-class GridLayout:
-    def __init__(self, rows, columns):
-        self.rows = rows
-        self.columns = columns
+class LargeMediumLayout:
+    def __init__(self, large_cell_ids):
+        self._large_cell_ids = large_cell_ids
 
     def render(self, livestream_endpoints):
         env = Environment(
@@ -30,8 +29,8 @@ class GridLayout:
             autoescape=select_autoescape()
         )
 
-        template = env.get_template("grid.html")
-        return template.render(layout=self, livestream_endpoints=livestream_endpoints)
+        template = env.get_template("lm.html")
+        return template.render(layout=self,
+            livestream_endpoints=livestream_endpoints,
+            large_cell_ids=self._large_cell_ids)
 
-    def to1fr(self, n):
-        return "".join(["1fr " for i in range(n)])

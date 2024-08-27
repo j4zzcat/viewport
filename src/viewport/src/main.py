@@ -24,7 +24,8 @@ Usage:
 
 Options:
   -v, --verbose           Be verbose.
-  -l, --layout=<layout>   The layout to use. Supported layouts: grid. [Default: grid:3x3]
+  -l, --layout=<layout>   The layout to use. Supported layouts: grid, lm. [Default: grid:3x3]
+                          Grid layout format is grid:rowsxcols, lm format is lm:[TL,TR,BL,BR].
   <url>                   The URL of a live video stream. Supported protocols: unifi and rtsp(s).
                           Unifi protocol takes the form of unifi://url/(_all|camera name,...)
                           Rtsp(s) protocol takes the form of rtsp(s)://url[::format]

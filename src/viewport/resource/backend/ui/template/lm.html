@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/html/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/html/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/html/favicon-16x16.png">
+    <link rel="manifest" href="/html/site.webmanifest">
+
+    <title>Video Grid</title>
+    <link rel="stylesheet" href="lm.css">
+    <script src="play.js"/>
+    <script src="bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mpegts.js@latest/dist/mpegts.min.js"></script>"
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+</head>
+
+<body>
+<div id="video-grid" class="video-grid"></div>
+<script>
+    function calculateCellSizes(largeCellsList) {
+        const LARGE_CELLS = {
+            tl: [[0,0], [0,1], [1,0], [1,1]],  // Top Left
+            tr: [[0,2], [0,3], [1,2], [1,3]],  // Top Right
+            bl: [[2,0], [2,1], [3,0], [3,1]],  // Bottom Left
+            br: [[2,2], [2,3], [3,2], [3,3]],  // Bottom Right
+            cc: [[1,1], [1,2], [2,1], [2,2]]   // Center
+        };
+
+        let cells = ["M", "M", "M", "M", "M", "M", "M", "M", "M", "M", "M", "M", "M", "M", "M", "M"]
+
+        let rowSize = 4;
+        largeCellsList.forEach(largeCellId => {
+            LARGE_CELLS[largeCellId].forEach(pos => {
+                row = pos[0];
+                col = pos[1];
+                index = row * rowSize + col;
+                cells[index] = largeCellId;
+            })
+        });
+
+        let result = [];
+        let seen = {};
+        cells.forEach(cellId => {
+            if(cellId === "M") {
+                result.push("medium");
+            } else {
+                if(!(cellId in seen)) {
+                    seen[cellId] = true;
+                    result.push("large");
+                }
+            }
+        });
+
+        return result;
+    }
+
+    const videoStreamUrls = [
+        {% for lep in livestream_endpoints %}
+            [ "{{ lep.stream_format }}", "{{ lep.scheme }}://" + window.location.hostname + ":{{ lep.port }}/{{ lep.path }}" ],
+        {% endfor %}
+    ];
+
+    const cellSizes = calculateCellSizes({{ large_cell_ids | tojson | safe}});
+
+    const videoGrid = document.getElementById("video-grid");
+
+    cellSizes.forEach((cellSize, index) => {
+        let videoElement = document.createElement("video");
+
+        videoElement.setAttribute("class", `video-cell ${cellSize}`);
+        videoElement.setAttribute("id", `video-${index}`);
+        videoElement.setAttribute("width", "100%");
+        videoElement.defaultMuted = true;
+        videoElement.muted = true;
+        videoElement.autoplay = true;
+
+        videoGrid.appendChild(videoElement);
+    });
+
+    play(videoStreamUrls);
+
+</script>
+</body>
+</html>

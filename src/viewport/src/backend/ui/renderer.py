@@ -40,9 +40,25 @@ class SimpleUIRenderer:
             rendered_file.write(
                 self._layout.render(self._livestream_endpoints))
 
+        # Copy js files
+        js_files = glob.glob(
+            "{viewport_root}/resource/backend/ui/js/*".format(
+                viewport_root=GlobalFactory.get_dirs()["viewport_root"]))
+
+        for file_path in js_files:
+            shutil.copy2(file_path, "{web_root_dir}/html".format(web_root_dir=GlobalFactory.get_dirs()["web_root_dir"]))
+
+        # Copy css files
+        css_files = glob.glob(
+            "{viewport_root}/resource/backend/ui/css/*".format(
+                viewport_root=GlobalFactory.get_dirs()["viewport_root"]))
+
+        for file_path in css_files:
+            shutil.copy2(file_path, "{web_root_dir}/html".format(web_root_dir=GlobalFactory.get_dirs()["web_root_dir"]))
+
         # Copy the redirect file
         shutil.copy(
-            "{viewport_root}/resource/backend/ui/templates/redirect.html".format(
+            "{viewport_root}/resource/backend/ui/template/redirect.html".format(
                 viewport_root=GlobalFactory.get_dirs()["viewport_root"]),
             "{web_root_dir}/index.html".format(
                 web_root_dir=GlobalFactory.get_dirs()["web_root_dir"]))

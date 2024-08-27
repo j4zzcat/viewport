@@ -19,6 +19,7 @@
 import os
 from urllib.parse import urlparse
 
+from backend.ui.lm import LargeMediumLayout
 from context import GlobalFactory
 from backend.ui.grid import GridLayout
 from backend.error import ApplicationException
@@ -77,6 +78,11 @@ class Streams:
             rows = int(params.split("x")[0])
             columns = int(params.split("x")[1])
             parsed_layout = GridLayout(rows, columns)
+
+        elif name == "lm":
+            params = layout.split(":")[1]
+            large_cell_ids = params.lower().split(",")
+            parsed_layout = LargeMediumLayout(large_cell_ids)
 
         else:
             raise ApplicationException("Unknown layout: {layout}".format(layout=layout))
