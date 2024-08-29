@@ -99,8 +99,7 @@ docker buildx build -t viewport:latest -f build/Dockerfile .
 * Not working on iOS.
 
 
-## Demo
-<img src="doc/recording1.gif" align="right"/>
+
 
 
 
