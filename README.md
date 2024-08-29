@@ -1,6 +1,6 @@
 # Viewport
 
-<img src="man/screenshot1.png" align="right" width="40%"/>
+<img src="doc/screenshot1.png" align="right" width="40%"/>
 
 *Viewport* is a simple program to display multiple, side-by-side Unifi Protect 
 and RTPS(S) video streams in an unattended web page. It is designed for passive, security 
@@ -94,6 +94,9 @@ You should have `docker` and `buildkit` installed.
 ```shell
 docker buildx build -t viewport:latest -f build/Dockerfile .
 ```
+
+## Demo
+<img src="doc/recording1.gif" align="right" width="60%"/>
 
 
 ## Known issues
