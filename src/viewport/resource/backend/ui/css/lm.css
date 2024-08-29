@@ -63,68 +63,68 @@ body, html {
 }
 
 /* Smoother blue-based color palette for the cells */
-.video-cell:nth-child(1) {
-    background-color: #b3cde0; /* Light Blue */
-}
+/*.video-cell:nth-child(1) {*/
+/*    background-color: #b3cde0; !* Light Blue *!*/
+/*}*/
 
-.video-cell:nth-child(2) {
-    background-color: #6497b1; /* Medium Blue */
-}
+/*.video-cell:nth-child(2) {*/
+/*    background-color: #6497b1; !* Medium Blue *!*/
+/*}*/
 
-.video-cell:nth-child(3) {
-    background-color: #005b96; /* Dark Blue */
-}
+/*.video-cell:nth-child(3) {*/
+/*    background-color: #005b96; !* Dark Blue *!*/
+/*}*/
 
-.video-cell:nth-child(4) {
-    background-color: #88c2e0; /* Sky Blue */
-}
+/*.video-cell:nth-child(4) {*/
+/*    background-color: #88c2e0; !* Sky Blue *!*/
+/*}*/
 
-.video-cell:nth-child(5) {
-    background-color: #1e81b0; /* Steel Blue */
-}
+/*.video-cell:nth-child(5) {*/
+/*    background-color: #1e81b0; !* Steel Blue *!*/
+/*}*/
 
-.video-cell:nth-child(6) {
-    background-color: #2a4d69; /* Prussian Blue */
-}
+/*.video-cell:nth-child(6) {*/
+/*    background-color: #2a4d69; !* Prussian Blue *!*/
+/*}*/
 
-.video-cell:nth-child(7) {
-    background-color: #3b7dd8; /* Dodger Blue */
-}
+/*.video-cell:nth-child(7) {*/
+/*    background-color: #3b7dd8; !* Dodger Blue *!*/
+/*}*/
 
-.video-cell:nth-child(8) {
-    background-color: #6699cc; /* Blue Gray */
-}
+/*.video-cell:nth-child(8) {*/
+/*    background-color: #6699cc; !* Blue Gray *!*/
+/*}*/
 
-.video-cell:nth-child(9) {
-    background-color: #b0c4de; /* Light Steel Blue */
-}
+/*.video-cell:nth-child(9) {*/
+/*    background-color: #b0c4de; !* Light Steel Blue *!*/
+/*}*/
 
-.video-cell:nth-child(10) {
-    background-color: #4682b4; /* Steel Blue */
-}
+/*.video-cell:nth-child(10) {*/
+/*    background-color: #4682b4; !* Steel Blue *!*/
+/*}*/
 
-.video-cell:nth-child(11) {
-    background-color: #5f9ea0; /* Cadet Blue */
-}
+/*.video-cell:nth-child(11) {*/
+/*    background-color: #5f9ea0; !* Cadet Blue *!*/
+/*}*/
 
-.video-cell:nth-child(12) {
-    background-color: #7ec8e3; /* Aero Blue */
-}
+/*.video-cell:nth-child(12) {*/
+/*    background-color: #7ec8e3; !* Aero Blue *!*/
+/*}*/
 
-.video-cell:nth-child(13) {
-    background-color: #003865; /* Deep Blue */
-}
+/*.video-cell:nth-child(13) {*/
+/*    background-color: #003865; !* Deep Blue *!*/
+/*}*/
 
-.video-cell:nth-child(14) {
-    background-color: #204b6f; /* Oxford Blue */
-}
+/*.video-cell:nth-child(14) {*/
+/*    background-color: #204b6f; !* Oxford Blue *!*/
+/*}*/
 
-.video-cell:nth-child(15) {
-    background-color: #44729b; /* Air Superiority Blue */
-}
+/*.video-cell:nth-child(15) {*/
+/*    background-color: #44729b; !* Air Superiority Blue *!*/
+/*}*/
 
-.video-cell:nth-child(16) {
-    background-color: #004c99; /* Sapphire Blue */
-}
+/*.video-cell:nth-child(16) {*/
+/*    background-color: #004c99; !* Sapphire Blue *!*/
+/*}*/
 
 /* Add more colors as needed */

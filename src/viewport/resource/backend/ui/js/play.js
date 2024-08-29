@@ -1,3 +1,4 @@
+import { SimplePlayer } from "./SimplePlayer.js";
 
 function play(videoStreamUrls) {
     videoStreamUrls.forEach((item, index) => {
@@ -9,7 +10,7 @@ function play(videoStreamUrls) {
                 let stream_url = item[1];
 
                 if (["unifi"].indexOf(stream_format) >= 0) {
-                    let videoPlayer = new viewport.SimplePlayer(
+                    let videoPlayer = new SimplePlayer(
                         `video-${index}`,
                         stream_url);
 
