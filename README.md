@@ -30,7 +30,7 @@ of the Unifi Protect Controller. Once _Viewport_ starts, head over to [http://lo
 Display cameras from several controllers and RTPS(S) sources on a 4x4 grid:
 ```bash
 docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-mode=1777 \
-  j4zzcat/viewport:1.3 \ 
+  j4zzcat/viewport:1.4 \ 
       streams \
         --layout grid:4x4 \
         'unifi://username1:password1@host1/_all' \
@@ -39,7 +39,19 @@ docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-m
         'rtsps://host3/HIJKLMNOP?nighmode=false'
 ```
 
-### Yet another example
+### And another example
+Display cameras on the Large-Regular layout (lr), with two large cells, one on the
+top left (tl) corner, and the other on the bottom right (br) corner, with the rest
+of the streams presented in regular-sized cells: 
+```bash
+docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-mode=1777 \
+  j4zzcat/viewport:1.4 \ 
+      streams \
+        --layout lr:tl,br \
+        'unifi://username1:password1@host1/_all'
+```
+
+### And yet another example
 By default, RTSP(S) streams are transcoded to HTTP Live Stream (HLS) format. This format provides a reasonable 
 balance between CPU consumption and latency. In addition, MPEG-TS and FLV are also available and can be specified as 
 the default or per individual streams. Have a look in [settings.toml](src/viewport/resource/settings.toml) to learn more.
@@ -48,7 +60,7 @@ Note that the transcoding of Unifi streams cannot be changed, this feature only 
 The following will transcode one stream to MPEG-TS and the other FLV:
 ```bash
 docker run -it --rm --network host --mount type=tmpfs,destination=/ramfs,tmpfs-mode=1777 \
-  j4zzcat/viewport:1.3 \ 
+  j4zzcat/viewport:1.4 \ 
       streams \
         'rtsps://host3/ABCDEFG::mpegts_1'  \
         'rtsps://host4/ZDEEFFS::flv_1'

@@ -19,7 +19,7 @@
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 
-class LargeMediumLayout:
+class LargeRegularLayout:
     def __init__(self, large_cell_ids):
         self._large_cell_ids = large_cell_ids
 
@@ -29,7 +29,7 @@ class LargeMediumLayout:
             autoescape=select_autoescape()
         )
 
-        template = env.get_template("lm.html")
+        template = env.get_template("lr.html")
         return template.render(layout=self,
             livestream_endpoints=livestream_endpoints,
             large_cell_ids=self._large_cell_ids)

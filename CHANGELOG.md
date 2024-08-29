@@ -1,3 +1,6 @@
+[Release 1.4](https://github.com/j4zzcat/viewport/tree/release/1.4), Aug 29, 2024
+* Introduced the Large-Regular layout
+* Bug fixes
 
 [Release 1.3](https://github.com/j4zzcat/viewport/tree/release/1.3), Aug 25, 2024 
 * RTPS(S) streams can be transcoded to HLS, MPEG-TS and FLV
