@@ -95,11 +95,13 @@ You should have `docker` and `buildkit` installed.
 docker buildx build -t viewport:latest -f build/Dockerfile .
 ```
 
-## Demo
-<img src="doc/recording1.gif" align="right" width="60%"/>
-
-
 ## Known issues
 * Not working on iOS.
+
+
+## Demo
+<img src="doc/recording1.gif" align="right"/>
+
+
 
 
